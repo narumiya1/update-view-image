@@ -1,5 +1,8 @@
 package com.example.uploadandviewimage;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,24 +12,46 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class GrainData
-{
+public class GrainData implements Parcelable {
     private String Message;
 
     private GrainItem[] Items;
 
-    public String getMessage ()
-    {
+    protected GrainData(Parcel in) {
+        Message = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(Message);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<GrainData> CREATOR = new Creator<GrainData>() {
+        @Override
+        public GrainData createFromParcel(Parcel in) {
+            return new GrainData(in);
+        }
+
+        @Override
+        public GrainData[] newArray(int size) {
+            return new GrainData[size];
+        }
+    };
+
+    public String getMessage() {
         return Message;
     }
 
-    public void setMessage (String Message)
-    {
+    public void setMessage(String Message) {
         this.Message = Message;
     }
 
-    public GrainItem[] getItems ()
-    {
+    public GrainItem[] getItems() {
         return Items;
     }
 
@@ -40,13 +65,13 @@ public class GrainData
         List<GrainType> listType = new ArrayList<GrainType>();
 
         //List<GrainSize> listSize= new ArrayList<GrainSize>();
-        for (int i =0;i<count;i++) {
+        for (int i = 0; i < count; i++) {
             listType.add(list.get(i).getGrainType());
             //listSize.add(list.get(i).getGrainSize());
         }
         // Now let's group grain type
         Map<String, List<GrainType>> countByType = new HashMap<>();
-        for(GrainType p : listType) {
+        for (GrainType p : listType) {
             if (!countByType.containsKey(p.getName())) {
                 countByType.put(p.getName(), new ArrayList<>());
             }
@@ -63,7 +88,7 @@ public class GrainData
             p.setName(entry.getKey());
             double size = entry.getValue().size();
             p.setValue(size);
-            p.setPercent(size/count);
+            p.setPercent(size / count);
             TypePie[pos] = p;
             pos = pos + 1;
         }
@@ -75,14 +100,14 @@ public class GrainData
         int count = Items.length;
         List<GrainItem> list = Arrays.asList(Items);
         //List<GrainType> listType = new ArrayList<GrainType>();
-        List<GrainSize> listSize= new ArrayList<GrainSize>();
-        for (int i =0;i<count;i++) {
+        List<GrainSize> listSize = new ArrayList<GrainSize>();
+        for (int i = 0; i < count; i++) {
             //listType.add(list.get(i).getGrainType());
             listSize.add(list.get(i).getGrainSize());
         }
         // Now let's group grain size
         Map<String, List<GrainSize>> countBySize = new HashMap<>();
-        for(GrainSize p : listSize) {
+        for (GrainSize p : listSize) {
             if (!countBySize.containsKey(p.getName())) {
                 countBySize.put(p.getName(), new ArrayList<>());
             }
@@ -99,7 +124,7 @@ public class GrainData
             p.setName(entry.getKey());
             double size = entry.getValue().size();
             p.setValue(size);
-            p.setPercent(size/count);
+            p.setPercent(size / count);
             SizePie[pos] = p;
             pos = pos + 1;
         }
@@ -107,14 +132,12 @@ public class GrainData
         return SizePie;
     }
 
-    public void setItems (GrainItem[] Items)
-    {
+    public void setItems(GrainItem[] Items) {
         this.Items = Items;
     }
 
     @Override
-    public String toString()
-    {
-        return "ClassPojo [Message = "+Message+", Items = "+Items+"]";
+    public String toString() {
+        return "ClassPojo [Message = " + Message + ", Items = " + Items + "]";
     }
 }

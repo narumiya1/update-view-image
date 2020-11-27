@@ -1,6 +1,8 @@
 package com.example.uploadandviewimage;
 
-public class GrainPie {
+import java.io.Serializable;
+
+public class GrainPie implements Serializable {
     private String Name;
     private double Value;
     private double Percent;

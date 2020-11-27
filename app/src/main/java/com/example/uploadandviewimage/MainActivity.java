@@ -521,9 +521,12 @@ public class MainActivity extends AppCompatActivity {
                         intent.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
-//                                intent.putStringArrayListExtra("contactRecords_list", type);
-                                startActivity(intent);
+
+                                Bundle setData = new Bundle();
+                                Intent sendData2 = new Intent(MainActivity.this, SecondActivity.class);
+                                setData.putString("DataSaya", String.valueOf(grainData.getItems().length));
+                                sendData2.putExtras(setData);
+                                startActivity(sendData2);
                             }
                         });
 

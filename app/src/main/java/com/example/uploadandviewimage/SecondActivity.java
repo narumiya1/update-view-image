@@ -32,18 +32,30 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static android.app.PendingIntent.getActivity;
 
 
 public class SecondActivity extends AppCompatActivity {
 
+    private GrainItem[] Items;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
+        TextView GetNilai = (TextView) findViewById(R.id.getData);
+        TextView total = (TextView) findViewById(R.id.total);
+
+        Bundle bundle = getIntent().getExtras();
+        GetNilai.setText("Data Yang Dierima: " + bundle.getString("DataSaya"));
+
         drawChart();
     }
 
@@ -51,12 +63,8 @@ public class SecondActivity extends AppCompatActivity {
         PieChart pieChart = findViewById(R.id.chart1);
         pieChart.setUsePercentValues(true);
 
-        GrainData grainData = new GrainData();
-        GrainPie[] size = grainData.getSizePie();
-
-        for (int i = 0 ; i<size.length; i++){
-
-        }
+//        GrainData grainData = new GrainData();
+//        GrainPie[] size = grainData.getTypePie();
 
         ArrayList<PieEntry> yvalues = new ArrayList<PieEntry>();
         yvalues.add(new PieEntry(8f, "January", 0));
