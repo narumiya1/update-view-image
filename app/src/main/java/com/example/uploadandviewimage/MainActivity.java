@@ -69,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
     PhotoView viewImage;
     Button b, intent;
     private String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-    private  static  final int PERMISSION_CODE_READ_GALLERY = 1;
-    private  static  final int PERMISSION_CODE_OPEN_CAMERA = 2;
+    private static final int PERMISSION_CODE_READ_GALLERY = 1;
+    private static final int PERMISSION_CODE_OPEN_CAMERA = 2;
 
     private Uri image_uri;
     private String mImageFileLocation = "";
@@ -84,10 +84,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        b=(Button)findViewById(R.id.btnSelectPhoto);
+        b = (Button) findViewById(R.id.btnSelectPhoto);
         intent = findViewById(R.id.intent);
         //viewImage=(ImageView)findViewById(R.id.viewImage);
-        viewImage=(PhotoView)findViewById(R.id.viewImage);
+        viewImage = (PhotoView) findViewById(R.id.viewImage);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,16 +121,16 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
     private void selectImage() {
-        final CharSequence[] options = { "Take Photo", "Choose from Gallery","Cancel" };
+        final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Add Photo!");
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
-                if (options[item].equals("Take Photo"))
-                {
-                    if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.M) {
+                if (options[item].equals("Take Photo")) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
                                 checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                             String[] permision = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                             //permission already granted
                             openCamera();
                         }
-                    }  else {
+                    } else {
                         // system OS < Marshmallow
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         File f = new File(android.os.Environment.getExternalStorageDirectory(), "temp.jpg");
@@ -151,10 +151,8 @@ public class MainActivity extends AppCompatActivity {
                     File f = new File(android.os.Environment.getExternalStorageDirectory(), "temp.jpg");
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
                     startActivityForResult(intent, 1); */
-                }
-                else if (options[item].equals("Choose from Gallery"))
-                {
-                    if (ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
+                } else if (options[item].equals("Choose from Gallery")) {
+                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                         // Permission is not granted
                         if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -169,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     } else {
                         //permission already granted
-                        Intent intent = new   Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         startActivityForResult(intent, 2);
                     }
                     /*
@@ -185,8 +183,7 @@ public class MainActivity extends AppCompatActivity {
                     } */
 
 
-                }
-                else if (options[item].equals("Cancel")) {
+                } else if (options[item].equals("Cancel")) {
                     dialog.dismiss();
                 }
             }
@@ -248,8 +245,7 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case 1:
-            {
+            case 1: {
                 if (grantResults.length > 0 &&
                         grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, do something you want
@@ -365,16 +361,16 @@ public class MainActivity extends AppCompatActivity {
 
             } else if (requestCode == 2) {
                 Uri selectedImage = data.getData();
-                String[] filePath = { MediaStore.Images.Media.DATA };
-                Cursor c = getContentResolver().query(selectedImage,filePath, null, null, null);
+                String[] filePath = {MediaStore.Images.Media.DATA};
+                Cursor c = getContentResolver().query(selectedImage, filePath, null, null, null);
                 c.moveToFirst();
                 int columnIndex = c.getColumnIndex(filePath[0]);
                 String picturePath = c.getString(columnIndex);
                 mImageFileLocation = picturePath;
 
                 c.close();
-                BitmapFactory.Options options = new BitmapFactory.Options ();
-                options.inSampleSize=4; // InSampleSize = 4;
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = 4; // InSampleSize = 4;
                 /*
                 Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath, options));
                 Log.w("path of image from gallery......******************.........", picturePath+"");
@@ -404,6 +400,8 @@ public class MainActivity extends AppCompatActivity {
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
+            } else if (requestCode == 10) {
+
             }
         }
     }
@@ -444,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
         int cameraImageWidth = bmOptions.outWidth;
         int cameraImageHeight = bmOptions.outHeight;
 
-        int scaleFactor = Math.min(cameraImageWidth/targetImageViewWidth, cameraImageHeight/targetImageViewHeight);
+        int scaleFactor = Math.min(cameraImageWidth / targetImageViewWidth, cameraImageHeight / targetImageViewHeight);
         bmOptions.inSampleSize = scaleFactor;
         bmOptions.inJustDecodeBounds = false;
 
@@ -470,7 +468,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void uploadImage(Bitmap bitmap) {
         File file = new File(mImageFileLocation);
-        int file_size = Integer.parseInt(String.valueOf(file.length()/1024));
+        int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
 
         //ByteArrayOutputStream bos = new ByteArrayOutputStream();
         //bitmap.compress(Bitmap.CompressFormat.JPEG, 0 /*ignored for PNG*/, bos);
@@ -506,7 +504,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, Response response) {
                     if (response.code() == 200) {
-                        GrainData grainData = (GrainData)response.body();
+                        GrainData grainData = (GrainData) response.body();
                         //String gson = new Gson().toJson(response.body());
                         //20201126
                         //get pie chart
@@ -522,11 +520,11 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
 
-                                Bundle setData = new Bundle();
-                                Intent sendData2 = new Intent(MainActivity.this, SecondActivity.class);
-                                setData.putString("DataSaya", String.valueOf(grainData.getItems().length));
-                                sendData2.putExtras(setData);
-                                startActivity(sendData2);
+
+                                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+//                                Bundle setData = new Bundle();
+                                intent.putExtra("DataSaya", type);
+                                startActivityForResult(intent, 10);
                             }
                         });
 
@@ -548,13 +546,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void initializeGrid(){
+    private void initializeGrid() {
         TableLayout ll = (TableLayout) findViewById(R.id.displayLinear);
 
 
-        for (int i = 0; i <40; i++) {
+        for (int i = 0; i < 40; i++) {
 
-            TableRow row= new TableRow(this);
+            TableRow row = new TableRow(this);
             TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
             row.setLayoutParams(lp);
             //checkBox = new CheckBox(this);

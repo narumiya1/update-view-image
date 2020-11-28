@@ -12,36 +12,14 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class GrainData implements Parcelable {
+public class GrainData {
     private String Message;
 
     private GrainItem[] Items;
 
-    protected GrainData(Parcel in) {
-        Message = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(Message);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<GrainData> CREATOR = new Creator<GrainData>() {
-        @Override
-        public GrainData createFromParcel(Parcel in) {
-            return new GrainData(in);
-        }
-
-        @Override
-        public GrainData[] newArray(int size) {
-            return new GrainData[size];
-        }
-    };
+//    protected GrainData() {
+//        Message = in.readString();
+//    }
 
     public String getMessage() {
         return Message;
