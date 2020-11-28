@@ -519,11 +519,10 @@ public class MainActivity extends AppCompatActivity {
                         intent.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-
-
                                 Intent intent = new Intent(MainActivity.this, SecondActivity.class);
 //                                Bundle setData = new Bundle();
                                 intent.putExtra("DataSaya", type);
+                                intent.putExtra("Size", size);
                                 startActivityForResult(intent, 10);
                             }
                         });

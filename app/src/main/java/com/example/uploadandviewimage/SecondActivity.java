@@ -33,12 +33,37 @@ public class SecondActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
         total = (TextView) findViewById(R.id.total);
-        TextView GetNilai = (TextView) findViewById(R.id.getData);
-
         Bundle bundle = getIntent().getExtras();
         GrainPie[] type = (GrainPie[]) bundle.get("DataSaya");
+        GrainPie[] size =  (GrainPie[]) bundle.get("Size");
 
         drawChart(type);
+        drwawChartSize(size);
+    }
+
+    private void drwawChartSize(GrainPie[] size) {
+        PieChart pieChart;
+        pieChart = findViewById(R.id.chart2);
+        pieChart.setUsePercentValues(true);
+        ArrayList<PieEntry> yvalues = new ArrayList<PieEntry>();
+        yvalues.add(new PieEntry((float)size[0].getValue(), size[0].getName(), 0));
+        yvalues.add(new PieEntry((float)size[1].getValue(), size[1].getName(), 1));
+        yvalues.add(new PieEntry((float)size[2].getValue(), size[2].getName(), 2));
+
+        PieDataSet dataSet = new PieDataSet(yvalues, getString(R.string.election_results));
+        PieData data = new PieData(dataSet);
+
+        data.setValueFormatter(new PercentFormatter());
+        pieChart.setData(data);
+        Description description = new Description();
+        description.setText(getString(R.string.pie_chart));
+        pieChart.setDescription(description);
+        pieChart.setDrawHoleEnabled(true);
+        pieChart.setTransparentCircleRadius(58f);
+        pieChart.setHoleRadius(58f);
+        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        data.setValueTextSize(13f);
+        data.setValueTextColor(Color.BLACK);
     }
 
 

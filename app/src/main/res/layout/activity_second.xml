@@ -6,34 +6,36 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/chart1"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
-        android:layout_marginTop="6dp"
-        android:layout_centerHorizontal="true"/>
-
     <TextView
-        android:id="@+id/getData"
+        android:id="@+id/tipe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/chart1"
-        android:layout_centerInParent="true"
+        android:text="Type"
+        android:layout_marginLeft="20dp"/>
+    <com.github.mikephil.charting.charts.PieChart
+        android:layout_below="@id/tipe" android:id="@+id/chart1"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:text="Data Yang Dierima:"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="6dp" />
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/chart2"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_below="@id/total"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="6dp" />
+
 
     <TextView
         android:id="@+id/total"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/getData"
+        android:layout_below="@id/chart1"
         android:layout_centerInParent="true"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
+        android:gravity="left"
+        android:layout_marginLeft="20dp"
         android:inputType="number"
         android:text="Total size :"
         android:textSize="15sp"
