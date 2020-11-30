@@ -45,5 +45,8 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    implementation 'com.itextpdf:itextg:5.5.10'
+    implementation 'com.github.yalantis:ucrop:2.2.2'
+//    implementation 'com.theartofdev.edmodo:android-image-cropper:2.3.+'
 
 }

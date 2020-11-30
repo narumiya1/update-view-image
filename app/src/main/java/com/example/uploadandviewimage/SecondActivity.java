@@ -91,6 +91,8 @@ public class SecondActivity extends AppCompatActivity {
         data.setValueTextSize(13f);
         data.setValueTextColor(Color.BLACK);
 
+        dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+
     }
 
 }

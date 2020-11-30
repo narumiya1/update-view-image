@@ -23,6 +23,8 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
@@ -42,7 +44,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.chrisbanes.photoview.PhotoView;
+import com.github.chrisbanes.photoview.PhotoViewAttacher;
+import com.github.mikephil.charting.charts.PieChart;
 import com.google.gson.Gson;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.yalantis.ucrop.UCrop;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -54,6 +62,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -67,7 +76,8 @@ public class MainActivity extends AppCompatActivity {
 
     //ImageView viewImage;
     PhotoView viewImage;
-    Button b, intent;
+    Button b, intent, pdf;
+
     private String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final int PERMISSION_CODE_READ_GALLERY = 1;
     private static final int PERMISSION_CODE_OPEN_CAMERA = 2;
@@ -85,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         b = (Button) findViewById(R.id.btnSelectPhoto);
+        pdf = (Button) findViewById(R.id.btnpdf);
         intent = findViewById(R.id.intent);
         //viewImage=(ImageView)findViewById(R.id.viewImage);
         viewImage = (PhotoView) findViewById(R.id.viewImage);
@@ -394,7 +405,10 @@ public class MainActivity extends AppCompatActivity {
                     //invalidate to update bitmap in imageview
                     viewImage.setImageBitmap(mutableBitmap);
                     viewImage.invalidate(); */
+                    cropImage(bitmap);
 
+                    PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(viewImage);
+                    photoViewAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     uploadImage(bitmap);
 
                 } catch (FileNotFoundException e) {
@@ -402,10 +416,41 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else if (requestCode == 10) {
 
+            }else if(requestCode == UCrop.REQUEST_CROP){
+                if (resultCode == RESULT_OK) {
+                    handleUCropResult(data);
+                } else {
+                    setResultCancelled();
+                }
+
             }
         }
     }
 
+    private void cropImage(Bitmap bitmap) {
+
+
+    }
+
+    private void setResultCancelled() {
+        Intent intent = new Intent();
+        setResult(Activity.RESULT_CANCELED, intent);
+        finish();
+    }
+    private void handleUCropResult(Intent data) {
+        if (data == null) {
+            setResultCancelled();
+            return;
+        }
+        final Uri resultUri = UCrop.getOutput(data);
+        setResultOk(resultUri);
+    }
+    private void setResultOk(Uri imagePath) {
+        Intent intent = new Intent();
+        intent.putExtra("path", imagePath);
+        setResult(Activity.RESULT_OK, intent);
+        finish();
+    }
     private void rotateImage(Bitmap bitmap) {
         ExifInterface exifInterface = null;
         try {
@@ -528,6 +573,59 @@ public class MainActivity extends AppCompatActivity {
                         });
 
                         String message = "";
+
+                        pdf.setVisibility(View.VISIBLE);
+                        pdf.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                GrainItem[] items = grainData.getItems();
+                                Document mDoc = new Document();
+                                //pdf file name
+                                String mFileName = new SimpleDateFormat("yyyyMMdd_HHmmss",
+                                        Locale.getDefault()).format(System.currentTimeMillis());
+                                //pdf file path
+                                String mFilePath = Environment.getExternalStorageDirectory() + "/" + mFileName + ".pdf";
+                                try {
+                                    //create instance of PdfWriter class
+                                    PdfWriter.getInstance(mDoc, new FileOutputStream(mFilePath));
+                                    //open the document for writing
+                                    mDoc.open();
+                                    //get text from EditText i.e. mTextEt
+
+                                    for (int i = 0; i < items.length; i++) {
+//                                        String mText = items[0].getGrainSize().getName();
+
+                                        String mTexta = items[i].getGrainType().getName();
+                                        String mText = items[i].getGrainSize().getName();
+                                        String mTextb = items[i].getGrainSize().getName();
+
+
+                                        //add author of the document (optional)
+                                        mDoc.addAuthor("ACKERMAN");
+
+                                        //add paragraph to the document
+                                        mDoc.add(new Paragraph(mTexta));
+                                        Paragraph paragraph = new Paragraph();
+                                        paragraph.setSpacingAfter(1);
+
+                                        mDoc.add(new Paragraph(mText));
+//
+//                                        mDoc.add(new Paragraph(mTextb));
+
+                                    }
+                                    //close the document
+                                    mDoc.close();
+                                    //show message that file is saved, it will show file name and file path too
+                                    Toast.makeText(MainActivity.this, mFileName + ".pdf\nis saved to\n" + mFilePath, Toast.LENGTH_SHORT).show();
+
+                                } catch (Exception e) {
+                                    //if any thing goes wrong causing exception, get and show exception message
+                                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+                        });
+
                     } else {
                         Toast.makeText(MainActivity.this, response.message(), Toast.LENGTH_LONG).show();
                     }
