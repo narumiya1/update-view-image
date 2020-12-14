@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="4dp">
-
+    app:cardCornerRadius="2dp">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#8A8989"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        />
     <TableLayout
+        android:layout_marginTop="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp">
@@ -13,31 +20,34 @@
         <TableRow>
 
             <TextView
+                android:fontFamily="@font/ubunturegular"
                 android:id="@+id/text1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Grain Type, Grain Size"
                 android:textColor="@android:color/black"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
         </TableRow>
 
         <TableRow>
 
             <TextView
+                android:fontFamily="@font/ubunturegular"
                 android:id="@+id/text2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="14dp"
                 android:text="Grain Type (Class, Id)"
                 android:textColor="@android:color/black"
                 android:textSize="15sp" />
 
             <TextView
+                android:fontFamily="@font/ubunturegular"
                 android:id="@+id/text3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="14dp"
                 android:text="GrainSize(Class, Id)"
                 android:textColor="@android:color/black"
                 android:textSize="15sp" />

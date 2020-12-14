@@ -1,18 +1,14 @@
-package com.example.uploadandviewimage;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+package com.example.uploadandviewimage.fragment;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ReceiverCallNotAllowedException;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -25,25 +21,52 @@ import android.graphics.Typeface;
 import android.graphics.pdf.PdfDocument;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.app.Activity;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.OpenableColumns;
-import android.view.Menu;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.uploadandviewimage.activity.PdfActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+
+import com.example.uploadandviewimage.ExampleAdapter;
+import com.example.uploadandviewimage.GrainData;
+import com.example.uploadandviewimage.GrainItem;
+import com.example.uploadandviewimage.GrainPie;
+import com.example.uploadandviewimage.GrainType;
+import com.example.uploadandviewimage.MainActivity;
+import com.example.uploadandviewimage.NetworkClient;
+import com.example.uploadandviewimage.R;
+import com.example.uploadandviewimage.SecondActivity;
+import com.example.uploadandviewimage.UploadApis;
+import com.example.uploadandviewimage.activity.HistoryActivity;
+import com.example.uploadandviewimage.helper.AppzDatabase;
+import com.example.uploadandviewimage.helper.RoomReadActivity;
+import com.example.uploadandviewimage.helper.RoomReadSingleActivity;
+import com.example.uploadandviewimage.helper.Type;
+import com.example.uploadandviewimage.utils.AppUtils;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -59,6 +82,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -67,14 +93,21 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class MainActivity extends AppCompatActivity {
+import static android.app.Activity.RESULT_OK;
 
-    //ImageView viewImage;
+public class HomeFragment extends Fragment {
+
+
+    private AppzDatabase db;
     PhotoView viewImage;
-    Button b, intent, pdf;
-    TextView warning, no_data ;
+    Button btn, chartf, pdf, hisdtory, view_history;
+    TextView warningtext, no_data;
     int pageWidth = 1200;
     Date dateTime;
+    ImageButton add_photo;
+    FloatingActionMenu menu;
+    FloatingActionButton fab_chart, fab_pdf, fab_history, fab_view_history;
+
     DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     private String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final int PERMISSION_CODE_READ_GALLERY = 1;
@@ -87,65 +120,96 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public HomeFragment() {
+    }
 
-        b = (Button) findViewById(R.id.btnSelectPhoto);
-        warning = findViewById(R.id.tv_warn);
-        no_data = findViewById(R.id.no_data);
-        pdf = (Button) findViewById(R.id.btnpdf);
-        intent = findViewById(R.id.intent);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragmnet_home, container, false);
+//        btn = view.findViewById(R.id.btnSelectPhotoFragment);
+        warningtext = view.findViewById(R.id.tv_warn);
+        no_data = view.findViewById(R.id.no_data);
+        pdf = (Button) view.findViewById(R.id.btnpdf);
+        add_photo = view.findViewById(R.id.iv_add);
+
         //viewImage=(ImageView)findViewById(R.id.viewImage);
-        viewImage = (PhotoView) findViewById(R.id.viewImage);
-        b.setOnClickListener(new View.OnClickListener() {
+        viewImage = (PhotoView) view.findViewById(R.id.viewImage);
+        menu = view.findViewById(R.id.fab_popUp);
+        fab_chart = view.findViewById(R.id.fab_chart);
+        fab_pdf = view.findViewById(R.id.fab_pdf);
+        fab_history = view.findViewById(R.id.historia);
+        fab_view_history = view.findViewById(R.id.fab_view_history);
+        final TextView textTime = view.findViewById(R.id.text_time);
+        textTime.setText(AppUtils.getFormattedDateString(AppUtils.getCurrentDateTime()));
+
+        fab_view_history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), RoomReadActivity.class);
+                startActivity(intent);
+            }
+        });
+
+//        db = Room.databaseBuilder(getActivity().getApplicationContext(), AppzDatabase.class, "tbType").build();
+        // migrate
+        db = Room.databaseBuilder(getActivity().getApplicationContext(),
+                AppzDatabase.class, "tbType")
+                .fallbackToDestructiveMigration()
+                .addMigrations(AppzDatabase.MIGRATION_3_4)
+                .build();
+
+        add_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectImage();
             }
         });
-
-        //initializeGrid();
-        /*
-        ArrayList<ExampleItem> exampleList = new ArrayList<>();
-        exampleList.add(new ExampleItem("Sakahayang1", 222.2323, 534.823));
-        exampleList.add(new ExampleItem("Sakahayang2", 122.434, 125.8));
-        exampleList.add(new ExampleItem("Sakahayang3", 432.434, 325.8));
-        exampleList.add(new ExampleItem("Sakahayang4", 543.434, 545.8));
-        exampleList.add(new ExampleItem("Sakahayang5", 982.434, 532.8)); */
-
-        //String contoh = exampleList.get(2).getClassification();
-
-        mRecyclerView = findViewById(R.id.recyclerView);
+        mRecyclerView = view.findViewById(R.id.recyclerView_fragment);
         mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        //mAdapter = new ExampleAdapter(exampleList);
-        //mRecyclerView.setAdapter(mAdapter);
+        menu.setVisibility(View.VISIBLE);
+
+        return view;
+
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds options to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+/*
+    @OnClick({R.id.btnSelectPhotoFragment, R.id.btnpdf, R.id.intent})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.btnSelectPhotoFragment:
+                selectImage();
+
+                break;
+            case R.id.btnpdf:
+
+                break;
+            case R.id.intent:
+
+                break;
+
+        }
     }
+    */
 
     private void selectImage() {
         final CharSequence[] options = {"Take Photo", "Choose from Gallery"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Add Photo!");
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
                 if (options[item].equals("Take Photo")) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
-                                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                            String[] permision = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                            requestPermissions(permision, PERMISSION_CODE_OPEN_CAMERA);
+                        if ((ActivityCompat.checkSelfPermission(getContext(),
+                                android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) ||
+                                (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED)) {
+                            String[] permission = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                            requestPermissions(permission, PERMISSION_CODE_OPEN_CAMERA);
+
                         } else {
                             //permission already granted
                             openCamera();
@@ -163,16 +227,16 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
                     startActivityForResult(intent, 1); */
                 } else if (options[item].equals("Choose from Gallery")) {
-                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                         // Permission is not granted
-                        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                             // Show an explanation to the user *asynchronously* -- don't block
                             // this thread waiting for the user's response! After the user
                             // sees the explanation, try again to request the permission.
                         } else {
                             // No explanation needed; request the permission
-                            ActivityCompat.requestPermissions(MainActivity.this,
+                            ActivityCompat.requestPermissions(getActivity(),
                                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                     PERMISSION_CODE_READ_GALLERY);
                         }
@@ -181,19 +245,25 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         startActivityForResult(intent, 2);
                     }
-                    /*
-                    if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED ||
-                            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                        String[] permision = { Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                        //requestPermissions(permision, PERMISSION_CODE_READ_GALLERY);
-                        ActivityCompat.requestPermissions(MainActivity.this, permision,                                 PERMISSION_CODE_READ_GALLERY);
+
+                } else if (options[item].equals("Choose from Gallery")) {
+                    if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        // Permission is not granted
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            // Show an explanation to the user *asynchronously* -- don't block
+                            // this thread waiting for the user's response! After the user
+                            // sees the explanation, try again to request the permission.
+                        } else {
+                            // No explanation needed; request the permission
+                            ActivityCompat.requestPermissions(getActivity(),
+                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    PERMISSION_CODE_READ_GALLERY);
+                        }
                     } else {
-                        //permission already granted
-                        Intent intent = new   Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         startActivityForResult(intent, 2);
-                    } */
-
-
+                    }
                 }
             }
         });
@@ -217,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
 
         //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
         //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-        image_uri = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", photoFile);
+        image_uri = FileProvider.getUriForFile(getContext(), getActivity().getApplicationContext().getPackageName() + ".provider", photoFile);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
 
         startActivityForResult(cameraIntent, 1);
@@ -227,32 +297,15 @@ public class MainActivity extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "IMAGE_" + timeStamp + "_";
         boolean isEmulated = Environment.isExternalStorageEmulated();
-
-        /*
-        int CAMERA_PERMISSION_REQUEST_CODE = 2;
-        int result = ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (result != PackageManager.PERMISSION_GRANTED){
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                Toast.makeText(this.getApplicationContext(), "External Storage permission needed. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},CAMERA_PERMISSION_REQUEST_CODE);
-            }
-        } */
-
-        //File storageDirectory = getFilesDir();
         File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        //File storageDirectory = Environment.getDataDirectory();
 
         File image = File.createTempFile(imageFileName, ".jpg", storageDirectory);
         mImageFileLocation = image.getAbsolutePath();
-
-
         return image;
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case 1: {
                 if (grantResults.length > 0 &&
@@ -260,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
                     // permission was granted, do something you want
                 } else {
                     // permission denied
-                    Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -268,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == 1) {
@@ -278,30 +331,9 @@ public class MainActivity extends AppCompatActivity {
                     BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
                     bitmap = BitmapFactory.decodeFile(mImageFileLocation,
                             bitmapOptions);
-                    //viewImage.setImageBitmap(bitmap);
 
                     rotateImage(setReducedImageSize());
 
-                    /*
-                    String path = android.os.Environment
-                            .getExternalStorageDirectory()
-                            + File.separator
-                            + "Phoenix" + File.separator + "default";
-                    f.delete();
-                    OutputStream outFile = null;
-                    File file = new File(path, String.valueOf(System.currentTimeMillis()) + ".jpg");
-                    try {
-                        outFile = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outFile);
-                        outFile.flush();
-                        outFile.close();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } */
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -371,7 +403,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (requestCode == 2) {
                 Uri selectedImage = data.getData();
                 String[] filePath = {MediaStore.Images.Media.DATA};
-                Cursor c = getContentResolver().query(selectedImage, filePath, null, null, null);
+                Cursor c = getActivity().getContentResolver().query(selectedImage, filePath, null, null, null);
                 c.moveToFirst();
                 int columnIndex = c.getColumnIndex(filePath[0]);
                 String picturePath = c.getString(columnIndex);
@@ -386,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
                 viewImage.setImageBitmap(thumbnail); */
 
                 try {
-                    InputStream inputStream = getContentResolver().openInputStream(data.getData());
+                    InputStream inputStream = getActivity().getContentResolver().openInputStream(data.getData());
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                     viewImage.setImageBitmap(bitmap);
 
@@ -416,68 +448,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else if (requestCode == 10) {
 
-            } else if (requestCode == UCrop.REQUEST_CROP) {
-                if (resultCode == RESULT_OK) {
-                    handleUCropResult(data);
-                } else {
-                    setResultCancelled();
-                }
+            } else if (requestCode == 11) {
 
             }
         }
-    }
-
-//    private void cropImage(Uri sourceUri) {
-//
-//        Uri destinationUri = Uri.fromFile(new File(getCacheDir(), queryName(getContentResolver(), sourceUri)));
-//        UCrop.Options options = new UCrop.Options();
-//        options.setCompressionQuality(IMAGE_COMPRESSION);
-//
-//        // applying UI theme
-//        options.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
-//        options.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
-//        options.setActiveWidgetColor(ContextCompat.getColor(this, R.color.colorPrimary));
-//
-//        if (lockAspectRatio)
-//            options.withAspectRatio(ASPECT_RATIO_X, ASPECT_RATIO_Y);
-//
-//        if (setBitmapMaxWidthHeight)
-//            options.withMaxResultSize(bitmapMaxWidth, bitmapMaxHeight);
-//
-//        UCrop.of(sourceUri, destinationUri)
-//                .withOptions(options)
-//                .start(this);
-//    }
-    private static String queryName(ContentResolver resolver, Uri uri) {
-        Cursor returnCursor =
-                resolver.query(uri, null, null, null, null);
-        assert returnCursor != null;
-        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-        returnCursor.moveToFirst();
-        String name = returnCursor.getString(nameIndex);
-        returnCursor.close();
-        return name;
-    }
-    private void setResultCancelled() {
-        Intent intent = new Intent();
-        setResult(Activity.RESULT_CANCELED, intent);
-        finish();
-    }
-
-    private void handleUCropResult(Intent data) {
-        if (data == null) {
-            setResultCancelled();
-            return;
-        }
-        final Uri resultUri = UCrop.getOutput(data);
-        setResultOk(resultUri);
-    }
-
-    private void setResultOk(Uri imagePath) {
-        Intent intent = new Intent();
-        intent.putExtra("path", imagePath);
-        setResult(Activity.RESULT_OK, intent);
-        finish();
     }
 
     private void rotateImage(Bitmap bitmap) {
@@ -543,27 +517,6 @@ public class MainActivity extends AppCompatActivity {
     private void uploadImage(Bitmap bitmap) {
         File file = new File(mImageFileLocation);
         int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
-
-        //ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        //bitmap.compress(Bitmap.CompressFormat.JPEG, 0 /*ignored for PNG*/, bos);
-        /* byte[] bitmapdata = bos.toByteArray();
-
-        //write the bytes in file
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(f);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            fos.write(bitmapdata);
-            fos.flush();
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } */
-
-
         try {
             Retrofit retrofit = NetworkClient.getRetrofit();
 
@@ -571,7 +524,6 @@ public class MainActivity extends AppCompatActivity {
             MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
 
             RequestBody someData = RequestBody.create(MediaType.parse("text/plain"), "This is a new Image");
-
             UploadApis uploadApis = retrofit.create(UploadApis.class);
             Call call = uploadApis.uploadImage(parts, someData);
             call.enqueue(new Callback() {
@@ -590,24 +542,136 @@ public class MainActivity extends AppCompatActivity {
                         mRecyclerView.setAdapter(mAdapter);
                         mRecyclerView.setVisibility(View.VISIBLE);
                         no_data.setVisibility(View.GONE);
-                        warning.setVisibility(View.GONE);
+                        warningtext.setVisibility(View.GONE);
                         viewImage.setVisibility(View.VISIBLE);
-                        intent.setVisibility(View.VISIBLE);
-                        intent.setOnClickListener(new View.OnClickListener() {
+                        fab_chart.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+                                Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
 //                                Bundle setData = new Bundle();
                                 intent.putExtra("DataSaya", type);
                                 intent.putExtra("Size", size);
                                 startActivityForResult(intent, 10);
                             }
                         });
+                        fab_pdf.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dateTime = new Date();
+                                GrainItem[] items = grainData.getItems();
 
+                                PdfDocument pdfDocument = new PdfDocument();
+                                Paint paint = new Paint();
+                                Paint titlePaint = new Paint();
+
+                                PdfDocument.PageInfo pageInfo
+                                        = new PdfDocument.PageInfo.Builder(1200, 2500, 1).create();
+                                PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+
+                                Canvas canvas = page.getCanvas();
+                                titlePaint.setTextAlign(Paint.Align.CENTER);
+                                titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+                                titlePaint.setColor(Color.BLACK);
+                                titlePaint.setTextSize(70);
+                                canvas.drawText("Report", pageWidth / 2, 200, titlePaint);
+
+                                paint.setColor(Color.BLACK);
+                                paint.setTextSize(35f);
+                                paint.setTextAlign(Paint.Align.RIGHT);
+                                //change 590-340 to
+                                canvas.drawText("No : " + "232425", pageWidth - 20, 250, paint);
+
+                                dateFormat = new SimpleDateFormat("dd/MM/yy");
+                                canvas.drawText("Tanggal: " + dateFormat.format(dateTime), pageWidth - 20, 300, paint);
+
+                                dateFormat = new SimpleDateFormat("HH:mm:ss");
+                                canvas.drawText("Pukul: " + dateFormat.format(dateTime), pageWidth - 20, 350, paint);
+
+                                paint.setStyle(Paint.Style.STROKE);
+                                paint.setStrokeWidth(2);
+                                canvas.drawRect(20, 360, pageWidth - 20, 420, paint);
+
+                                paint.setTextAlign(Paint.Align.LEFT);
+                                paint.setStyle(Paint.Style.FILL);
+                                canvas.drawText("Size", 200, 400, paint);
+                                canvas.drawText("Type", 500, 400, paint);
+                                canvas.drawText("Jumlah data", 800, 400, paint);
+
+
+                                int y = 450;
+                                for (int j = 0; j < items.length; j++) {
+                                    canvas.drawText(String.valueOf(items[j].getGrainType().getName()), 500, y, paint);
+                                    canvas.drawText(String.valueOf(items[j].getGrainSize().getName()), 200, y, paint);
+                                    y += 50;
+                                }
+
+
+//                                   canvas.drawText(String.valueOf(items[2].getShape().getWidth()), 800, 1000, paint);
+
+
+                                pdfDocument.finishPage(page);
+
+                                File file = new File(Environment.getExternalStorageDirectory(), "/Pesanan.pdf");
+
+
+                                try {
+                                    pdfDocument.writeTo(new FileOutputStream(file));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                                pdfDocument.close();
+                                Toast.makeText(getContext(), "PDF sudah dibuat", Toast.LENGTH_LONG).show();
+
+                            }
+
+                        });
+
+                        Date date = new Date();
+                        for(int i=0; i<type.length; i++) {
+                            String name = type[i].getName();
+
+                            double jumlah = type[i].getPercent();
+
+                            //call db model
+                            Type type2 = new Type();
+
+//                            for(int j=0; j<type.length; j++) {
+//                                // Automatically saved to history
+//
+//                                if (type[i].getName() == type[0].getName() || type[j].getValue() == type[0].getValue()){
+//                                    type2.setNamaType(type[0].getName());
+//                                }else if(type[i].getName() == type[1].getName() || type[j].getValue() == type[1].getValue()){
+//                                    type2.setNamaType(type[1].getName());
+//                                }else if(type[i].getName() == type[2].getName()|| type[j].getValue() == type[2].getValue()){
+//                                    type2.setNamaType(type[2].getName());
+//                                }
+//
+//                            }
+                            type2.setNamaType(name);
+                            type2.setJumlahType(jumlah);
+                            type2.setCreatedAt(date);
+                            insertData(type2);
+
+                        }
+                        /*using button
+                        chartf.setVisibility(View.VISIBLE);
+                        chartf.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
+//                                Bundle setData = new Bundle();
+                                intent.putExtra("DataSaya", type);
+                                intent.putExtra("Size", size);
+                                startActivityForResult(intent, 10);
+                            }
+                        });
+                        */
                         String message = "";
 
+                        /*using button
                         pdf.setVisibility(View.VISIBLE);
-
+                        //pdf x & y
                         pdf.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -653,15 +717,14 @@ public class MainActivity extends AppCompatActivity {
 
 
                                 int y = 450;
-                                for(int j = 0 ; j<items.length; j++){
+                                for (int j = 0; j < items.length; j++) {
                                     canvas.drawText(String.valueOf(items[j].getGrainType().getName()), 500, y, paint);
                                     canvas.drawText(String.valueOf(items[j].getGrainSize().getName()), 200, y, paint);
-                                    y+=50;
-                                  }
+                                    y += 50;
+                                }
 
 
 //                                   canvas.drawText(String.valueOf(items[2].getShape().getWidth()), 800, 1000, paint);
-
 
 
                                 pdfDocument.finishPage(page);
@@ -676,63 +739,113 @@ public class MainActivity extends AppCompatActivity {
                                 }
 
                                 pdfDocument.close();
-                                Toast.makeText(MainActivity.this, "PDF sudah dibuat", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), "PDF sudah dibuat", Toast.LENGTH_LONG).show();
 
                             }
                         });
 
-//                        pdf.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View view) {
-//                                GrainItem[] items = grainData.getItems();
-//                                Document mDoc = new Document();
-//                                //pdf file name
-//                                String mFileName = new SimpleDateFormat("yyyyMMdd_HHmmss",
-//                                        Locale.getDefault()).format(System.currentTimeMillis());
-//                                //pdf file path
-//                                String mFilePath = Environment.getExternalStorageDirectory() + "/" + mFileName + ".pdf";
-//                                try {
-//                                    //create instance of PdfWriter class
-//                                    PdfWriter.getInstance(mDoc, new FileOutputStream(mFilePath));
-//                                    //open the document for writing
-//                                    mDoc.open();
-//                                    //get text from EditText i.e. mTextEt
-//
-//                                    for (int i = 0; i < items.length; i++) {
-////                                        String mText = items[0].getGrainSize().getName();
-//
-//                                        String mTexta = items[i].getGrainType().getName();
-//                                        String mText = items[i].getGrainSize().getName();
-//                                        String mTextb = items[i].getGrainSize().getName();
-//
-//                                        //add author of the document (optional)
-//                                        mDoc.addAuthor("ACKERMAN");
-//
-//                                        //add paragraph to the document
-//                                        mDoc.add(new Paragraph(mTexta));
-//                                        Paragraph paragraph = new Paragraph();
-//                                        paragraph.setSpacingAfter(1);
-//
-//                                        mDoc.add(new Paragraph(mText));
-////
-////                                        mDoc.add(new Paragraph(mTextb));
-//
-//                                    }
-//                                    //close the document
-//                                    mDoc.close();
-//                                    //show message that file is saved, it will show file name and file path too
-//                                    Toast.makeText(MainActivity.this, mFileName + ".pdf\nis saved to\n" + mFilePath, Toast.LENGTH_SHORT).show();
-//
-//                                } catch (Exception e) {
-//                                    //if any thing goes wrong causing exception, get and show exception message
-//                                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-//                                }
-//
-//                            }
-//                        });
+                        */
 
+                        /*use dao database & button
+
+                        final Type type1 = (Type) getActivity().getIntent().getSerializableExtra("data");
+                        hisdtory.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Type type2 = new Type();
+                                String name = type[2].getName().toString();
+//                                double jumlah = type[1].getValue();
+                                //manual
+                                double jumlah = 3;
+                                type2.setNamaType(name);
+                                type2.setJumlahType(jumlah);
+                                insertData(type2);
+
+                            }
+                        });
+
+                        */
+
+                        //send data fragmrnt to activity
+                        /*
+                        hisdtory.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                Intent intent = new Intent((Context) getActivity(), HistoryActivity.class);
+                                intent.putExtra("Type", type);
+                                intent.putExtra("Size", size);
+                                startActivityForResult(intent, 11);
+                            }
+                        });
+                        /*
+
+                         */
+                        //fragment to fragment
+                 /*    hisdtory.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Bundle result = new Bundle();
+                                result.putString("BundleKey_Home", "result");
+                                getParentFragmentManager().setFragmentResult("BundleKey_Home", result);
+                            }
+                        });
+                 */
+
+                        //library pdf writter
+                        /*
+                        pdf.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                GrainItem[] items = grainData.getItems();
+                                Document mDoc = new Document();
+                                //pdf file name
+                                String mFileName = new SimpleDateFormat("yyyyMMdd_HHmmss",
+                                        Locale.getDefault()).format(System.currentTimeMillis());
+                                //pdf file path
+                                String mFilePath = Environment.getExternalStorageDirectory() + "/" + mFileName + ".pdf";
+                                try {
+                                    //create instance of PdfWriter class
+                                    PdfWriter.getInstance(mDoc, new FileOutputStream(mFilePath));
+                                    //open the document for writing
+                                    mDoc.open();
+                                    //get text from EditText i.e. mTextEt
+
+                                    for (int i = 0; i < items.length; i++) {
+//                                        String mText = items[0].getGrainSize().getName();
+
+                                        String mTexta = items[i].getGrainType().getName();
+                                        String mText = items[i].getGrainSize().getName();
+                                        String mTextb = items[i].getGrainSize().getName();
+
+                                        //add author of the document (optional)
+                                        mDoc.addAuthor("ACKERMAN");
+
+                                        //add paragraph to the document
+                                        mDoc.add(new Paragraph(mTexta));
+                                        Paragraph paragraph = new Paragraph();
+                                        paragraph.setSpacingAfter(1);
+
+                                        mDoc.add(new Paragraph(mText));
+//
+//                                        mDoc.add(new Paragraph(mTextb));
+
+                                    }
+                                    //close the document
+                                    mDoc.close();
+                                    //show message that file is saved, it will show file name and file path too
+                                    Toast.makeText(getActivity(), mFileName + ".pdf\nis saved to\n" + mFilePath, Toast.LENGTH_SHORT).show();
+
+                                } catch (Exception e) {
+                                    //if any thing goes wrong causing exception, get and show exception message
+                                    Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+                        });
+                        */
                     } else {
-                        Toast.makeText(MainActivity.this, response.message(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
                     }
                 }
 
@@ -748,34 +861,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void initializeGrid() {
-        TableLayout ll = (TableLayout) findViewById(R.id.displayLinear);
+    private void insertData(final Type type2) {
+        new AsyncTask<Void, Void, Long>() {
+            @Override
+            protected Long doInBackground(Void... voids) {
+                long status = db.typeDAO().insertBarang(type2);
+                return status;
+            }
 
-
-        for (int i = 0; i < 40; i++) {
-
-            TableRow row = new TableRow(this);
-            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-            row.setLayoutParams(lp);
-            //checkBox = new CheckBox(this);
-            TextView tv = new TextView(this);
-            tv.setText("dafasf");
-            row.addView(tv);
-            Button addBtn = new Button(this);
-            addBtn.setText("ssafasfsa");
-            row.addView(addBtn);
-            //addBtn.setImageResource(R.drawable.add);
-            //minusBtn = new ImageButton(this);
-            //minusBtn.setImageResource(R.drawable.minus);
-            //qty = new TextView(this);
-
-
-            //qty.setText("10");
-            //row.addView(checkBox);
-            //row.addView(minusBtn);
-            //row.addView(qty);
-            //row.addView(addBtn);
-            ll.addView(row, i);
-        }
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            protected void onPostExecute(Long status) {
+                Toast.makeText(getActivity().getApplicationContext(), "status row " + status, Toast.LENGTH_SHORT).show();
+            }
+        }.execute();
     }
+
+
 }
+

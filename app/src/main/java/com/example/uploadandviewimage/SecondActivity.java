@@ -27,13 +27,13 @@ import static android.app.PendingIntent.getActivity;
 public class SecondActivity extends AppCompatActivity {
     private TextView total;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
         total = (TextView) findViewById(R.id.total);
         Bundle bundle = getIntent().getExtras();
+
         GrainPie[] type = (GrainPie[]) bundle.get("DataSaya");
         GrainPie[] size =  (GrainPie[]) bundle.get("Size");
 

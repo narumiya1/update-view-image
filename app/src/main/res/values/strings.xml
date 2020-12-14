@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Grain Vision 2020</string>
+    <string name="title_activity_home">MainActivity</string>
 </resources>

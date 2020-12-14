@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="6dp"
+    tools:context="com.example.uploadandviewimage.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="6dp">
+
+        <TextView
+            android:id="@+id/text_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="4dp"
+            android:gravity="right"
+            android:text="10 10 10" android:fontFamily="@font/ubunturegular"
+            android:textColor="#3E3D3D"
+            android:textSize="12sp"
+            android:layout_marginBottom="6dp"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/line_background"
+            android:backgroundTintMode="src_over">
+
+            <TextView
+                android:id="@+id/no_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="40dp"
+                android:fontFamily="@font/dosisivarfont"
+                android:gravity="center"
+                android:text="Select Photo First"
+                android:textColor="#6E6262"
+                android:textSize="18sp"
+                android:visibility="visible" />
+
+            <com.github.chrisbanes.photoview.PhotoView
+                android:id="@+id/viewImage"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:visibility="invisible" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_margin="10dp"
+                android:background="@drawable/line_background"
+                android:backgroundTint="@color/design_default_color_error"
+                android:outlineAmbientShadowColor="@color/design_default_color_error"
+                android:outlineSpotShadowColor="@color/design_default_color_error"
+                app:cardBackgroundColor="@color/colorPrimaryDark"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="4dp">
+
+                <ImageButton
+                    android:id="@+id/iv_add"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="top|left"
+                    android:background="#F8F6F6"
+                    android:outlineAmbientShadowColor="@color/colorAccent"
+                    android:src="@drawable/ic_baseline_add_a_photo_24" />
+
+
+            </androidx.cardview.widget.CardView>
+
+        </FrameLayout>
+
+        <ScrollView
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/colorAccent">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tv_warn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:fontFamily="@font/dosisivarfont"
+                    android:gravity="center"
+                    android:text="No data available"
+                    android:textColor="#6E6262"
+                    android:textSize="20sp"
+                    android:visibility="visible" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/cardview_dark_background"
+                    android:scrollbars="vertical"
+                    android:visibility="invisible" />
+
+                <com.github.clans.fab.FloatingActionMenu
+                    android:id="@+id/fab_popUp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="bottom|right"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="50dp"
+                    android:src="@drawable/ic_baseline_how_to_reg_24"
+                    android:visibility="invisible"
+                    app:fab_size="normal"
+                    app:menu_backgroundColor="@android:color/transparent"
+                    app:menu_colorNormal="#05B6A2"
+                    app:menu_colorPressed="#FF00786D"
+                    app:menu_icon="@drawable/ic_notifications_black_24dp"
+                    app:menu_labels_colorNormal="#FFFFFF"
+                    app:menu_labels_colorPressed="#BDBDBD"
+                    app:menu_labels_showShadow="true"
+                    app:menu_labels_textColor="#000000"
+                    app:menu_openDirection="up"
+                    app:menu_showShadow="true">
+
+                    <com.github.clans.fab.FloatingActionButton
+                        android:id="@+id/fab_chart"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_home_black_24dp"
+                        app:fab_colorNormal="@color/cardview_shadow_start_color"
+                        app:fab_colorPressed="#FF00786D"
+                        app:fab_label="View in Chart"
+                        app:fab_size="mini" />
+
+                    <com.github.clans.fab.FloatingActionButton
+                        android:id="@+id/historia"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_baseline_amp_stories_24"
+                        app:fab_colorNormal="@color/colorAccent"
+                        app:fab_colorPressed="#FF00786D"
+                        app:fab_label="Simpan Ke History"
+                        app:fab_size="mini" />
+
+                    <com.github.clans.fab.FloatingActionButton
+                        android:id="@+id/fab_pdf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_dashboard_black_24dp"
+                        app:fab_colorNormal="@color/design_default_color_error"
+                        app:fab_colorPressed="#FF00786D"
+                        app:fab_label="Export pdf"
+                        app:fab_size="mini" />
+
+                    <com.github.clans.fab.FloatingActionButton
+                        android:id="@+id/fab_view_history"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_baseline_drafts_24"
+                        app:fab_colorNormal="@color/design_default_color_error"
+                        app:fab_colorPressed="#FF00786D"
+                        app:fab_label="View History "
+                        app:fab_size="mini" />
+
+                </com.github.clans.fab.FloatingActionMenu>
+
+            </FrameLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+</LinearLayout>
