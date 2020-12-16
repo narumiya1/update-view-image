@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Type.class}, version = 2)
+@Database(entities = {GrainTypeData.class}, version = 3)
 public abstract class AppzDatabase extends RoomDatabase {
     public abstract TypeDAO typeDAO();
 
@@ -22,8 +22,15 @@ public abstract class AppzDatabase extends RoomDatabase {
     public static final Migration MIGRATION_3_4 = new Migration(3, 4) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
-            database.execSQL("ALTER TABLE tbarang "
-                    + " ADD COLUMN modifed_at String");
+            database.execSQL("ALTER TABLE tbarang " + " ADD COLUMN type_percent double");
+        }
+    };
+    @VisibleForTesting
+    public static final Migration MIGRATION_4_5 = new Migration(3, 4) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE tbarang " + " ADD COLUMN type_percent double");
+            database.execSQL("ALTER TABLE tbarang " + " ADD COLUMN type_value double" );
         }
     };
 

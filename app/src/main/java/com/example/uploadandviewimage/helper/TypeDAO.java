@@ -7,25 +7,24 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.uploadandviewimage.GrainItem;
+import java.sql.Date;
 
 @Dao
 public interface TypeDAO  {
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insertBarang(Type barang);
+    long insertBarang(GrainTypeData barang);
 
     @Update
-    int updateBarang(Type barang);
+    int updateBarang(GrainTypeData barang);
 
     @Delete
-    int deleteBarang(Type barang);
+    int deleteBarang(GrainTypeData barang);
 
-    @Query("SELECT * FROM tbType")
-    Type[] selectAllItems();
+    @Query("SELECT * FROM tbType order by created_at DESC")
+    GrainTypeData[] selectAllItems();
 
-    @Query("SELECT * FROM tbType WHERE typeId = :id LIMIT 1")
-    Type selectBarangDetail(int id);
-
+    @Query("SELECT * FROM tbType WHERE typeId = :id ")
+    GrainTypeData selectBarangDetail(int id);
 }

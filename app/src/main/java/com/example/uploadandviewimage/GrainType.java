@@ -1,6 +1,8 @@
 package com.example.uploadandviewimage;
 
-public class GrainType
+import java.io.Serializable;
+
+public class GrainType implements Serializable
 {
     private double ScoreIdentification;
 

@@ -61,7 +61,7 @@ import com.example.uploadandviewimage.activity.HistoryActivity;
 import com.example.uploadandviewimage.helper.AppzDatabase;
 import com.example.uploadandviewimage.helper.RoomReadActivity;
 import com.example.uploadandviewimage.helper.RoomReadSingleActivity;
-import com.example.uploadandviewimage.helper.Type;
+import com.example.uploadandviewimage.helper.GrainTypeData;
 import com.example.uploadandviewimage.utils.AppUtils;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
@@ -127,7 +127,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragmnet_home, container, false);
-//        btn = view.findViewById(R.id.btnSelectPhotoFragment);
+
         warningtext = view.findViewById(R.id.tv_warn);
         no_data = view.findViewById(R.id.no_data);
         pdf = (Button) view.findViewById(R.id.btnpdf);
@@ -151,12 +151,12 @@ public class HomeFragment extends Fragment {
             }
         });
 
-//        db = Room.databaseBuilder(getActivity().getApplicationContext(), AppzDatabase.class, "tbType").build();
+
         // migrate
         db = Room.databaseBuilder(getActivity().getApplicationContext(),
                 AppzDatabase.class, "tbType")
                 .fallbackToDestructiveMigration()
-                .addMigrations(AppzDatabase.MIGRATION_3_4)
+                .addMigrations(AppzDatabase.MIGRATION_4_5)
                 .build();
 
         add_photo.setOnClickListener(new View.OnClickListener() {
@@ -176,24 +176,6 @@ public class HomeFragment extends Fragment {
 
     }
 
-/*
-    @OnClick({R.id.btnSelectPhotoFragment, R.id.btnpdf, R.id.intent})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.btnSelectPhotoFragment:
-                selectImage();
-
-                break;
-            case R.id.btnpdf:
-
-                break;
-            case R.id.intent:
-
-                break;
-
-        }
-    }
-    */
 
     private void selectImage() {
         final CharSequence[] options = {"Take Photo", "Choose from Gallery"};
@@ -450,7 +432,8 @@ public class HomeFragment extends Fragment {
 
             } else if (requestCode == 11) {
 
-            }
+            }else if (requestCode ==14){}
+
         }
     }
 
@@ -537,6 +520,7 @@ public class HomeFragment extends Fragment {
                         //for GrainType and GrainSize
                         GrainPie[] type = grainData.getTypePie();
                         GrainPie[] size = grainData.getSizePie();
+//                        GrainType grainType = new GrainType();
 
                         mAdapter = new ExampleAdapter(grainData);
                         mRecyclerView.setAdapter(mAdapter);
@@ -631,42 +615,19 @@ public class HomeFragment extends Fragment {
                         for(int i=0; i<type.length; i++) {
                             String name = type[i].getName();
 
-                            double jumlah = type[i].getPercent();
+                            double val = type[i].getValue();
+                            double pct = type[i].getPercent();
 
                             //call db model
-                            Type type2 = new Type();
-
-//                            for(int j=0; j<type.length; j++) {
-//                                // Automatically saved to history
-//
-//                                if (type[i].getName() == type[0].getName() || type[j].getValue() == type[0].getValue()){
-//                                    type2.setNamaType(type[0].getName());
-//                                }else if(type[i].getName() == type[1].getName() || type[j].getValue() == type[1].getValue()){
-//                                    type2.setNamaType(type[1].getName());
-//                                }else if(type[i].getName() == type[2].getName()|| type[j].getValue() == type[2].getValue()){
-//                                    type2.setNamaType(type[2].getName());
-//                                }
-//
-//                            }
+                            GrainTypeData type2 = new GrainTypeData();
                             type2.setNamaType(name);
-                            type2.setJumlahType(jumlah);
+                            type2.setVal(val);
+                            type2.setPct(pct);
                             type2.setCreatedAt(date);
                             insertData(type2);
 
                         }
-                        /*using button
-                        chartf.setVisibility(View.VISIBLE);
-                        chartf.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
-//                                Bundle setData = new Bundle();
-                                intent.putExtra("DataSaya", type);
-                                intent.putExtra("Size", size);
-                                startActivityForResult(intent, 10);
-                            }
-                        });
-                        */
+
                         String message = "";
 
                         /*using button
@@ -746,51 +707,8 @@ public class HomeFragment extends Fragment {
 
                         */
 
-                        /*use dao database & button
 
-                        final Type type1 = (Type) getActivity().getIntent().getSerializableExtra("data");
-                        hisdtory.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Type type2 = new Type();
-                                String name = type[2].getName().toString();
-//                                double jumlah = type[1].getValue();
-                                //manual
-                                double jumlah = 3;
-                                type2.setNamaType(name);
-                                type2.setJumlahType(jumlah);
-                                insertData(type2);
 
-                            }
-                        });
-
-                        */
-
-                        //send data fragmrnt to activity
-                        /*
-                        hisdtory.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-
-                                Intent intent = new Intent((Context) getActivity(), HistoryActivity.class);
-                                intent.putExtra("Type", type);
-                                intent.putExtra("Size", size);
-                                startActivityForResult(intent, 11);
-                            }
-                        });
-                        /*
-
-                         */
-                        //fragment to fragment
-                 /*    hisdtory.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Bundle result = new Bundle();
-                                result.putString("BundleKey_Home", "result");
-                                getParentFragmentManager().setFragmentResult("BundleKey_Home", result);
-                            }
-                        });
-                 */
 
                         //library pdf writter
                         /*
@@ -861,7 +779,7 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private void insertData(final Type type2) {
+    private void insertData(final GrainTypeData type2) {
         new AsyncTask<Void, Void, Long>() {
             @Override
             protected Long doInBackground(Void... voids) {

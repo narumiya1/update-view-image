@@ -41,7 +41,8 @@
                 android:fontFamily="@font/montserratlight"
                 android:text="IR 42"
                 android:textColor="@android:color/black"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="invisible" />
 
             <TextView
                 android:id="@+id/tv_jumlah1"
@@ -54,7 +55,8 @@
                 android:gravity="right"
                 android:text="7"
                 android:textColor="@android:color/black"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="invisible" />
 
             <TextView
                 android:id="@+id/tv_item2"
@@ -78,7 +80,8 @@
                 android:gravity="right"
                 android:text="9"
                 android:textColor="@android:color/black"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="invisible" />
 
 
             <TextView
@@ -90,7 +93,8 @@
                 android:fontFamily="@font/montserratlight"
                 android:text="Pandan Wangi"
                 android:textColor="@android:color/black"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="invisible" />
 
             <TextView
                 android:id="@+id/tv_jumlah3"
@@ -103,7 +107,8 @@
                 android:gravity="right"
                 android:text="6"
                 android:textColor="@android:color/black"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="invisible" />
 
         </RelativeLayout>
 
@@ -131,15 +136,17 @@
         android:id="@+id/tipe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp" android:gravity="center"
+        android:layout_marginLeft="20dp"
         android:fontFamily="@font/ubunturegular"
+        android:gravity="center"
         android:text="Presentase Type"
         android:textStyle="bold" />
 
-    <View android:layout_gravity="center"
+    <View
         android:layout_width="130dp"
         android:layout_height="1dp"
         android:layout_below="@id/tipe"
+        android:layout_gravity="center"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:background="#D5CBCB" />

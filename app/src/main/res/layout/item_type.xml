@@ -19,7 +19,7 @@
         card_view:cardElevation="2.5dp">
 
 
-        <RelativeLayout
+        <RelativeLayout android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="14dp"
@@ -100,7 +100,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom">
+            android:layout_gravity="center">
 
             <TextView
                 android:id="@+id/item_desc"
@@ -109,10 +109,10 @@
                 android:layout_marginRight="6dp"
                 android:layout_marginBottom="4dp"
                 android:fontFamily="@font/montserratlight"
-                android:gravity="right|bottom"
+                android:gravity="center"
                 android:text="2021"
                 android:textColor="@android:color/black"
-                android:textSize="12sp" />
+                android:textSize="18sp" />
 
             <TextView android:visibility="gone"
                 android:id="@+id/item_jumlah"

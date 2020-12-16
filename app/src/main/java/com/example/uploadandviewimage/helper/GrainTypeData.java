@@ -11,15 +11,18 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity(tableName = "tbType")
-public class Type implements Serializable {
+public class GrainTypeData implements Serializable {
     @PrimaryKey(autoGenerate = true)
     public int typeId;
 
     @ColumnInfo(name = "nama_type")
     public String namaType;
 
-    @ColumnInfo(name = "jumlah_type")
-    public double jumlahType;
+    @ColumnInfo(name = "type_value")
+    public double val;
+
+    @ColumnInfo(name = "type_percent")
+    public double pct;
 
     @ColumnInfo(name = "created_at")
     @TypeConverters({TimeStampConverters.class})
@@ -71,13 +74,20 @@ public class Type implements Serializable {
         this.namaType = namaType;
     }
 
-    public double getJumlahType() {
-        return jumlahType;
+    public double getVal() {
+        return val;
     }
 
-    public void setJumlahType(double jumlahType) {
-        this.jumlahType = jumlahType;
+    public void setVal(double val) {
+        this.val = val;
     }
 
+    public double getPct() {
+        return pct;
+    }
+
+    public void setPct(double pct) {
+        this.pct = pct;
+    }
 
 }

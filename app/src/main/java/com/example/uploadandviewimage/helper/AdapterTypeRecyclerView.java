@@ -3,6 +3,8 @@ package com.example.uploadandviewimage.helper;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,21 +16,27 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import com.example.uploadandviewimage.GrainHistory;
+import com.example.uploadandviewimage.GrainHistoryCollection;
 import com.example.uploadandviewimage.R;
+import com.example.uploadandviewimage.SecondActivity;
 import com.example.uploadandviewimage.utils.AppUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
+//try change history
 public class AdapterTypeRecyclerView extends RecyclerView.Adapter<AdapterTypeRecyclerView.ViewHolders> {
-    public ArrayList<Type> daftarType;
+    public ArrayList<GrainTypeData> daftarType;
+    public ArrayList<GrainHistory> histories;
     public Context context;
     private AppzDatabase db;
 
-    public AdapterTypeRecyclerView(ArrayList<Type> daftarTypes, Context ctx) {
+    public AdapterTypeRecyclerView(ArrayList<GrainTypeData> daftarTypes,ArrayList<GrainHistory> histories, Context ctx) {
         this.daftarType = daftarTypes;
         this.context = ctx;
-
+        this.histories = histories;
         db = Room.databaseBuilder(context.getApplicationContext(),
                 AppzDatabase.class, "tbType").allowMainThreadQueries().build();
 
@@ -36,15 +44,13 @@ public class AdapterTypeRecyclerView extends RecyclerView.Adapter<AdapterTypeRec
     }
 
     public class ViewHolders extends RecyclerView.ViewHolder {
-        TextView tvTitle, itemTime, item_jumlah;
+        TextView  itemTime;
         CardView cvMain;
 
         public ViewHolders(@NonNull View itemView) {
             super(itemView);
-            tvTitle = itemView.findViewById(R.id.tv_namabarang);
             itemTime = itemView.findViewById(R.id.item_desc);
             cvMain = itemView.findViewById(R.id.cv_main);
-            item_jumlah = itemView.findViewById(R.id.tv_jumlah1);
 
         }
     }
@@ -60,21 +66,37 @@ public class AdapterTypeRecyclerView extends RecyclerView.Adapter<AdapterTypeRec
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolders holder, int position) {
-        Type note = getItem(position);
+        GrainTypeData note = getItem(position);
 
         final String name = daftarType.get(position).getNamaType();
-        final double jumlah = daftarType.get(position).getJumlahType();
-        String value = new Double(jumlah).toString();
+        final double val = daftarType.get(position).getVal();
+        final double pct = daftarType.get(position).getPct();
+        String value = new Double(val).toString();
 
         holder.cvMain.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                /**
-                 *  Kodingan untuk tutorial Selanjutnya :p Read detail data
-                 */
-                Type barang = db.typeDAO().selectBarangDetail(daftarType.get(position).getTypeId());
-                context.startActivity(RoomReadSingleActivity.getActIntent((Activity) context).putExtra("data", barang));
+                GrainHistoryCollection historyCollection = new GrainHistoryCollection(daftarType);
+                //ArrayList<GrainHistory> history = historyCollection.GetList();
+
+                //Date date = new Date();
+                Date dateSelected = daftarType.get(position).getCreatedAt() ;
+
+                GrainHistory history = historyCollection.findDate(dateSelected);
+
+                //GrainTypeData barang = db.typeDAO().selectBarangDetail(daftarType.get(position).getTypeId());
+
+                //context.startActivity(RoomReadSingleActivity.getActIntent((Activity) context).putExtra("data", barang));
+                context.startActivity(RoomReadSingleActivity.getActIntent((Activity) context).putExtra("data", history));
+
+//                Bundle bundles = new Bundle();
+//                bundles.putSerializable("test", history);
+//                bundles.putSerializable("data", dateSelected);
+//                Intent intent = new Intent(context, RoomReadSingleActivity.class);
+//                intent.putExtras(bundles);
+//                context.startActivity(intent);
+
             }
         });
         holder.cvMain.setOnLongClickListener(new View.OnLongClickListener() {
@@ -104,12 +126,12 @@ public class AdapterTypeRecyclerView extends RecyclerView.Adapter<AdapterTypeRec
                 return true;
             }
         });
-        holder.tvTitle.setText(name);
+
         holder.itemTime.setText(AppUtils.getFormattedDateString(note.getCreatedAt()));
-        holder.item_jumlah.setText(value + " %");
+
     }
 
-    private Type getItem(int position) {
+    private GrainTypeData getItem(int position) {
         return daftarType.get(position);
     }
 

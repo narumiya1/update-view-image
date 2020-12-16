@@ -9,7 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.uploadandviewimage.GrainHistory;
+import com.example.uploadandviewimage.GrainHistoryCollection;
 import com.example.uploadandviewimage.GrainPie;
+import com.example.uploadandviewimage.GrainType;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.utils.AppUtils;
 import com.github.mikephil.charting.charts.PieChart;
@@ -23,8 +26,9 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.util.ArrayList;
 
 public class RoomReadSingleActivity extends AppCompatActivity {
-    Type type;
-    public ArrayList<Type> daftarType;
+    GrainTypeData type;
+    GrainHistory history;
+    public ArrayList<GrainTypeData> listHistoria;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,23 +38,30 @@ public class RoomReadSingleActivity extends AppCompatActivity {
         tv_item1=findViewById(R.id.tv_item1);
         itemTimes = findViewById(R.id.item_time);
         tv_jumlah1 = findViewById(R.id.tv_jumlah1);
-
-
-        type = (Type) getIntent().getSerializableExtra("data");
-        final double jumlah = type.getJumlahType();
-        String value = new Double(jumlah).toString();
-        tv_item1.setText(type.getNamaType());
-        itemTimes.setText(AppUtils.getFormattedDateString(type.getCreatedAt()));
-        tv_jumlah1.setText(value+ " %");
+        tv_item2=findViewById(R.id.tv_item2);
+        history = (GrainHistory) getIntent().getSerializableExtra("data");
 
         //pie chart
         PieChart pieChart;
         pieChart = findViewById(R.id.chart_detail);
         pieChart.setUsePercentValues(true);
         ArrayList<PieEntry> yvalues = new ArrayList<PieEntry>();
-        yvalues.add(new PieEntry((float)jumlah, type.getNamaType(), 0));
-        yvalues.add(new PieEntry(10.0f, "red swan", 1));
-        yvalues.add(new PieEntry(10.0f,"red swan", 2));
+
+        ArrayList<GrainPie> myTypes = history.getType();
+        int count =myTypes.size();
+        StringBuilder builder = new StringBuilder();
+        //String[] arr = {type.getNamaType()};
+        for (int i=0;i<count;i++) {
+            //chart
+            GrainPie type = myTypes.get(i);
+            yvalues.add(new PieEntry((float)type.getValue(), type.getName(), i + 1));
+            //text
+            String s = type.getName();
+            builder.append(s).append(" - ").append(type.getValue()).append("%").append("\t\r\n");
+        }
+
+        tv_item2.setText(builder.toString());
+
 
         PieDataSet dataSet = new PieDataSet(yvalues, getString(R.string.election_results));
         PieData data = new PieData(dataSet);
