@@ -24,6 +24,15 @@ public class GrainTypeData implements Serializable {
     @ColumnInfo(name = "type_percent")
     public double pct;
 
+    @ColumnInfo(name = "nama_szie")
+    public String namaSize;
+
+    @ColumnInfo(name = "size_value")
+    public double val_size;
+
+    @ColumnInfo(name = "pct_percent")
+    public double pct_size;
+
     @ColumnInfo(name = "created_at")
     @TypeConverters({TimeStampConverters.class})
     private Date createdAt;
@@ -90,4 +99,27 @@ public class GrainTypeData implements Serializable {
         this.pct = pct;
     }
 
+    public String getNamaSize() {
+        return namaSize;
+    }
+
+    public void setNamaSize(String namaSize) {
+        this.namaSize = namaSize;
+    }
+
+    public double getVal_size() {
+        return val_size;
+    }
+
+    public void setVal_size(double val_size) {
+        this.val_size = val_size;
+    }
+
+    public double getPct_size() {
+        return pct_size;
+    }
+
+    public void setPct_size(double pct_size) {
+        this.pct_size = pct_size;
+    }
 }
