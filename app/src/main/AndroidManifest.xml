@@ -35,8 +35,8 @@
         <activity android:name=".activity.PdfActivity" />
         <activity android:name=".activity.HistoryActivity"/>
         <!--dao-->
-        <activity android:name=".helper.RoomReadSingleActivity"/>
-        <activity android:name=".helper.RoomReadActivity"/>
+        <activity android:name=".roomdbGhistory.HistoryReadSingleActivity"/>
+        <activity android:name=".roomdbGhistory.HistoryReadActivity"/>
 
 <activity android:name=".MainActivity"/>
         <provider

@@ -1,4 +1,4 @@
-package com.example.uploadandviewimage.helper;
+package com.example.uploadandviewimage.roomdbGhistory;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,21 +12,18 @@ import androidx.room.Room;
 import com.example.uploadandviewimage.GrainHistoryCollection;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.GrainHistory;
-
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 
-public class RoomReadActivity extends AppCompatActivity {
+public class HistoryReadActivity extends AppCompatActivity {
 
-    private AppzDatabase db;
+    private AppDatabase db;
     private RecyclerView rvView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-    private ArrayList<GrainTypeData> daftarBarang;
+    private ArrayList<GHistory> listGrainType;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,7 +37,7 @@ public class RoomReadActivity extends AppCompatActivity {
         /**
          * Initialize ArrayList untuk data barang
          */
-        daftarBarang = new ArrayList<>();
+        listGrainType = new ArrayList<>();
 
         /**
          * Initialize database
@@ -48,10 +45,10 @@ public class RoomReadActivity extends AppCompatActivity {
          */
 
 //        db = Room.databaseBuilder(getApplicationContext(), AppzDatabase.class, "tbType").allowMainThreadQueries().build();
-        db = Room.databaseBuilder(getApplicationContext(), AppzDatabase.class, "tbType")
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "tbGrainHistory")
                 .allowMainThreadQueries()
                 .fallbackToDestructiveMigration()
-                .addMigrations(AppzDatabase.MIGRATION_4_5)
+                .addMigrations(AppDatabase.MIGRATION_2_3)
                 .build();
         /**
          * Initialize recyclerview dan layout manager
@@ -65,21 +62,21 @@ public class RoomReadActivity extends AppCompatActivity {
          * Add all data to arraylist
          */
 //        daftarBarang.addAll(Arrays.asList(db.typeDAO().selectAllItems()));
-        daftarBarang.addAll(Arrays.asList(db.typeDAO().selectAllItems()));
-        GrainHistoryCollection historyCol = new GrainHistoryCollection(daftarBarang);
+        listGrainType.addAll(Arrays.asList(db.gHistoryDao().selectAllItems()));
+        GrainHistoryCollection historyCol = new GrainHistoryCollection(listGrainType);
         ArrayList<GrainHistory>history = historyCol.GetList();
 
         // filter data depend on date
         /**
          * Set all data ke adapter, dan menampilkannya
          */
-        adapter = new AdapterTypeRecyclerView(daftarBarang,history, this);
+        adapter = new AdapterTypeRecyclerView(history, this );
         rvView.setAdapter(adapter);
     }
 
 
     public static Intent getActIntent(Activity activity) {
         // kode untuk pengambilan Intent
-        return new Intent(activity, RoomReadActivity.class);
+        return new Intent(activity, HistoryReadActivity.class);
     }
 }

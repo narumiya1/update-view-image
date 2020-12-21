@@ -1,15 +1,14 @@
-package com.example.uploadandviewimage.helper;
+package com.example.uploadandviewimage.roomdbGhistory;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -19,7 +18,6 @@ import androidx.room.Room;
 import com.example.uploadandviewimage.GrainHistory;
 import com.example.uploadandviewimage.GrainHistoryCollection;
 import com.example.uploadandviewimage.R;
-import com.example.uploadandviewimage.SecondActivity;
 import com.example.uploadandviewimage.utils.AppUtils;
 
 import java.util.ArrayList;
@@ -28,18 +26,17 @@ import java.util.Date;
 
 //try change history
 public class AdapterTypeRecyclerView extends RecyclerView.Adapter<AdapterTypeRecyclerView.ViewHolders> {
-    public ArrayList<GrainTypeData> daftarType;
+//    public ArrayList<GHistory> daftarHistory;
     public ArrayList<GrainHistory> histories;
     public Context context;
-    private AppzDatabase db;
+    private AppDatabase db;
 
-    public AdapterTypeRecyclerView(ArrayList<GrainTypeData> daftarTypes,ArrayList<GrainHistory> histories, Context ctx) {
-        this.daftarType = daftarTypes;
+    public AdapterTypeRecyclerView(ArrayList<GrainHistory> histories, Context ctx) {
+//        this.daftarType = daftarTypes;
         this.context = ctx;
         this.histories = histories;
         db = Room.databaseBuilder(context.getApplicationContext(),
-                AppzDatabase.class, "tbType").allowMainThreadQueries().build();
-
+                AppDatabase.class, "tbGrainHistory").allowMainThreadQueries().build();
 
     }
 
@@ -66,36 +63,37 @@ public class AdapterTypeRecyclerView extends RecyclerView.Adapter<AdapterTypeRec
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolders holder, int position) {
-        GrainTypeData note = getItem(position);
+        GrainHistory note = getItem(position);
 
-        final String name = daftarType.get(position).getNamaType();
-        final double val = daftarType.get(position).getVal();
-        final double pct = daftarType.get(position).getPct();
-        String value = new Double(val).toString();
 
         holder.cvMain.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                GrainHistoryCollection historyCollection = new GrainHistoryCollection(daftarType);
-                //ArrayList<GrainHistory> history = historyCollection.GetList();
+//                Toast.makeText(context , "ID : "+ daftarHistory.size() , Toast.LENGTH_LONG).show();
 
-                //Date date = new Date();
-                Date dateSelected = daftarType.get(position).getCreatedAt() ;
+//                ArrayList<GHistory> grainHistory = new ArrayList<GHistory>();
+//                grainHistory.addAll(Arrays.asList(db.gHistoryDao().selectAllItems()));
 
-                GrainHistory history = historyCollection.findDate(dateSelected);
+//                GrainHistoryCollection historyCollection = new GrainHistoryCollection(grainHistory);
 
-                //GrainTypeData barang = db.typeDAO().selectBarangDetail(daftarType.get(position).getTypeId());
+                Date dateSelected = histories.get(position).getDateTime() ;
 
-                //context.startActivity(RoomReadSingleActivity.getActIntent((Activity) context).putExtra("data", barang));
-                context.startActivity(RoomReadSingleActivity.getActIntent((Activity) context).putExtra("data", history));
+                //cari history berdasarkan date selected
+                GrainHistory history = new GrainHistory();
+                int count = histories.size();
+                for (int i=0;i<count;i++) {
+                    GrainHistory h = histories.get(i);
+                    if (h.getDateTime().equals(dateSelected)) {
+                        history = h;
+                        break;
+                    }
+                }
 
-//                Bundle bundles = new Bundle();
-//                bundles.putSerializable("test", history);
-//                bundles.putSerializable("data", dateSelected);
-//                Intent intent = new Intent(context, RoomReadSingleActivity.class);
-//                intent.putExtras(bundles);
-//                context.startActivity(intent);
+//                GrainHistory history = historyCollection.findDate(dateSelected);
+
+                context.startActivity(HistoryReadSingleActivity.getActIntent((Activity) context).putExtra("data", history));
+
 
             }
         });
@@ -119,7 +117,7 @@ public class AdapterTypeRecyclerView extends RecyclerView.Adapter<AdapterTypeRec
                             @Override
                             public void onClick(View view) {
                                 dialog.dismiss();
-                                onDeteleBarang(position);
+
                             }
                         }
                 );
@@ -127,25 +125,18 @@ public class AdapterTypeRecyclerView extends RecyclerView.Adapter<AdapterTypeRec
             }
         });
 
-        holder.itemTime.setText(AppUtils.getFormattedDateString(note.getCreatedAt()));
+        holder.itemTime.setText(AppUtils.getFormattedDateString(note.getDateTime()));
 
     }
 
-    private GrainTypeData getItem(int position) {
-        return daftarType.get(position);
+    private GrainHistory getItem(int position) {
+        return histories.get(position);
     }
 
-
-    private void onDeteleBarang(int position) {
-        db.typeDAO().deleteBarang(daftarType.get(position));
-        daftarType.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, daftarType.size());
-    }
 
     @Override
     public int getItemCount() {
-        return daftarType.size();
+        return histories.size();
     }
 
 

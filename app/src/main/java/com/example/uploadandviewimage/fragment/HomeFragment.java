@@ -2,13 +2,11 @@ package com.example.uploadandviewimage.fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ReceiverCallNotAllowedException;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -20,6 +18,8 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.pdf.PdfDocument;
 import android.media.ExifInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -36,13 +36,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -51,26 +49,18 @@ import com.example.uploadandviewimage.ExampleAdapter;
 import com.example.uploadandviewimage.GrainData;
 import com.example.uploadandviewimage.GrainItem;
 import com.example.uploadandviewimage.GrainPie;
-import com.example.uploadandviewimage.GrainType;
-import com.example.uploadandviewimage.MainActivity;
 import com.example.uploadandviewimage.NetworkClient;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.SecondActivity;
 import com.example.uploadandviewimage.UploadApis;
-import com.example.uploadandviewimage.activity.HistoryActivity;
-import com.example.uploadandviewimage.helper.AppzDatabase;
-import com.example.uploadandviewimage.helper.RoomReadActivity;
-import com.example.uploadandviewimage.helper.RoomReadSingleActivity;
-import com.example.uploadandviewimage.helper.GrainTypeData;
+import com.example.uploadandviewimage.roomdbGhistory.AppDatabase;
+import com.example.uploadandviewimage.roomdbGhistory.GHistory;
+import com.example.uploadandviewimage.roomdbGhistory.HistoryReadActivity;
 import com.example.uploadandviewimage.utils.AppUtils;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -79,12 +69,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
-import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.Unbinder;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -98,7 +85,7 @@ import static android.app.Activity.RESULT_OK;
 public class HomeFragment extends Fragment {
 
 
-    private AppzDatabase db;
+    private AppDatabase db;
     PhotoView viewImage;
     Button btn, chartf, pdf, hisdtory, view_history;
     TextView warningtext, no_data;
@@ -146,7 +133,7 @@ public class HomeFragment extends Fragment {
         fab_view_history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), RoomReadActivity.class);
+                Intent intent = new Intent(getActivity(), HistoryReadActivity.class);
                 startActivity(intent);
             }
         });
@@ -154,9 +141,8 @@ public class HomeFragment extends Fragment {
 
         // migrate
         db = Room.databaseBuilder(getActivity().getApplicationContext(),
-                AppzDatabase.class, "tbType")
+                AppDatabase.class, "tbGrainHistory")
                 .fallbackToDestructiveMigration()
-                .addMigrations(AppzDatabase.MIGRATION_4_5)
                 .build();
 
         add_photo.setOnClickListener(new View.OnClickListener() {
@@ -175,7 +161,6 @@ public class HomeFragment extends Fragment {
         return view;
 
     }
-
 
     private void selectImage() {
         final CharSequence[] options = {"Take Photo", "Choose from Gallery"};
@@ -611,21 +596,37 @@ public class HomeFragment extends Fragment {
 
                         });
 
+                        LocalDate date2 = LocalDate.now();
                         Date date = new Date();
+                        //type
                         for(int i=0; i<type.length; i++) {
                             String name = type[i].getName();
-
                             double val = type[i].getValue();
                             double pct = type[i].getPercent();
 
                             //call db model
-                            GrainTypeData type2 = new GrainTypeData();
-                            type2.setNamaType(name);
+                            GHistory type2 = new GHistory();
+                            type2.setName(name);
                             type2.setVal(val);
                             type2.setPct(pct);
+                            type2.setDataType(1);
                             type2.setCreatedAt(date);
                             insertData(type2);
+                        }
+                        //size
+                        for(int i=0; i<size.length; i++) {
+                            String name_size = size[i].getName();
+                            double val_size = size[i].getValue();
+                            double pct_size = size[i].getPercent();
 
+                            //call db model
+                            GHistory type2 = new GHistory();
+                            type2.setName(name_size);
+                            type2.setVal(val_size);
+                            type2.setPct(pct_size);
+                            type2.setDataType(2);
+                            type2.setCreatedAt(date);
+                            insertData(type2);
                         }
 
                         String message = "";
@@ -779,11 +780,11 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private void insertData(final GrainTypeData type2) {
+    private void insertData(final GHistory type2) {
         new AsyncTask<Void, Void, Long>() {
             @Override
             protected Long doInBackground(Void... voids) {
-                long status = db.typeDAO().insertBarang(type2);
+                long status = db.gHistoryDao().insertGrain(type2);
                 return status;
             }
 

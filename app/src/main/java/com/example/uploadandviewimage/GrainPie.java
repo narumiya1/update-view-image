@@ -7,6 +7,34 @@ public class GrainPie implements Serializable {
     private double Value;
     private double Percent;
 
+//    private String NameSize;
+//    private double ValueSize;
+//    private double PercentSize;
+//
+//    public String getNameSize() {
+//        return NameSize;
+//    }
+//
+//    public void setNameSize(String nameSize) {
+//        NameSize = nameSize;
+//    }
+//
+//    public double getValueSize() {
+//        return ValueSize;
+//    }
+//
+//    public void setValueSize(double valueSize) {
+//        ValueSize = valueSize;
+//    }
+//
+//    public double getPercentSize() {
+//        return PercentSize;
+//    }
+//
+//    public void setPercentSize(double percentSize) {
+//        PercentSize = percentSize;
+//    }
+
     public String getName ()
     {
         return Name;

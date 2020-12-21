@@ -10,7 +10,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_main"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="210dp"
         android:layout_gravity="center_horizontal"
         android:layout_margin="4dp"
         android:padding="10dp"
@@ -18,99 +18,78 @@
         card_view:cardCornerRadius="3dp"
         card_view:cardElevation="2.5dp">
 
-
-        <RelativeLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="14dp"
-            android:layout_marginTop="0dp">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/title_data"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Data Detail"
-                android:textSize="16sp" />
+                android:layout_height="match_parent"
+                android:layout_marginLeft="14dp"
+                android:layout_marginTop="0dp">
 
-            <TextView
-                android:id="@+id/tv_item1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/title_data"
-                android:fontFamily="@font/montserratlight"
-                android:text="IR 42"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:visibility="invisible" />
+                <TextView
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/title_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Specs"
+                    android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/tv_jumlah1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/title_data"
-                android:layout_marginRight="4dp"
-                android:layout_toRightOf="@id/tv_item1"
-                android:fontFamily="@font/montserratlight"
-                android:gravity="right"
-                android:text="7"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:visibility="invisible" />
-
-            <TextView
-                android:id="@+id/tv_item2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tv_item1"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/montserratlight"
-                android:text="Karawang "
-                android:textColor="@android:color/black"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/tv_jumlah2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tv_item1"
-                android:layout_marginRight="4dp"
-                android:layout_toRightOf="@id/tv_item2"
-                android:fontFamily="@font/montserratlight"
-                android:gravity="right"
-                android:text="9"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:visibility="invisible" />
+                <TextView
+                    android:id="@+id/tv_item1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/title_data"
+                    android:fontFamily="@font/montserratlight"
+                    android:text="Type"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="italic"
+                    android:visibility="visible" />
 
 
-            <TextView
-                android:id="@+id/tv_item3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tv_item2"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/montserratlight"
-                android:text="Pandan Wangi"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:visibility="invisible" />
+                <TextView
+                    android:id="@+id/tv_items2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_item1"
+                    android:layout_marginTop="0dp"
+                    android:fontFamily="@font/montserratlight"
+                    android:text="Type "
+                    android:textColor="@android:color/black"
+                    android:textSize="14dp" />
 
-            <TextView
-                android:id="@+id/tv_jumlah3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tv_item2"
-                android:layout_marginRight="4dp"
-                android:layout_toRightOf="@id/tv_item2"
-                android:fontFamily="@font/montserratlight"
-                android:gravity="right"
-                android:text="6"
-                android:textColor="@android:color/black"
-                android:textSize="16sp"
-                android:visibility="invisible" />
+                <TextView
+                    android:id="@+id/data_szie"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_items2"
+                    android:fontFamily="@font/montserratlight"
+                    android:text="Size "
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="italic" />
 
-        </RelativeLayout>
+
+
+
+                <TextView
+                    android:id="@+id/tv_items3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/data_szie"
+                    android:fontFamily="@font/montserratlight"
+                    android:text="Size"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"/>
+
+
+
+            </RelativeLayout>
+        </ScrollView>
+
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -139,7 +118,7 @@
         android:layout_marginLeft="20dp"
         android:fontFamily="@font/ubunturegular"
         android:gravity="center"
-        android:text="Presentase Type"
+        android:text="Type"
         android:textStyle="bold" />
 
     <View
@@ -151,13 +130,44 @@
         android:layout_marginRight="10dp"
         android:background="#D5CBCB" />
 
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/chart_detail"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:layout_below="@id/tipe"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center"
-        android:layout_marginTop="6dp" />
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/chart_type"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_below="@id/tipe" />
+
+            <TextView
+                android:id="@+id/size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:fontFamily="@font/ubunturegular"
+                android:gravity="center"
+                android:text="Size"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="130dp"
+                android:layout_height="1dp"
+                android:layout_below="@id/tipe"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#D5CBCB" />
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/chart_sizec"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_centerHorizontal="true" />
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

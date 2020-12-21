@@ -5,8 +5,6 @@ import android.os.Parcelable;
 
 import com.example.uploadandviewimage.GrainPie;
 import com.example.uploadandviewimage.GrainType;
-import com.example.uploadandviewimage.helper.GrainTypeData;
-import com.example.uploadandviewimage.helper.TypeDAO;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,6 +35,13 @@ public class GrainHistory implements Serializable {
     public void setType (ArrayList<GrainPie> listType)
     {
         this.types = listType;
+    }
+    public ArrayList<GrainPie> getSize() {
+        return sizes;
+    }
+
+    public void setSizes(ArrayList<GrainPie> sizes) {
+        this.sizes = sizes;
     }
 
     public Date getDateTime ()
