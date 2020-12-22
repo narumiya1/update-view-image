@@ -10,14 +10,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.uploadandviewimage.R;
-import com.example.uploadandviewimage.SecondActivity;
 import com.example.uploadandviewimage.fragment.AccountFragment;
-import com.example.uploadandviewimage.fragment.ChartFragment;
-import com.example.uploadandviewimage.fragment.HistoryFragment;
+import com.example.uploadandviewimage.fragment.AboutFragment;
 import com.example.uploadandviewimage.fragment.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import static com.example.uploadandviewimage.fragment.ChartFragment.*;
 
 public class FragmentActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener  {
 
@@ -49,7 +45,7 @@ public class FragmentActivity extends AppCompatActivity implements BottomNavigat
                 fragment = new HomeFragment();
                 break;
             case R.id.chart_menu:
-                fragment = new ChartFragment();
+                fragment = new AboutFragment();
                 break;
             case R.id.account_menu:
                 fragment = new AccountFragment();

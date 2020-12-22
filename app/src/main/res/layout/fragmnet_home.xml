@@ -48,6 +48,8 @@
             <com.github.chrisbanes.photoview.PhotoView
                 android:id="@+id/viewImage"
                 android:layout_width="match_parent"
+                android:src="@drawable/beraslogo01"
+                android:background="@drawable/beraslogo01"
                 android:layout_height="180dp"
                 android:visibility="invisible" />
 

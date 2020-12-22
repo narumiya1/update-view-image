@@ -18,19 +18,19 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.SecondActivity;
 
-public class ChartFragment extends Fragment {
+public class AboutFragment extends Fragment {
     Button bt;
     EditText et;
 
-    public ChartFragment() {
+    public AboutFragment() {
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chart, container, false);
-        bt = view.findViewById(R.id.btnPassData);
-        et = view.findViewById(R.id.inMessage);
+//        bt = view.findViewById(R.id.btnPassData);
+//        et = view.findViewById(R.id.inMessage);
 
        /* bt.setOnClickListener(new View.OnClickListener() {
             @Override

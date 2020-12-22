@@ -115,29 +115,8 @@ public class HomeFragment extends Fragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragmnet_home, container, false);
-
-        warningtext = view.findViewById(R.id.tv_warn);
-        no_data = view.findViewById(R.id.no_data);
-        pdf = (Button) view.findViewById(R.id.btnpdf);
-        add_photo = view.findViewById(R.id.iv_add);
-        btnRetry = view.findViewById(R.id.btnRetry);
-        //viewImage=(ImageView)findViewById(R.id.viewImage);
-        viewImage = (PhotoView) view.findViewById(R.id.viewImage);
-        menu = view.findViewById(R.id.fab_popUp);
-        fab_chart = view.findViewById(R.id.fab_chart);
-        fab_pdf = view.findViewById(R.id.fab_pdf);
-        fab_history = view.findViewById(R.id.historia);
-        fab_view_history = view.findViewById(R.id.fab_view_history);
-        final TextView textTime = view.findViewById(R.id.text_time);
-        textTime.setText(AppUtils.getFormattedDateString(AppUtils.getCurrentDateTime()));
-        fab_view_history.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), HistoryReadActivity.class);
-                startActivity(intent);
-            }
-        });
-
+        //get view
+        findViews(view);
         //check connection
         if (isConnected()) {
             Toast.makeText(view.getContext(), "Internet Connected", Toast.LENGTH_SHORT).show();
@@ -161,7 +140,15 @@ public class HomeFragment extends Fragment{
                 AppDatabase.class, "tbGrainHistory")
                 .fallbackToDestructiveMigration()
                 .build();
+        //get location
 
+        fab_view_history.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), HistoryReadActivity.class);
+                startActivity(intent);
+            }
+        });
         add_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -177,6 +164,23 @@ public class HomeFragment extends Fragment{
 
         return view;
 
+    }
+
+    private void findViews(View view) {
+        warningtext = view.findViewById(R.id.tv_warn);
+        no_data = view.findViewById(R.id.no_data);
+        pdf = (Button) view.findViewById(R.id.btnpdf);
+        add_photo = view.findViewById(R.id.iv_add);
+        btnRetry = view.findViewById(R.id.btnRetry);
+        //viewImage=(ImageView)findViewById(R.id.viewImage);
+        viewImage = (PhotoView) view.findViewById(R.id.viewImage);
+        menu = view.findViewById(R.id.fab_popUp);
+        fab_chart = view.findViewById(R.id.fab_chart);
+        fab_pdf = view.findViewById(R.id.fab_pdf);
+        fab_history = view.findViewById(R.id.historia);
+        fab_view_history = view.findViewById(R.id.fab_view_history);
+        final TextView textTime = view.findViewById(R.id.text_time);
+        textTime.setText(AppUtils.getFormattedDateString(AppUtils.getCurrentDateTime()));
     }
 
     private boolean isConnected() {
