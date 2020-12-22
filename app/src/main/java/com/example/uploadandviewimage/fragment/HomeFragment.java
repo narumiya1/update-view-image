@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,7 @@ import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.uploadandviewimage.ExampleAdapter;
 import com.example.uploadandviewimage.GrainData;
@@ -82,19 +84,18 @@ import retrofit2.Retrofit;
 
 import static android.app.Activity.RESULT_OK;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment{
 
 
     private AppDatabase db;
     PhotoView viewImage;
-    Button btn, chartf, pdf, hisdtory, view_history;
+    Button btnRetry, chartf, pdf, hisdtory, view_history;
     TextView warningtext, no_data;
     int pageWidth = 1200;
     Date dateTime;
     ImageButton add_photo;
     FloatingActionMenu menu;
     FloatingActionButton fab_chart, fab_pdf, fab_history, fab_view_history;
-
     DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     private String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final int PERMISSION_CODE_READ_GALLERY = 1;
@@ -119,7 +120,7 @@ public class HomeFragment extends Fragment {
         no_data = view.findViewById(R.id.no_data);
         pdf = (Button) view.findViewById(R.id.btnpdf);
         add_photo = view.findViewById(R.id.iv_add);
-
+        btnRetry = view.findViewById(R.id.btnRetry);
         //viewImage=(ImageView)findViewById(R.id.viewImage);
         viewImage = (PhotoView) view.findViewById(R.id.viewImage);
         menu = view.findViewById(R.id.fab_popUp);
@@ -129,7 +130,6 @@ public class HomeFragment extends Fragment {
         fab_view_history = view.findViewById(R.id.fab_view_history);
         final TextView textTime = view.findViewById(R.id.text_time);
         textTime.setText(AppUtils.getFormattedDateString(AppUtils.getCurrentDateTime()));
-
         fab_view_history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -138,7 +138,24 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        //check connection
+        if (isConnected()) {
+            Toast.makeText(view.getContext(), "Internet Connected", Toast.LENGTH_SHORT).show();
+        } else {
+            btnRetry.setVisibility(View.VISIBLE);
+            btnRetry.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (isConnected()){
+                        btnRetry.setVisibility(View.GONE);
+                    }else {
+                        Toast.makeText(view.getContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
+                    }
 
+                }
+            });
+            Toast.makeText(view.getContext(), "Check Connection and Try Again", Toast.LENGTH_LONG).show();
+        }
         // migrate
         db = Room.databaseBuilder(getActivity().getApplicationContext(),
                 AppDatabase.class, "tbGrainHistory")
@@ -159,6 +176,20 @@ public class HomeFragment extends Fragment {
         menu.setVisibility(View.VISIBLE);
 
         return view;
+
+    }
+
+    private boolean isConnected() {
+        boolean connected = false;
+        try {
+            ConnectivityManager cm = (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo nInfo = cm.getActiveNetworkInfo();
+            connected = nInfo != null && nInfo.isAvailable() && nInfo.isConnected();
+            return connected;
+        } catch (Exception e) {
+            Log.e("Connectivity Exception", e.getMessage());
+        }
+        return connected;
 
     }
 
@@ -795,7 +826,6 @@ public class HomeFragment extends Fragment {
             }
         }.execute();
     }
-
 
 }
 
