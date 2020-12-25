@@ -25,6 +25,19 @@
             android:textColor="#3E3D3D"
             android:textSize="12sp"
             android:layout_marginBottom="6dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_lang"
+            android:layout_centerInParent="true"
+            android:text="LATITUDE"  android:visibility="gone"/>
+        <TextView android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_long"
+            android:layout_below="@id/tv_lang"
+            android:layout_centerInParent="true"
+            android:text="LONGITUDE" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -119,8 +132,8 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentBottom="true"
                     android:layout_gravity="bottom|right"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="50dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="60dp"
                     android:src="@drawable/ic_baseline_how_to_reg_24"
                     android:visibility="invisible"
                     app:fab_size="normal"

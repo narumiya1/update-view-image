@@ -540,6 +540,7 @@ public class MainActivity extends AppCompatActivity {
         return compressedOri;
     }
 
+
     private void uploadImage(Bitmap bitmap) {
         File file = new File(mImageFileLocation);
         int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
@@ -564,6 +565,7 @@ public class MainActivity extends AppCompatActivity {
         } */
 
 
+        /*
         try {
             Retrofit retrofit = NetworkClient.getRetrofit();
 
@@ -745,6 +747,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             String errMessage = e.getMessage();
         }
+        */
+
 
     }
 

@@ -12,8 +12,8 @@ import retrofit2.http.Part;
 
 public interface UploadApis {
     @Multipart
-    @POST("api/DocFile")
-    Call<GrainData> uploadImage(@Part MultipartBody.Part part, @Part("somedata") RequestBody requestBody);
+    @POST("api/DocFile2")
+    Call<GrainData> uploadImage(@Part MultipartBody.Part part, @Part("USER_ID") RequestBody requestBody1, @Part("LATITUDE") RequestBody requestBody2, @Part("LONGITUDE") RequestBody requestBody3);
 
     @FormUrlEncoded
     @POST("insertdata.php")

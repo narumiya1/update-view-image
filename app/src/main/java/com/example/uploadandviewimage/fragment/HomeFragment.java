@@ -2,6 +2,7 @@ package com.example.uploadandviewimage.fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -55,6 +56,7 @@ import com.example.uploadandviewimage.NetworkClient;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.SecondActivity;
 import com.example.uploadandviewimage.UploadApis;
+import com.example.uploadandviewimage.activity.LocTrack;
 import com.example.uploadandviewimage.roomdbGhistory.AppDatabase;
 import com.example.uploadandviewimage.roomdbGhistory.GHistory;
 import com.example.uploadandviewimage.roomdbGhistory.HistoryReadActivity;
@@ -69,9 +71,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.RoundingMode;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 
 import okhttp3.MediaType;
@@ -82,6 +87,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.app.Activity.RESULT_OK;
 
 public class HomeFragment extends Fragment{
@@ -108,6 +115,12 @@ public class HomeFragment extends Fragment{
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    private ArrayList permissionsToRequest=new ArrayList();
+    private ArrayList permissionsRejected = new ArrayList();
+    private ArrayList permissions = new ArrayList();
+    private final static int ALL_PERMISSIONS_RESULT = 101;
+    LocTrack locationTrack;
+    TextView longi,lati;
     public HomeFragment() {
     }
 
@@ -141,7 +154,7 @@ public class HomeFragment extends Fragment{
                 .fallbackToDestructiveMigration()
                 .build();
         //get location
-
+        ceklocation();
         fab_view_history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -181,6 +194,8 @@ public class HomeFragment extends Fragment{
         fab_view_history = view.findViewById(R.id.fab_view_history);
         final TextView textTime = view.findViewById(R.id.text_time);
         textTime.setText(AppUtils.getFormattedDateString(AppUtils.getCurrentDateTime()));
+        longi = view.findViewById(R.id.tv_long);
+        lati = view.findViewById(R.id.tv_lang);
     }
 
     private boolean isConnected() {
@@ -305,22 +320,102 @@ public class HomeFragment extends Fragment{
         mImageFileLocation = image.getAbsolutePath();
         return image;
     }
+    private void ceklocation() {
+        permissions.add(ACCESS_FINE_LOCATION);
+        permissions.add(ACCESS_COARSE_LOCATION);
+        permissionsToRequest = findUnAskedPermissions(permissions);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 1: {
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, do something you want
-                } else {
-                    // permission denied
-                    Toast.makeText(getContext(), "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
+
+            if (permissionsToRequest.size() > 0)
+                requestPermissions((String[]) permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+        }
+
+
+        locationTrack = new LocTrack(getContext());
+
+        if (locationTrack.canGetLocation()) {
+            double longitude = locationTrack.getLongitude();
+            double latitude = locationTrack.getLatitude();
+            lati.setText("lati" +latitude);
+            longi.setText("longitudesz" +longitude);
+            Toast.makeText(getContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
+        } else {
+
+            locationTrack.showSettingsAlert();
         }
     }
+
+    private ArrayList findUnAskedPermissions(ArrayList wanted) {
+        ArrayList result = new ArrayList();
+
+        for (Object perm : wanted) {
+            if (!hasPermission((String) perm)) {
+                result.add(perm);
+            }
+        }
+
+        return result;
+    }
+    private boolean canMakeSmores() {
+        return (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1);
+    }
+    private boolean hasPermission(String permission) {
+        if (canMakeSmores()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return (ContextCompat.checkSelfPermission(getContext(),permission) == PackageManager.PERMISSION_GRANTED);
+            }
+        }
+        return true;
+    }
+
+
+    @TargetApi(Build.VERSION_CODES.M)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode,permissions, grantResults );
+        switch (requestCode) {
+
+            case ALL_PERMISSIONS_RESULT:
+                for (Object perms : permissionsToRequest) {
+                    if (!hasPermission((String) perms)) {
+                        permissionsRejected.add(perms);
+                    }
+                }
+
+                if (permissionsRejected.size() > 0) {
+
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (shouldShowRequestPermissionRationale((String) permissionsRejected.get(0))) {
+                            showMessageOKCancel("These permissions are mandatory for the application. Please allow access.",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                requestPermissions((String[]) permissionsRejected.toArray(new String[permissionsRejected.size()]), ALL_PERMISSIONS_RESULT);
+                                            }
+                                        }
+                                    });
+                            break;
+                        }
+                    }
+
+                }
+
+                break;
+        }
+
+    }
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(getContext())
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -525,14 +620,49 @@ public class HomeFragment extends Fragment{
 
             RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
             MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
+            String name = "Rifqi";
+            double latitude = locationTrack.getLatitude();
+            int val1=(int) latitude;
+            double longitude = locationTrack.getLongitude();
+            int val2=(int) longitude;
+//            RequestBody someData = RequestBody.create(MediaType.parse("text/plain"), "This is a new Image");
+            /*
+            //using format dec
 
-            RequestBody someData = RequestBody.create(MediaType.parse("text/plain"), "This is a new Image");
+
+            // DecimalFormat, default is RoundingMode.HALF_EVEN
+            DecimalFormat decimalFormatter = new DecimalFormat();
+            decimalFormatter.setRoundingMode(RoundingMode.DOWN);
+            System.out.println("Down : " + decimalFormatter.format(lati));  //2.14
+            double p = Double.parseDouble(decimalFormatter.format(lati));
+            */
+
+
+            /*
+            RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), "This is a new Image");
+                    new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("USER_ID","Rifqi")
+                        .build();
+            RequestBody req2 = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("LATITUDE", "59")
+                    .build();
+            RequestBody req3 = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("LONGITUDE", "49" )
+                    .build();
+            */
+            RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), "Rifqi");
+            RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
+            RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
             UploadApis uploadApis = retrofit.create(UploadApis.class);
-            Call call = uploadApis.uploadImage(parts, someData);
+            Call call = uploadApis.uploadImage(parts, req1, req2, req3);
             call.enqueue(new Callback() {
                 @Override
                 public void onResponse(Call call, Response response) {
                     if (response.code() == 200) {
+                        Object obj = response.body();
                         GrainData grainData = (GrainData) response.body();
                         //String gson = new Gson().toJson(response.body());
                         //20201126
@@ -830,6 +960,5 @@ public class HomeFragment extends Fragment{
             }
         }.execute();
     }
-
 }
 
