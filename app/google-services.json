@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "914171715134",
-    "project_id": "auth-9c4b8",
-    "storage_bucket": "auth-9c4b8.appspot.com"
+    "project_number": "295315885087",
+    "project_id": "phoneauths-804fe",
+    "storage_bucket": "phoneauths-804fe.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:914171715134:android:6deec8e560a297d5aabb6f",
+        "mobilesdk_app_id": "1:295315885087:android:9b07b52cac1230354b192a",
         "android_client_info": {
-          "package_name": "auth.apps1_"
+          "package_name": "com.example.uploadandviewimage"
         }
       },
       "oauth_client": [
         {
-          "client_id": "914171715134-tmq8rpeefkjp9uja5s2aeasjde3sm2hc.apps.googleusercontent.com",
+          "client_id": "295315885087-vg9oeti1tpcko5ancoe5749vqc90op9d.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "auth.apps1_",
+            "package_name": "com.example.uploadandviewimage",
             "certificate_hash": "2665fca4027ff5318a444b04a03ea64076683140"
           }
         },
         {
-          "client_id": "914171715134-bkporsbnnf311dde3acd6epq799adcvm.apps.googleusercontent.com",
+          "client_id": "295315885087-mf2anuq8amvla4r93afcsmhppedkjfto.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCFFgQocPptI6FXJukoPhzFtKFhySXVvSQ"
+          "current_key": "AIzaSyC8uONvUNYJhb6NPXul4Fws8bHB-IWmeHI"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "914171715134-bkporsbnnf311dde3acd6epq799adcvm.apps.googleusercontent.com",
+              "client_id": "295315885087-mf2anuq8amvla4r93afcsmhppedkjfto.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
