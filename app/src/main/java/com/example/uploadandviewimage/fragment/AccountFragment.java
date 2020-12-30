@@ -18,10 +18,12 @@ import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.activity.FragmentActivity;
 import com.example.uploadandviewimage.auth.AuthActivity;
 import com.example.uploadandviewimage.auth.ProfileActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class AccountFragment extends Fragment {
     TextView txtData;
     Button btnLogout ;
+    FirebaseAuth mAuth ;
 
     public AccountFragment() {
     }
@@ -37,12 +39,14 @@ public class AccountFragment extends Fragment {
         String d = bundle.getString("key");
         txtData.setText(d);
         */
-        txtData = (TextView) rootView.findViewById(R.id.txtData);
+        mAuth = FirebaseAuth.getInstance();
+        txtData = rootView.findViewById(R.id.tv_account_phone);
+        txtData.setText(mAuth.getCurrentUser().getPhoneNumber());
         btnLogout = rootView.findViewById(R.id.btn_lougout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(getContext(), AuthActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
@@ -52,6 +56,9 @@ public class AccountFragment extends Fragment {
 
 
         Bundle bundle = this.getArguments();
+        if (getArguments() != null) {
+            String mParam1 = getArguments().getString("params");
+        }
 
 
         if (bundle != null) {

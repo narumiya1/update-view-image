@@ -18,6 +18,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.pdf.PdfDocument;
+import android.location.Location;
 import android.media.ExifInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -27,6 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +59,7 @@ import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.SecondActivity;
 import com.example.uploadandviewimage.UploadApis;
 import com.example.uploadandviewimage.activity.LocTrack;
+import com.example.uploadandviewimage.location.GpsUtils;
 import com.example.uploadandviewimage.roomdbGhistory.AppDatabase;
 import com.example.uploadandviewimage.roomdbGhistory.GHistory;
 import com.example.uploadandviewimage.roomdbGhistory.HistoryReadActivity;
@@ -65,6 +68,12 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -78,6 +87,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -115,9 +125,11 @@ public class HomeFragment extends Fragment{
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private ArrayList permissionsToRequest=new ArrayList();
-    private ArrayList permissionsRejected = new ArrayList();
-    private ArrayList permissions = new ArrayList();
+    private ArrayList<String> permissionsToRequest;
+    private ArrayList<String> permissionsRejected = new ArrayList();
+    private ArrayList <String> permissions = new ArrayList();
+    FirebaseAuth mAuth ;
+    String phoneNumberz ;
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocTrack locationTrack;
     TextView longi,lati;
@@ -155,6 +167,39 @@ public class HomeFragment extends Fragment{
                 .build();
         //get location
         ceklocation();
+        permissions.add(ACCESS_FINE_LOCATION);
+        permissions.add(ACCESS_COARSE_LOCATION);
+
+        permissionsToRequest = findUnAskedPermissions(permissions);
+        //get the permissions we have asked for before but are not granted..
+        //we will store this in a global list to access later.
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+
+            if (permissionsToRequest.size() > 0)
+                requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+        }
+
+        locationTrack = new LocTrack(getContext());
+
+
+        if (locationTrack.canGetLocation()) {
+
+
+            double longitude = locationTrack.getLongitude();
+            double latitude = locationTrack.getLatitude();
+
+            lati.setText("latitude" +latitude);
+            longi.setText("longitudesz" +longitude);
+
+            Toast.makeText(getActivity(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
+        } else {
+
+            locationTrack.showSettingsAlert();
+        }
+
         fab_view_history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -190,12 +235,13 @@ public class HomeFragment extends Fragment{
         menu = view.findViewById(R.id.fab_popUp);
         fab_chart = view.findViewById(R.id.fab_chart);
         fab_pdf = view.findViewById(R.id.fab_pdf);
-        fab_history = view.findViewById(R.id.historia);
         fab_view_history = view.findViewById(R.id.fab_view_history);
         final TextView textTime = view.findViewById(R.id.text_time);
         textTime.setText(AppUtils.getFormattedDateString(AppUtils.getCurrentDateTime()));
         longi = view.findViewById(R.id.tv_long);
         lati = view.findViewById(R.id.tv_lang);
+        mAuth = FirebaseAuth.getInstance();
+
     }
 
     private boolean isConnected() {
@@ -332,16 +378,15 @@ public class HomeFragment extends Fragment{
         }
 
 
-        locationTrack = new LocTrack(getContext());
+        locationTrack = new LocTrack(getActivity());
 
         if (locationTrack.canGetLocation()) {
             double longitude = locationTrack.getLongitude();
             double latitude = locationTrack.getLatitude();
-            lati.setText("lati" +latitude);
+            lati.setText("latitude" +latitude);
             longi.setText("longitudesz" +longitude);
             Toast.makeText(getContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
         } else {
-
             locationTrack.showSettingsAlert();
         }
     }
@@ -377,7 +422,7 @@ public class HomeFragment extends Fragment{
         switch (requestCode) {
 
             case ALL_PERMISSIONS_RESULT:
-                for (Object perms : permissionsToRequest) {
+                for (String perms : permissionsToRequest) {
                     if (!hasPermission((String) perms)) {
                         permissionsRejected.add(perms);
                     }
@@ -653,7 +698,8 @@ public class HomeFragment extends Fragment{
                     .addFormDataPart("LONGITUDE", "49" )
                     .build();
             */
-            RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), "Rifqi");
+            phoneNumberz = mAuth.getCurrentUser().getPhoneNumber();
+            RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(phoneNumberz));
             RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
             RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
             UploadApis uploadApis = retrofit.create(UploadApis.class);

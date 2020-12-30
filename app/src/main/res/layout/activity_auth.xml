@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:digits="0123456789"
-            android:hint="enter your number"
+            android:hint="enter your number \nex: 81320696782"
             android:maxLength="11" />
 
     </LinearLayout>

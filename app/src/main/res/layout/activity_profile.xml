@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileActivity">
+    tools:context=".auth.ProfileActivity">
 
 
     <TextView
@@ -14,7 +14,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:text="Welcome to Your Profile's"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
         android:textColor="@color/colorPrimary" />
 
     <TextView
@@ -24,12 +24,13 @@
         android:text="Name Profile"
         android:gravity="bottom|center"
         android:layout_below="@id/buttonLogout"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
         android:textColor="@color/colorPrimary" />
 
 
 
     <Button
+        android:visibility="gone"
         android:id="@+id/buttonLogout"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
@@ -40,5 +41,21 @@
         android:text="Silahkan Lanjut Ke Aplikasi"
         android:textAllCaps="false"
         android:textColor="#ffffff" />
+
+    <TextView
+        android:layout_below="@id/tvName"
+        android:id="@+id/enable_location"
+        android:text="Enable your Location before Run App"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:layout_below="@+id/enable_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_enable"
+        android:layout_centerInParent="true"
+        android:text="Enable" />
 
 </RelativeLayout>

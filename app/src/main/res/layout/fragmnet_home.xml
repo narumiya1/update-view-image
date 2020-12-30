@@ -8,6 +8,13 @@
     android:orientation="vertical"
     android:padding="6dp"
     tools:context="com.example.uploadandviewimage.MainActivity">
+    <TextView
+        android:id="@+id/nomor_telepon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:gravity="center"
+        android:textColor="#000" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -30,8 +37,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/tv_lang"
             android:layout_centerInParent="true"
-            android:text="LATITUDE"  android:visibility="gone"/>
-        <TextView android:visibility="gone"
+            android:text="LATITUDE"  android:visibility="visible"/>
+        <TextView android:visibility="visible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tv_long"
@@ -139,12 +146,12 @@
                     app:fab_size="normal"
                     app:menu_backgroundColor="@android:color/transparent"
                     app:menu_colorNormal="#05B6A2"
-                    app:menu_colorPressed="#FF00786D"
+                    app:menu_colorPressed="#939C9B"
                     app:menu_icon="@drawable/ic_notifications_black_24dp"
-                    app:menu_labels_colorNormal="#FFFFFF"
-                    app:menu_labels_colorPressed="#BDBDBD"
+                    app:menu_labels_colorNormal="@color/colorPrimary"
+                    app:menu_labels_colorPressed="#E91E63"
                     app:menu_labels_showShadow="true"
-                    app:menu_labels_textColor="#000000"
+                    app:menu_labels_textColor="#F8F7F5"
                     app:menu_openDirection="up"
                     app:menu_showShadow="true">
 
@@ -153,27 +160,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_home_black_24dp"
-                        app:fab_colorNormal="@color/cardview_shadow_start_color"
+                        app:fab_colorNormal="@color/colorPrimary"
                         app:fab_colorPressed="#FF00786D"
                         app:fab_label="View in Chart"
                         app:fab_size="mini" />
 
-                    <com.github.clans.fab.FloatingActionButton
-                        android:id="@+id/historia"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_baseline_amp_stories_24"
-                        app:fab_colorNormal="@color/colorAccent"
-                        app:fab_colorPressed="#FF00786D"
-                        app:fab_label="Simpan Ke History"
-                        app:fab_size="mini" />
 
                     <com.github.clans.fab.FloatingActionButton
                         android:id="@+id/fab_pdf"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_dashboard_black_24dp"
-                        app:fab_colorNormal="@color/design_default_color_error"
+                        app:fab_colorNormal="@color/colorPrimary"
                         app:fab_colorPressed="#FF00786D"
                         app:fab_label="Export pdf"
                         app:fab_size="mini" />
@@ -183,7 +181,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_baseline_drafts_24"
-                        app:fab_colorNormal="@color/design_default_color_error"
+                        app:fab_colorNormal="@color/colorPrimary"
                         app:fab_colorPressed="#FF00786D"
                         app:fab_label="View History "
                         app:fab_size="mini" />
