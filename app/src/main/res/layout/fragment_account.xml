@@ -30,6 +30,7 @@
                     android:src="@drawable/ic_baseline_how_to_reg_24" />
 
                 <TextView
+                    android:id="@+id/nameOneTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -37,7 +38,7 @@
                     android:text="Nama"
                     android:textColor="#403C3C"
                     android:textSize="21sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"/>
             </LinearLayout>
             <!--   <androidx.cardview.widget.CardView
                    android:layout_width="400dp"
@@ -118,7 +119,6 @@
         </RelativeLayout>
 
         <LinearLayout
-            android:id="@+id/ll_account"
             android:layout_width="360dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center|top"
@@ -131,14 +131,6 @@
                 android:orientation="horizontal"
                 android:paddingLeft="25dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="@font/montserratlight"
-                    android:gravity="center"
-                    android:text="silahkan lengkapi data "
-                    android:textStyle="bold|italic" />
             </LinearLayout>
 
             <LinearLayout
@@ -153,6 +145,7 @@
                     android:src="@drawable/ic_home_black_24dp" />
 
                 <TextView
+                    android:id="@+id/tvemail_account"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -185,27 +178,6 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:orientation="horizontal"
-                android:paddingLeft="25dp">
-
-                <ImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/ic_notifications_black_24dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:fontFamily="@font/montserratlight"
-                    android:paddingLeft="20dp"
-                    android:text="Username"
-                    android:textStyle="bold" />
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -220,6 +192,7 @@
                     android:src="@drawable/ic_baseline_amp_stories_24" />
 
                 <TextView
+                    android:id="@+id/tv_account_alamat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -230,15 +203,43 @@
             </LinearLayout>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btn_lougout"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/button"
-            android:text="Logout"
-            android:textColor="#F6F4F4" />
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp">
+            <Button
+                android:id="@+id/btn_lougout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/button"
+                android:text="Logout"
+                android:textColor="#F6F4F4" />
+
+            <Button
+                android:id="@+id/btn_insertdataacount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/button"
+                android:text="Edit Data"
+                android:textColor="#F6F4F4" />
+
+            <Button
+                android:id="@+id/btn_readdataacount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/button"
+                android:text="read data"
+                android:textColor="#F6F4F4" />
+
+        </LinearLayout>
     </LinearLayout>
 
     <TextView

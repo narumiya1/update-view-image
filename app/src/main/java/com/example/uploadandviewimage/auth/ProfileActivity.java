@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uploadandviewimage.R;
+import com.example.uploadandviewimage.activity.AccountActivity;
 import com.example.uploadandviewimage.activity.FragmentActivity;
 import com.example.uploadandviewimage.activity.LocTrack;
 import com.example.uploadandviewimage.fragment.HomeFragment;
