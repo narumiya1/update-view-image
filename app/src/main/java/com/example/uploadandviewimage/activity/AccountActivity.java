@@ -28,6 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class AccountActivity extends AppCompatActivity {
     private EditText name, email,alamat ;
+    private String id;
     private Button submit;
     private DatabaseReference databaseReference;
     AccountFragment fragment = new AccountFragment();
@@ -86,8 +87,9 @@ public class AccountActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                id= databaseReference.push().getKey();
                 if (!isEmpty(name.getText().toString()) && !isEmpty(email.getText().toString()) && !isEmpty(alamat.getText().toString())){
-                    submitAccount(new Accounts(name.getText().toString(), email.getText().toString(), alamat.getText().toString()));
+                    submitAccount(new Accounts(id,name.getText().toString(), email.getText().toString(), alamat.getText().toString()));
                 }else {
                     Snackbar.make(findViewById(R.id.bt_submit), "Data tidak boleh kosong", Snackbar.LENGTH_LONG).show();
 

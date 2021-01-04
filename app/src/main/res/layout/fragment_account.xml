@@ -119,6 +119,7 @@
         </RelativeLayout>
 
         <LinearLayout
+            android:id="@+id/lLUpdate"
             android:layout_width="360dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center|top"
@@ -226,17 +227,17 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/button"
-                android:text="Edit Data"
+                android:text="Insert Data"
                 android:textColor="#F6F4F4" />
 
             <Button
-                android:id="@+id/btn_readdataacount"
+                android:id="@+id/btn_updatedataacount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/button"
-                android:text="read data"
+                android:text="update data"
                 android:textColor="#F6F4F4" />
 
         </LinearLayout>

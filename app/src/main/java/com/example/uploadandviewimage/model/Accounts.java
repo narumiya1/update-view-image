@@ -7,7 +7,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 import java.io.Serializable;
 @IgnoreExtraProperties
 public class Accounts implements Serializable {
-
+    private String id;
     private String nama;
     private String email;
     private String alamat;
@@ -16,11 +16,20 @@ public class Accounts implements Serializable {
 
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getNama() {
         return nama;
     }
 
-    public Accounts(String nama, String email, String alamat) {
+    public Accounts(String id,String nama, String email, String alamat) {
+        this.id = id;
         this.nama = nama;
         this.email = email;
         this.alamat = alamat;
