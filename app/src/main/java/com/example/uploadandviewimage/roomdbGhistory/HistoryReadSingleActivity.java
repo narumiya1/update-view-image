@@ -84,8 +84,8 @@ public class HistoryReadSingleActivity extends AppCompatActivity {
         ArrayList<GrainPie> mySize = history.getSize();
         pieCharts.setUsePercentValues(true);
         ArrayList<PieEntry> valuesz = new ArrayList<PieEntry>();
-
-        for (int j=0;j<count;j++) {
+        int counts =mySize.size();
+        for (int j=0;j<counts;j++) {
             GrainPie sizc = mySize.get(j);
             float a = (float) sizc.getValue();
             int b = (int)Math.round(a);
