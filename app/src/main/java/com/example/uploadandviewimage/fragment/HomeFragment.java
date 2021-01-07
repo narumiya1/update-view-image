@@ -52,6 +52,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.uploadandviewimage.ExampleAdapter;
 import com.example.uploadandviewimage.GrainData;
+import com.example.uploadandviewimage.GrainHistory;
 import com.example.uploadandviewimage.GrainItem;
 import com.example.uploadandviewimage.GrainPie;
 import com.example.uploadandviewimage.NetworkClient;
@@ -59,6 +60,7 @@ import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.SecondActivity;
 import com.example.uploadandviewimage.UploadApis;
 import com.example.uploadandviewimage.activity.LocTrack;
+import com.example.uploadandviewimage.activity.PdfActivity;
 import com.example.uploadandviewimage.location.GpsUtils;
 import com.example.uploadandviewimage.roomdbGhistory.AppDatabase;
 import com.example.uploadandviewimage.roomdbGhistory.GHistory;
@@ -74,6 +76,11 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -112,7 +119,7 @@ public class HomeFragment extends Fragment{
     Date dateTime;
     ImageButton add_photo;
     FloatingActionMenu menu;
-    FloatingActionButton fab_chart, fab_pdf, fab_history, fab_view_history;
+    FloatingActionButton fab_chart, fab_pdf, fab_pdf_intent, fab_view_history;
     DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     private String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final int PERMISSION_CODE_READ_GALLERY = 1;
@@ -227,7 +234,7 @@ public class HomeFragment extends Fragment{
     private void findViews(View view) {
         warningtext = view.findViewById(R.id.tv_warn);
         no_data = view.findViewById(R.id.no_data);
-        pdf = (Button) view.findViewById(R.id.btnpdf);
+        fab_pdf_intent =  view.findViewById(R.id.fab_pdf_intent);
         add_photo = view.findViewById(R.id.iv_add);
         btnRetry = view.findViewById(R.id.btnRetry);
         //viewImage=(ImageView)findViewById(R.id.viewImage);
@@ -592,7 +599,11 @@ public class HomeFragment extends Fragment{
 
             } else if (requestCode == 11) {
 
-            }else if (requestCode ==14){}
+            }else if (requestCode ==14){
+
+            }else if (requestCode == 19){
+
+            }
 
         }
     }
@@ -734,6 +745,16 @@ public class HomeFragment extends Fragment{
                                 startActivityForResult(intent, 10);
                             }
                         });
+                        fab_pdf_intent.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent((Context) getActivity(), PdfActivity.class);
+//                                Bundle setData = new Bundle();
+                                intent.putExtra("pdfType", type);
+                                intent.putExtra("pdfSize", size);
+                                startActivityForResult(intent, 19);
+                            }
+                        });
                         fab_pdf.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -753,7 +774,7 @@ public class HomeFragment extends Fragment{
                                 titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
                                 titlePaint.setColor(Color.BLACK);
                                 titlePaint.setTextSize(70);
-                                canvas.drawText("Report", pageWidth / 2, 200, titlePaint);
+                                canvas.drawText("Hasil Pengujian", pageWidth / 2, 200, titlePaint);
 
                                 paint.setColor(Color.BLACK);
                                 paint.setTextSize(35f);
@@ -790,8 +811,12 @@ public class HomeFragment extends Fragment{
 
 
                                 pdfDocument.finishPage(page);
-
-                                File file = new File(Environment.getExternalStorageDirectory(), "/Pesanan.pdf");
+                                //pdf file name
+                                String mFileName = new SimpleDateFormat("yyyy_MMdd_HHmmss",
+                                        Locale.getDefault()).format(System.currentTimeMillis());
+                                //pdf file path
+                                String mFilePath = Environment.getExternalStorageDirectory() + "/" + mFileName + ".pdf";
+                                File file = new File(Environment.getExternalStorageDirectory(),  "/" + mFileName + ".pdf");
 
 
                                 try {
@@ -923,8 +948,9 @@ public class HomeFragment extends Fragment{
 
 
                         //library pdf writter
+
                         /*
-                        pdf.setOnClickListener(new View.OnClickListener() {
+                        fab_pdf_button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 GrainItem[] items = grainData.getItems();
@@ -940,7 +966,11 @@ public class HomeFragment extends Fragment{
                                     //open the document for writing
                                     mDoc.open();
                                     //get text from EditText i.e. mTextEt
-
+                                    float [] pointColumnWidths = {150F, 150F};
+                                    PdfPTable pdfPTable = new PdfPTable(pointColumnWidths);
+                                    // Adding cells to the table
+//                                    pdfPTable.addCell("Jenis ");
+//                                    pdfPTable.addCell("Size");
                                     for (int i = 0; i < items.length; i++) {
 //                                        String mText = items[0].getGrainSize().getName();
 
@@ -951,13 +981,16 @@ public class HomeFragment extends Fragment{
                                         //add author of the document (optional)
                                         mDoc.addAuthor("ACKERMAN");
 
+                                        pdfPTable.addCell(mTextb);
+                                        pdfPTable.addCell(mTexta);
+                                        mDoc.add(pdfPTable);
                                         //add paragraph to the document
-                                        mDoc.add(new Paragraph(mTexta));
-                                        Paragraph paragraph = new Paragraph();
-                                        paragraph.setSpacingAfter(1);
-
-                                        mDoc.add(new Paragraph(mText));
+//                                        mDoc.add(new Paragraph(mTexta));
+//                                        Paragraph paragraph = new Paragraph();
+//                                        paragraph.setSpacingAfter(1);
 //
+//                                        mDoc.add(new Paragraph(mText));
+////
 //                                        mDoc.add(new Paragraph(mTextb));
 
                                     }
@@ -974,6 +1007,7 @@ public class HomeFragment extends Fragment{
                             }
                         });
                         */
+
                     } else {
                         Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
                     }

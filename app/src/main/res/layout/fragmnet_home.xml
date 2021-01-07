@@ -29,7 +29,7 @@
             android:layout_marginTop="4dp"
             android:gravity="right"
             android:text="10 10 10" android:fontFamily="@font/ubunturegular"
-            android:textColor="#3E3D3D"
+            android:textColor="#3E3D3D" android:visibility="gone"
             android:textSize="12sp"
             android:layout_marginBottom="6dp"/>
         <TextView
@@ -37,8 +37,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/tv_lang"
             android:layout_centerInParent="true"
-            android:text="LATITUDE"  android:visibility="visible"/>
-        <TextView android:visibility="visible"
+            android:text="LATITUDE"  android:visibility="gone"/>
+        <TextView android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tv_long"
@@ -163,7 +163,8 @@
                         app:fab_colorNormal="@color/colorPrimary"
                         app:fab_colorPressed="#FF00786D"
                         app:fab_label="View in Chart"
-                        app:fab_size="mini" />
+                        app:fab_size="mini"
+                        android:visibility="gone"/>
 
 
                     <com.github.clans.fab.FloatingActionButton
@@ -185,6 +186,17 @@
                         app:fab_colorPressed="#FF00786D"
                         app:fab_label="View History "
                         app:fab_size="mini" />
+
+                    <com.github.clans.fab.FloatingActionButton
+                        android:id="@+id/fab_pdf_intent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_baseline_drafts_24"
+                        app:fab_colorNormal="@color/colorPrimary"
+                        app:fab_colorPressed="#FF00786D"
+                        app:fab_label="pdf button "
+                        app:fab_size="mini"
+                        android:visibility="visible"/>
 
                 </com.github.clans.fab.FloatingActionMenu>
                 <Button android:layout_marginBottom="40dp"
