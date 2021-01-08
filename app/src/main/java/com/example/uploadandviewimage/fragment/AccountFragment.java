@@ -14,10 +14,9 @@ import androidx.fragment.app.Fragment;
 
 import com.example.uploadandviewimage.Account.SaveData;
 import com.example.uploadandviewimage.R;
-import com.example.uploadandviewimage.activity.AccountActivity;
-import com.example.uploadandviewimage.activity.AccountUpdateActivity;
+import com.example.uploadandviewimage.Account.AccountUpdateActivity;
 import com.example.uploadandviewimage.auth.AuthActivity;
-import com.example.uploadandviewimage.model.Accounts;
+import com.example.uploadandviewimage.Account.Accounts;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,6 +33,7 @@ public class AccountFragment extends Fragment {
     FirebaseAuth mAuth ;
     DatabaseReference rootDb;
     String getEmail, getAlamatz, getUsernamez,id;
+    String phoneNumbbr;
     public AccountFragment() {
     }
 
@@ -70,12 +70,12 @@ public class AccountFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        // get Data from Insert
-
+        // get Data from Insert using firebase data snapshot
         rootDb = FirebaseDatabase.getInstance().getReference().child("account");
         rootDb.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                phoneNumbbr = mAuth.getCurrentUser().getPhoneNumber();
 
                 List<Accounts> bpfragmentTableList = new ArrayList<>();
 
@@ -86,6 +86,9 @@ public class AccountFragment extends Fragment {
                     getEmail = bpfragmentTable.getEmail();
                     getAlamatz = bpfragmentTable.getAlamat();
                     id = bpfragmentTable.getId();
+                    if (bpfragmentTable.getPhoneNumbers() == phoneNumbbr){
+                        System.out.println(" founded" + bpfragmentTable.getPhoneNumbers());
+                    }
                     bpfragmentTableList.add(bpfragmentTable);
                     txtUsername.setText(getUsernamez);
                     txtAlamat.setText(getAlamatz);
