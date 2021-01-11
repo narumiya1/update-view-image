@@ -174,7 +174,7 @@ public class PdfActivity extends AppCompatActivity {
         canvas.drawBitmap(b, 400, 700, paint);
         // chart to pdf
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        b.compress(Bitmap.CompressFormat.JPEG, 100, stream) ;
+        b.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 
 
 
