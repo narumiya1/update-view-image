@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,12 +15,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.uploadandviewimage.Account.Accounts;
+import com.example.uploadandviewimage.Account.SaveData;
 import com.example.uploadandviewimage.R;
-import com.example.uploadandviewimage.activity.AccountActivity;
 import com.example.uploadandviewimage.activity.FragmentActivity;
 import com.example.uploadandviewimage.activity.LocTrack;
-import com.example.uploadandviewimage.fragment.HomeFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -33,7 +36,8 @@ public class ProfileActivity extends AppCompatActivity {
     private ArrayList<String> permissionsToRequest;
     private ArrayList<String> permissionsRejected = new ArrayList<>();
     private ArrayList<String> permissions = new ArrayList<>();
-
+    DatabaseReference databaseReference;
+    String userId;
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocTrack locationTrack;
 
@@ -83,6 +87,23 @@ public class ProfileActivity extends AppCompatActivity {
                     locationTrack.showSettingsAlert();
                 }
 
+//                 9 1 try insert user data automatically
+                databaseReference = FirebaseDatabase.getInstance().getReference().child("account");
+                String userName, userEmail, userAlamat;
+                String phoneNumbber = mAuth.getCurrentUser().getPhoneNumber();
+                userName = "name";
+                userEmail = "email";
+                userAlamat= "alamat";
+                if (TextUtils.isEmpty(userId)) {
+                    userId = databaseReference.push().getKey();
+                    Accounts accounts = new Accounts(userId, userName, userEmail, userAlamat, phoneNumbber);
+                    databaseReference.child(userId).setValue(accounts);
+                    Toast.makeText(view.getContext(), "Sucessed", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(ProfileActivity.this, FragmentActivity.class);
+                    startActivity(intent);
+                }
+                Intent intent = new Intent(ProfileActivity.this, FragmentActivity.class);
+                startActivity(intent);
             }
         });
 

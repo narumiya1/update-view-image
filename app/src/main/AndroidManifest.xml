@@ -44,8 +44,7 @@
         <!--dao-->
         <activity android:name=".roomdbGhistory.HistoryReadSingleActivity" />
         <activity android:name=".roomdbGhistory.HistoryReadActivity" />
-        <activity android:name=".activity.AccountActivity" />
-        <activity android:name=".activity.AccountUpdateActivity" />
+        <activity android:name=".Account.AccountUpdateActivity" />
         <activity android:name=".Account.SaveData" />
         <activity android:name=".MainActivity" />
 
