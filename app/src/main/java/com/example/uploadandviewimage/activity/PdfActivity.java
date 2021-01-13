@@ -145,10 +145,9 @@ public class PdfActivity extends AppCompatActivity {
         pieChart = findViewById(R.id.piechart2pdf);
         pieChart.setUsePercentValues(true);
         ArrayList<PieEntry> yvalues = new ArrayList<PieEntry>();
-        yvalues.add(new PieEntry((float)type[0].getValue(), type[0].getName(), 0));
-        yvalues.add(new PieEntry((float)type[1].getValue(), type[1].getName(), 1));
-        yvalues.add(new PieEntry((float)type[2].getValue(), type[2].getName(), 2));
-
+        for (int i = 0 ; i <type.length ; i++) {
+            yvalues.add(new PieEntry((float) type[i].getValue(), type[i].getName(), i+1));
+        }
         PieDataSet dataSet = new PieDataSet(yvalues, getString(R.string.election_results));
         PieData data = new PieData(dataSet);
 

@@ -11,22 +11,55 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
+import com.example.uploadandviewimage.GrainHistory;
+import com.example.uploadandviewimage.GrainHistoryCollection;
 import com.example.uploadandviewimage.GrainPie;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.SecondActivity;
+import com.example.uploadandviewimage.roomdbGhistory.AdapterTypeRecyclerView;
+import com.example.uploadandviewimage.roomdbGhistory.AppDatabase;
+import com.example.uploadandviewimage.roomdbGhistory.GHistory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 //implements FragmentResultListener
 public class HistoryFragment extends Fragment implements FragmentResultListener {
-    TextView histprycb;
+    private AppDatabase db;
+    private RecyclerView rvView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private ArrayList<GHistory> listGrainType;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 //        return  inflater.inflate(R.layout.fragment_history,container, false);
         View view = inflater.inflate(R.layout.fragment_history, container, false);
-        histprycb = view.findViewById(R.id.historycb);
+        listGrainType = new ArrayList<>();
+        db = Room.databaseBuilder(getContext(), AppDatabase.class, "tbGrainHistory")
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .addMigrations(AppDatabase.MIGRATION_2_3)
+                .build();
+        rvView = view.findViewById(R.id.rv_history);
+        rvView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(getContext());
+        rvView.setLayoutManager(layoutManager);
+        listGrainType.addAll(Arrays.asList(db.gHistoryDao().selectAllItems()));
+        GrainHistoryCollection historyCol = new GrainHistoryCollection(listGrainType);
+        ArrayList<GrainHistory>history = historyCol.GetList();
 
+        // filter data depend on date
+        /**
+         * Set all data ke adapter, dan menampilkannya
+         */
+        adapter = new AdapterTypeRecyclerView(history, getContext() );
+        rvView.setAdapter(adapter);
         return view;
 
     }
