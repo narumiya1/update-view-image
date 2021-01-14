@@ -38,7 +38,7 @@ public class SaveData extends AppCompatActivity {
             public void onClick(View view) {
                 String userId, userName, userEmail, userAlamat;
                 phoneNumbber = mAuth.getCurrentUser().getPhoneNumber();
-                userId = databaseReference.push().getKey();
+                userId = mAuth.getCurrentUser().getUid();
                 userName = name.getText().toString();
                 userEmail = email.getText().toString();
                 userAlamat= alamat.getText().toString();

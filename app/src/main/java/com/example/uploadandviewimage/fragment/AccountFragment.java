@@ -34,7 +34,7 @@ public class AccountFragment extends Fragment {
     Button btnLogout, btn_insertdataacount, btn_updatedataacount ;
     FirebaseAuth mAuth ;
     DatabaseReference rootDb;
-    String getEmail, getAlamatz, getUsernamez,id;
+    String getEmail, getAlamatz, getUsernamez,id, getId;
     String phoneNumbbr;
     public AccountFragment() {
     }
@@ -45,6 +45,8 @@ public class AccountFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_account, container, false);
 
         mAuth = FirebaseAuth.getInstance();
+        phoneNumbbr = mAuth.getCurrentUser().getPhoneNumber();
+
         txtData = rootView.findViewById(R.id.tv_account_phone);
         txtUsername = (TextView)rootView.findViewById(R.id.nameOneTv);
         textEmail = rootView.findViewById(R.id.tvemail_account);
@@ -73,28 +75,32 @@ public class AccountFragment extends Fragment {
             }
         });
         // get Data from Insert using firebase data snapshot
-        rootDb = FirebaseDatabase.getInstance().getReference().child("account");
+        rootDb = FirebaseDatabase.getInstance().getReference().child("accountz");
         rootDb.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                phoneNumbbr = mAuth.getCurrentUser().getPhoneNumber();
 
                 List<Accounts> bpfragmentTableList = new ArrayList<>();
 
                 for (DataSnapshot dataSnapshot1 : snapshot.getChildren()) {
 
                     Accounts bpfragmentTable = dataSnapshot1.getValue(Accounts.class);
-                    getUsernamez = bpfragmentTable.getNama();
-                    getEmail = bpfragmentTable.getEmail();
-                    getAlamatz = bpfragmentTable.getAlamat();
-                    id = bpfragmentTable.getId();
-                    if (bpfragmentTable.getPhoneNumbers() == phoneNumbbr){
-                        System.out.println(" founded" + bpfragmentTable.getPhoneNumbers());
+                    id = mAuth.getCurrentUser().getUid();
+                    getId = bpfragmentTable.getId();
+                    //try 11 1 21
+                    if (id.equals(getId)) {
+                        getUsernamez = bpfragmentTable.getNama();
+                        getEmail = bpfragmentTable.getEmail();
+                        getAlamatz = bpfragmentTable.getAlamat();
+
+
+                        System.out.println(" founded" + getId + " " + id);
+                        txtUsername.setText(getUsernamez);
+                        txtAlamat.setText(getAlamatz);
+                        textEmail.setText(getEmail);
+                        break;
                     }
                     bpfragmentTableList.add(bpfragmentTable);
-                    txtUsername.setText(getUsernamez);
-                    txtAlamat.setText(getAlamatz);
-                    textEmail.setText(getEmail);
 
 
                 }
@@ -111,8 +117,12 @@ public class AccountFragment extends Fragment {
         btn_updatedataacount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Intent intent = new Intent(getContext(), AccountUpdateActivity.class);
                 intent.putExtra("id",id);
+                intent.putExtra("namez", getUsernamez);
+                intent.putExtra("email", getEmail);
+                intent.putExtra("alamat", getAlamatz);
                 startActivity(intent);
 
             }

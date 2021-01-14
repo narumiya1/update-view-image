@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -864,7 +865,48 @@ public class HomeFragment extends Fragment{
                             type2.setCreatedAt(date);
                             insertData(type2);
                         }
-
+//                        AlertDialog.Builder alertadd = new AlertDialog.Builder(getContext());
+//                        LayoutInflater factory = LayoutInflater.from(getContext());
+//                        final View viewz = factory.inflate(R.layout.fragment_sample_dialog, null);
+//                        TextView textView = viewz.findViewById(R.id.inEmail);
+//                        TextView textView1 = viewz.findViewById(R.id.inPassword);
+//
+//                        alertadd.setView(viewz);
+//                        alertadd.setNeutralButton("Here!", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dlg, int sumthin) {
+//
+//
+//                            }
+//                        });
+//                        alertadd.setPositiveButton("Share", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//
+//                                GrainItem[] itemz = grainData.getItems();
+//
+//                                for (int j = 0; j < itemz.length; j++) {
+//                                    textView.setText(String.valueOf(itemz[j].getGrainSize().getName()));
+//                                    textView1.setText(String.valueOf(itemz[j].getGrainType().getName()));
+//                                }
+//                                Intent sendIntent = new Intent(Intent.ACTION_SEND);
+////                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                sendIntent.setType("text/plain");
+////                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Hey, download this app!");
+//
+//                                sendIntent.putExtra(Intent.EXTRA_TEXT, TextUtils.concat(textView.getText().toString(), textView1.getText().toString()).toString());
+//                                String someValue = (String) TextUtils.concat(textView.getText().toString(), textView1.getText().toString() );
+//
+//                                Intent shareIntent = Intent.createChooser(sendIntent, someValue);
+//                                startActivity(shareIntent);
+//                            }
+//                        });
+//
+//                        alertadd.show();
+                        Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
+//                                Bundle setData = new Bundle();
+                        intent.putExtra("DataSaya", type);
+                        intent.putExtra("Size", size);
+                        startActivityForResult(intent, 10);
                         String message = "";
 
                         /*using button
@@ -943,8 +985,6 @@ public class HomeFragment extends Fragment{
                         });
 
                         */
-
-
 
 
                         //library pdf writter

@@ -14,7 +14,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     //migrate for add table
     @VisibleForTesting
-    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+    public static final Migration MIGRATION_2_3 = new Migration(2, 3) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE tbarang "

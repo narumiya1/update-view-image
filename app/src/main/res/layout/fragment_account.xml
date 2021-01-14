@@ -228,6 +228,7 @@
                 android:layout_marginTop="6dp"
                 android:background="@drawable/button"
                 android:text="Insert Data"
+                android:visibility="gone"
                 android:textColor="#F6F4F4" />
 
             <Button

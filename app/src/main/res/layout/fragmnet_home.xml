@@ -169,6 +169,7 @@
 
                     <com.github.clans.fab.FloatingActionButton
                         android:id="@+id/fab_pdf"
+                        android:visibility="gone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_dashboard_black_24dp"
@@ -185,7 +186,8 @@
                         app:fab_colorNormal="@color/colorPrimary"
                         app:fab_colorPressed="#FF00786D"
                         app:fab_label="View History "
-                        app:fab_size="mini" />
+                        app:fab_size="mini"
+                        android:visibility="gone"/>
 
                     <com.github.clans.fab.FloatingActionButton
                         android:id="@+id/fab_pdf_intent"
@@ -194,7 +196,7 @@
                         android:src="@drawable/ic_baseline_drafts_24"
                         app:fab_colorNormal="@color/colorPrimary"
                         app:fab_colorPressed="#FF00786D"
-                        app:fab_label="pdf button "
+                        app:fab_label="Export to PDF "
                         app:fab_size="mini"
                         android:visibility="visible"/>
 

@@ -21,7 +21,7 @@ public class AccountUpdateActivity extends AppCompatActivity {
     Button update;
     EditText et_nama, et_email, et_alamat;
     TextView tv_id;
-    String id, name, phonne;
+    String id, name,email, alamat, phonne;
     FirebaseAuth mAuth;
 
     @Override
@@ -38,15 +38,20 @@ public class AccountUpdateActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        id = intent.getStringExtra("id");
+        id = mAuth.getCurrentUser().getPhoneNumber();
         name = intent.getStringExtra("namez");
+        email = intent.getStringExtra("email");
+        alamat = intent.getStringExtra("alamat");
         tv_id.setText(id);
         et_nama.setText(name);
+        et_email.setText(email);
+        et_alamat.setText(alamat);
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("account");
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("accountz");
                 String nameU, alamarU, emailU, phones ;
+                id = mAuth.getCurrentUser().getUid();
                 nameU = et_nama.getText().toString();
                 emailU  = et_email.getText().toString();
                 alamarU = et_alamat.getText().toString();
