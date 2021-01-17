@@ -49,4 +49,20 @@
         android:text="Continue"
         android:textAllCaps="false"
         android:textColor="#ffffff" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Have an account, login here"
+        android:layout_below="@id/buttonContinue"/>
+    <Button
+        android:id="@+id/btn_auth_login"
+        android:layout_marginTop="16dp"
+        android:text="Login"
+        android:layout_below="@id/buttonContinue"
+        android:layout_width="match_parent"
+        android:foregroundGravity="right"
+        android:layout_height="wrap_content"
+        android:gravity="center"/>
+
 </RelativeLayout>

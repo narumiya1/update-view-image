@@ -30,6 +30,7 @@
                     android:src="@drawable/ic_baseline_how_to_reg_24" />
 
                 <TextView
+                    android:fontFamily="@font/ubunturegular"
                     android:id="@+id/nameOneTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -153,6 +154,7 @@
                     android:fontFamily="@font/montserratlight"
                     android:paddingLeft="20dp"
                     android:text=" email@gmail.com"
+                    android:textSize="16dp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -176,6 +178,7 @@
                     android:paddingLeft="20dp"
                     android:fontFamily="@font/montserratlight"
                     android:text="+662 81 225 225"
+                    android:textSize="16dp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -199,17 +202,63 @@
                     android:layout_gravity="center_vertical"
                     android:fontFamily="@font/montserratlight"
                     android:paddingLeft="20dp"
+                    android:textSize="16dp"
                     android:text="Alamat  "
                     android:textStyle="bold" />
             </LinearLayout>
-        </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:orientation="horizontal"
+                android:paddingLeft="25dp"
+                android:visibility="invisible">
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_baseline_amp_stories_24" />
+
+                <TextView
+                    android:id="@+id/tv_password_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:fontFamily="@font/montserratlight"
+                    android:paddingLeft="20dp"
+                    android:textSize="16dp"
+                    android:text="Alamat  "
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tv_password_view_retype"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:fontFamily="@font/montserratlight"
+                    android:paddingLeft="20dp"
+                    android:textSize="16dp"
+                    android:text="Alamat  "
+                    android:textStyle="bold"/>
+            </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="40dp">
+            <Button
+                android:id="@+id/btn_updatedataacount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/ubunturegular"
+                android:background="@drawable/button"
+                android:text="update data"
+                android:textColor="#F6F4F4" />
             <Button
                 android:id="@+id/btn_lougout"
                 android:layout_width="wrap_content"
@@ -217,7 +266,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/button"
-                android:text="Logout"
+                android:text="Logout" android:fontFamily="@font/ubunturegular"
                 android:textColor="#F6F4F4" />
 
             <Button
@@ -231,15 +280,6 @@
                 android:visibility="gone"
                 android:textColor="#F6F4F4" />
 
-            <Button
-                android:id="@+id/btn_updatedataacount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/button"
-                android:text="update data"
-                android:textColor="#F6F4F4" />
 
         </LinearLayout>
     </LinearLayout>
@@ -251,7 +291,7 @@
         android:layout_marginTop="20dp"
         android:text="No data received"
         android:textSize="20sp"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tv_account"
@@ -263,7 +303,7 @@
         android:text="my account"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:visibility="gone" />
-
+    </LinearLayout>
 </RelativeLayout>
 
 

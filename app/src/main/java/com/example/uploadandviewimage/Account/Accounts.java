@@ -12,6 +12,8 @@ public class Accounts implements Serializable {
     private String email;
     private String alamat;
     private String phoneNumbers;
+    private String password;
+    private String retypePassword;
 
     public Accounts(){
 
@@ -37,12 +39,14 @@ public class Accounts implements Serializable {
         this.phoneNumbers = phoneNumbers;
     }
 
-    public Accounts(String id, String nama, String email, String alamat, String phoneNumbers) {
+    public Accounts(String id, String nama, String email, String alamat, String phoneNumbers, String password, String retypePassword) {
         this.id = id;
         this.nama = nama;
         this.email = email;
         this.alamat = alamat;
         this.phoneNumbers = phoneNumbers;
+        this.password = password;
+        this.retypePassword = retypePassword;
     }
 
     public void setNama(String nama) {
@@ -65,7 +69,21 @@ public class Accounts implements Serializable {
         this.alamat = alamat;
     }
 
+    public String getPassword() {
+        return password;
+    }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRetypePassword() {
+        return retypePassword;
+    }
+
+    public void setRetypePassword(String retypePassword) {
+        this.retypePassword = retypePassword;
+    }
 }
 
 

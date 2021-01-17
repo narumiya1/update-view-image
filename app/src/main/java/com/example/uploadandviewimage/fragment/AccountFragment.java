@@ -19,6 +19,7 @@ import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.Account.AccountUpdateActivity;
 import com.example.uploadandviewimage.auth.AuthActivity;
 import com.example.uploadandviewimage.Account.Accounts;
+import com.example.uploadandviewimage.auth.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,11 +31,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AccountFragment extends Fragment {
-    TextView txtData, textEmail, txtUsername, txtAlamat;
+    TextView txtData, textEmail, txtUsername, txtAlamat, txtPasswrd,txtPasswrdRetype ;
     Button btnLogout, btn_insertdataacount, btn_updatedataacount ;
     FirebaseAuth mAuth ;
     DatabaseReference rootDb;
-    String getEmail, getAlamatz, getUsernamez,id, getId;
+    String getEmail, getAlamatz, getUsernamez,id, getId, getPw, getPwRetype;
     String phoneNumbbr;
     public AccountFragment() {
     }
@@ -45,20 +46,22 @@ public class AccountFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_account, container, false);
 
         mAuth = FirebaseAuth.getInstance();
-        phoneNumbbr = mAuth.getCurrentUser().getPhoneNumber();
+//        phoneNumbbr = mAuth.getCurrentUser().getPhoneNumber();
 
         txtData = rootView.findViewById(R.id.tv_account_phone);
         txtUsername = (TextView)rootView.findViewById(R.id.nameOneTv);
         textEmail = rootView.findViewById(R.id.tvemail_account);
         txtAlamat = rootView.findViewById(R.id.tv_account_alamat);
+        txtPasswrd = rootView.findViewById(R.id.tv_password_view);
+        txtPasswrdRetype = rootView.findViewById(R.id.tv_password_view_retype);
         txtData.setText(mAuth.getCurrentUser().getPhoneNumber());
         // logout
         btnLogout = rootView.findViewById(R.id.btn_lougout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getContext(), AuthActivity.class);
+//                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(getContext(), LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
                 startActivity(intent);
@@ -92,6 +95,9 @@ public class AccountFragment extends Fragment {
                         getUsernamez = bpfragmentTable.getNama();
                         getEmail = bpfragmentTable.getEmail();
                         getAlamatz = bpfragmentTable.getAlamat();
+                        getPw = bpfragmentTable.getPassword();
+                        getPwRetype = bpfragmentTable.getRetypePassword();
+                        phoneNumbbr = bpfragmentTable.getPhoneNumbers();
 
 
                         System.out.println(" founded" + getId + " " + id);
@@ -123,6 +129,9 @@ public class AccountFragment extends Fragment {
                 intent.putExtra("namez", getUsernamez);
                 intent.putExtra("email", getEmail);
                 intent.putExtra("alamat", getAlamatz);
+                intent.putExtra("psswrd", getAlamatz);
+                intent.putExtra("psswrdretype", getAlamatz);
+
                 startActivity(intent);
 
             }

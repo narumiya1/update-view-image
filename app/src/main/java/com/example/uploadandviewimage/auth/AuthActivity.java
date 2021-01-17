@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.uploadandviewimage.Account.SaveData;
 import com.example.uploadandviewimage.R;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -75,7 +76,7 @@ public class AuthActivity extends AppCompatActivity {
         super.onStart();
         FirebaseApp.initializeApp(this);
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            Intent intent = new Intent(this, ProfileActivity.class);
+            Intent intent = new Intent(this, SaveData.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
             startActivity(intent);

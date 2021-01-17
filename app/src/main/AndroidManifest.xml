@@ -47,6 +47,7 @@
         <activity android:name=".Account.AccountUpdateActivity" />
         <activity android:name=".Account.SaveData" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".auth.LoginActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

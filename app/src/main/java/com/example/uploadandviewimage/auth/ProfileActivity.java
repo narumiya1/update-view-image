@@ -54,7 +54,7 @@ public class ProfileActivity extends AppCompatActivity {
         //we will store this in a global list to access later.
         mAuth = FirebaseAuth.getInstance();
         name = findViewById(R.id.tvName);
-        name.setText(mAuth.getCurrentUser().getPhoneNumber());
+//        name.setText(mAuth.getCurrentUser().getPhoneNumber());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
 
@@ -88,6 +88,8 @@ public class ProfileActivity extends AppCompatActivity {
                 }
 
 //                 9 1 try insert user data automatically
+                // 11 1 21 not using automatically
+                /*
                 databaseReference = FirebaseDatabase.getInstance().getReference().child("account");
                 String userName, userEmail, userAlamat;
                 String phoneNumbber = mAuth.getCurrentUser().getPhoneNumber();
@@ -102,6 +104,7 @@ public class ProfileActivity extends AppCompatActivity {
                     Intent intent = new Intent(ProfileActivity.this, FragmentActivity.class);
                     startActivity(intent);
                 }
+                */
                 Intent intent = new Intent(ProfileActivity.this, FragmentActivity.class);
                 startActivity(intent);
             }

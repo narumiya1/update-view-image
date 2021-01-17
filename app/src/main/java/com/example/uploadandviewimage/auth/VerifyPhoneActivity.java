@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.uploadandviewimage.Account.SaveData;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.fragment.AccountFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -75,7 +76,7 @@ public class VerifyPhoneActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 
-                            Intent intent = new Intent(VerifyPhoneActivity.this, ProfileActivity.class);
+                            Intent intent = new Intent(VerifyPhoneActivity.this, SaveData.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
 
