@@ -21,4 +21,14 @@ public interface UploadApis {
             @Field("name") String name,
             @Field("email")int jumlah
     );
+
+    @FormUrlEncoded
+    @POST("/account/login")
+    Call<ResponseBody>insertLogin(
+            @Field("Phone") String phone,
+            @Field("Password")String password
+    );
+
+
+
 }

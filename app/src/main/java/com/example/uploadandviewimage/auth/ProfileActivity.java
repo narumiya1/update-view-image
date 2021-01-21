@@ -4,9 +4,11 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +22,7 @@ import com.example.uploadandviewimage.Account.SaveData;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.activity.FragmentActivity;
 import com.example.uploadandviewimage.activity.LocTrack;
+import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -40,6 +43,7 @@ public class ProfileActivity extends AppCompatActivity {
     String userId;
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocTrack locationTrack;
+    Sesion session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +56,12 @@ public class ProfileActivity extends AppCompatActivity {
         permissionsToRequest = findUnAskedPermissions(permissions);
         //get the permissions we have asked for before but are not granted..
         //we will store this in a global list to access later.
-        mAuth = FirebaseAuth.getInstance();
+//        mAuth = FirebaseAuth.getInstance();
+
         name = findViewById(R.id.tvName);
+        Intent intent = getIntent();
+        String names= intent.getStringExtra("numberPhone");
+        name.setText(names);
 //        name.setText(mAuth.getCurrentUser().getPhoneNumber());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
@@ -61,8 +69,20 @@ public class ProfileActivity extends AppCompatActivity {
             if (permissionsToRequest.size() > 0)
                 requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
         }
+        session = new Sesion(this);
+//        openMain();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean Islogin = prefs.getBoolean("Islogin", false);
+        if(Islogin)
+        {   // condition true means user is already login
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivityForResult(i, 1);
+        }
 
-
+        else
+        {
+            // condition false take it user on login form
+        }
         Button btn = (Button) findViewById(R.id.btn_enable);
 
 
@@ -105,12 +125,28 @@ public class ProfileActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
                 */
+
                 Intent intent = new Intent(ProfileActivity.this, FragmentActivity.class);
                 startActivity(intent);
             }
         });
 
     }
+
+    private void openMain() {
+        if (session.isLoggedIn()) {
+            Intent intent = new Intent(ProfileActivity.this, FragmentActivity.class);
+            startActivity(intent);
+            System.out.println(session.isLoggedIn());
+        }else {
+            Intent i = new Intent(this, LoginActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
+            finish();
+        }
+    }
+
 
 
     private ArrayList<String> findUnAskedPermissions(ArrayList<String> wanted) {
@@ -197,7 +233,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (FirebaseAuth.getInstance().getCurrentUser() != null){
-            name.setText("your Uid = "+mAuth.getCurrentUser().getUid());
+//            name.setText("your Uid = "+mAuth.getCurrentUser().getUid());
         }
     }
 }

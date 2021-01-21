@@ -20,6 +20,8 @@ import com.example.uploadandviewimage.Account.AccountUpdateActivity;
 import com.example.uploadandviewimage.auth.AuthActivity;
 import com.example.uploadandviewimage.Account.Accounts;
 import com.example.uploadandviewimage.auth.LoginActivity;
+import com.example.uploadandviewimage.auth.Preference;
+import com.example.uploadandviewimage.auth.Sesion;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,7 +38,8 @@ public class AccountFragment extends Fragment {
     FirebaseAuth mAuth ;
     DatabaseReference rootDb;
     String getEmail, getAlamatz, getUsernamez,id, getId, getPw, getPwRetype;
-    String phoneNumbbr;
+    String getPphoneNumbbr;
+    Sesion session;
     public AccountFragment() {
     }
 
@@ -54,17 +57,20 @@ public class AccountFragment extends Fragment {
         txtAlamat = rootView.findViewById(R.id.tv_account_alamat);
         txtPasswrd = rootView.findViewById(R.id.tv_password_view);
         txtPasswrdRetype = rootView.findViewById(R.id.tv_password_view_retype);
-        txtData.setText(mAuth.getCurrentUser().getPhoneNumber());
+        session = new Sesion(getContext());
+//        txtData.setText(mAuth.getCurrentUser().getPhoneNumber());
         // logout
         btnLogout = rootView.findViewById(R.id.btn_lougout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 //                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getContext(), LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                Intent intent = new Intent(getContext(), LoginActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//
+//                startActivity(intent);
+                session.logoutUser();
 
-                startActivity(intent);
             }
         });
         // insert Data user
@@ -78,7 +84,7 @@ public class AccountFragment extends Fragment {
             }
         });
         // get Data from Insert using firebase data snapshot
-        rootDb = FirebaseDatabase.getInstance().getReference().child("accountz");
+        rootDb = FirebaseDatabase.getInstance().getReference().child("accounts");
         rootDb.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -88,22 +94,25 @@ public class AccountFragment extends Fragment {
                 for (DataSnapshot dataSnapshot1 : snapshot.getChildren()) {
 
                     Accounts bpfragmentTable = dataSnapshot1.getValue(Accounts.class);
-                    id = mAuth.getCurrentUser().getUid();
-                    getId = bpfragmentTable.getId();
+//                    id = mAuth.getCurrentUser().getUid();
+                    getId = bpfragmentTable.getPhoneNumbers();
+                    String getPhone;
+                    getPhone = bpfragmentTable.getPhoneNumbers();
                     //try 11 1 21
-                    if (id.equals(getId)) {
+                    if (getPhone.equals(getId)) {
                         getUsernamez = bpfragmentTable.getNama();
                         getEmail = bpfragmentTable.getEmail();
                         getAlamatz = bpfragmentTable.getAlamat();
                         getPw = bpfragmentTable.getPassword();
                         getPwRetype = bpfragmentTable.getRetypePassword();
-                        phoneNumbbr = bpfragmentTable.getPhoneNumbers();
+                        getPphoneNumbbr = bpfragmentTable.getPhoneNumbers();
 
 
                         System.out.println(" founded" + getId + " " + id);
                         txtUsername.setText(getUsernamez);
                         txtAlamat.setText(getAlamatz);
                         textEmail.setText(getEmail);
+                        txtData.setText(getPphoneNumbbr);
                         break;
                     }
                     bpfragmentTableList.add(bpfragmentTable);
@@ -129,6 +138,7 @@ public class AccountFragment extends Fragment {
                 intent.putExtra("namez", getUsernamez);
                 intent.putExtra("email", getEmail);
                 intent.putExtra("alamat", getAlamatz);
+                intent.putExtra("phone", getPphoneNumbbr);
                 intent.putExtra("psswrd", getAlamatz);
                 intent.putExtra("psswrdretype", getAlamatz);
 

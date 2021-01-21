@@ -710,7 +710,7 @@ public class HomeFragment extends Fragment{
                     .addFormDataPart("LONGITUDE", "49" )
                     .build();
             */
-            phoneNumberz = mAuth.getCurrentUser().getPhoneNumber();
+//            phoneNumberz = mAuth.getCurrentUser().getPhoneNumber();
             RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(phoneNumberz));
             RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
             RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));

@@ -27,7 +27,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".auth.AuthActivity"
+            android:name=".SplashActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +39,7 @@
         <activity android:name=".activity.PdfActivity" />
         <activity android:name=".activity.HistoryActivity" />
         <activity android:name=".activity.FragmentActivity" />
-        <activity android:name=".auth.ProfileActivity" />
+        <activity android:name=".auth.AuthActivity" />
         <activity android:name=".auth.VerifyPhoneActivity" />
         <!--dao-->
         <activity android:name=".roomdbGhistory.HistoryReadSingleActivity" />
@@ -48,6 +48,7 @@
         <activity android:name=".Account.SaveData" />
         <activity android:name=".MainActivity" />
         <activity android:name=".auth.LoginActivity"/>
+        <activity android:name=".auth.ProfileActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

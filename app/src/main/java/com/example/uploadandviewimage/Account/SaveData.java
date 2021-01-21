@@ -14,10 +14,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.activity.FragmentActivity;
+import com.example.uploadandviewimage.auth.LoginActivity;
 import com.example.uploadandviewimage.auth.ProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class SaveData extends AppCompatActivity {
     private EditText nameA, email, alamat, passwor, retyope_password, mobilephone_reg;
@@ -39,8 +44,11 @@ public class SaveData extends AppCompatActivity {
         mobilephone_reg = findViewById(R.id.mobilephone_reg);
         mAuth = FirebaseAuth.getInstance();
         btnInsert = findViewById(R.id.textView_insert);
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("accountz");
-
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("accounts");
+//        if (mAuth != null) {
+//            Intent intent = new Intent(SaveData.this, ProfileActivity.class);
+//            startActivity(intent);
+//        }
         btnInsert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,7 +72,7 @@ public class SaveData extends AppCompatActivity {
                     }
                 }
                 Accounts accounts = new Accounts(userId, userName, userEmail, userAlamat, phoneNumbber, passwordUser, retypePasswordUser);
-                databaseReference.child(userId).setValue(accounts);
+                databaseReference.child(mobilephone_sreg).setValue(accounts);
                 Intent intent = new Intent(SaveData.this, ProfileActivity.class);
                 startActivity(intent);
             }

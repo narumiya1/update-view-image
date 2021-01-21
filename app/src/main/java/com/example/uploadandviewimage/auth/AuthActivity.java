@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -22,6 +23,7 @@ public class AuthActivity extends AppCompatActivity {
 
     private Spinner spinner;
     private EditText editText;
+    private Button Login;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,7 +33,14 @@ public class AuthActivity extends AppCompatActivity {
         spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, CountryData.countryNames));
 
         editText = findViewById(R.id.editTextPhone);
-
+        Login = findViewById(R.id.btn_auth_login);
+        Login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AuthActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
         findViewById(R.id.buttonContinue).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

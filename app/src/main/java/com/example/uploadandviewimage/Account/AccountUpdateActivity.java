@@ -23,7 +23,7 @@ public class AccountUpdateActivity extends AppCompatActivity {
     Button update;
     EditText et_nama, et_email, et_alamat, et_password, et_password_retype;
     TextView tv_id;
-    String id, name,email, alamat, pw, retype;
+    String id, name,email, alamat,phone, pw, retype;
     FirebaseAuth mAuth;
 
     @Override
@@ -42,12 +42,13 @@ public class AccountUpdateActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        id = mAuth.getCurrentUser().getPhoneNumber();
+//        id = mAuth.getCurrentUser().getPhoneNumber();
         name = intent.getStringExtra("namez");
         email = intent.getStringExtra("email");
         alamat = intent.getStringExtra("alamat");
         pw = intent.getStringExtra("psswrd");
         retype = intent.getStringExtra("psswrdretype");
+        phone = intent.getStringExtra("phone");
         tv_id.setText(id);
         et_nama.setText(name);
         et_email.setText(email);
@@ -57,7 +58,7 @@ public class AccountUpdateActivity extends AppCompatActivity {
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("accountz");
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("accounts");
                 String nameU, alamarU, emailU, phones, password, passwordRetype ;
                 id = mAuth.getCurrentUser().getUid();
                 nameU = et_nama.getText().toString();
@@ -65,7 +66,7 @@ public class AccountUpdateActivity extends AppCompatActivity {
                 alamarU = et_alamat.getText().toString();
                 password = et_password.getText().toString();
                 passwordRetype = et_password_retype.getText().toString();
-                phones = mAuth.getCurrentUser().getPhoneNumber();
+//                phones = mAuth.getCurrentUser().getPhoneNumber();
                 if (!TextUtils.isEmpty(password) && !TextUtils.isEmpty(passwordRetype)) {
                     if (password.equals(passwordRetype)) {
                         Toast.makeText(AccountUpdateActivity.this, " Sucessfully  ", Toast.LENGTH_SHORT).show();
@@ -80,8 +81,8 @@ public class AccountUpdateActivity extends AppCompatActivity {
                 args.putString("v", String.valueOf(nameU));
                 args.putString("w", String.valueOf(emailU));
                 args.putString("x", String.valueOf(alamarU));
-                Accounts accounts = new Accounts(id,nameU, emailU, alamarU,phones, password, passwordRetype);
-                databaseReference.child(id).setValue(accounts);
+                Accounts accounts = new Accounts(id,nameU, emailU, alamarU,phone, password, passwordRetype);
+                databaseReference.child(phone).setValue(accounts);
                 AccountFragment accountzs = new AccountFragment();
                 accountzs.setArguments(args);
                 Intent intent = new Intent(AccountUpdateActivity.this, FragmentActivity.class);
