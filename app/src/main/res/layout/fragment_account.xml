@@ -19,16 +19,20 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
-                android:background="@drawable/gradient"
+
                 android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="45dp"
-                    android:src="@drawable/ic_baseline_how_to_reg_24" />
-
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profile_image"
+                    android:layout_gravity="center"
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:src="@drawable/ic_baseline_how_to_reg_24"
+                    app:civ_border_color="#BFB9CA"
+                    app:civ_border_width="3dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="54dp"/>
                 <TextView
                     android:fontFamily="@font/ubunturegular"
                     android:id="@+id/nameOneTv"
@@ -40,6 +44,14 @@
                     android:textColor="#403C3C"
                     android:textSize="21sp"
                     android:textStyle="bold"/>
+                <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="14dp"
+                android:background="@color/colorPrimary" />
+
             </LinearLayout>
             <!--   <androidx.cardview.widget.CardView
                    android:layout_width="400dp"
@@ -136,15 +148,16 @@
             </LinearLayout>
 
             <LinearLayout
+                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingLeft="25dp">
+                android:paddingLeft="45dp">
 
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/ic_home_black_24dp" />
+                    android:src="@drawable/ic_baseline_mail_24" />
 
                 <TextView
                     android:id="@+id/tvemail_account"
@@ -161,14 +174,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
-                android:paddingLeft="25dp">
+                android:paddingLeft="45dp">
 
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/ic_baseline_list_24" />
+                    android:src="@drawable/ic_baseline_phone_iphone_24" />
 
                 <TextView
                     android:id="@+id/tv_account_phone"
@@ -186,14 +199,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
-                android:paddingLeft="25dp">
+                android:paddingLeft="45dp">
 
                 <ImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/ic_baseline_amp_stories_24" />
+                    android:src="@drawable/ic_home_black_24dp" />
 
                 <TextView
                     android:id="@+id/tv_account_alamat"
