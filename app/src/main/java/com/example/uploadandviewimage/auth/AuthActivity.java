@@ -7,6 +7,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,8 +16,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uploadandviewimage.Account.SaveData;
 import com.example.uploadandviewimage.R;
+import com.example.uploadandviewimage.auth.CountryData;
+import com.example.uploadandviewimage.auth.LoginActivity;
+import com.example.uploadandviewimage.auth.VerifyPhoneActivity;
+import com.example.uploadandviewimage.R;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.regex.Pattern;
 
 public class AuthActivity extends AppCompatActivity {
     private String verificationId;
@@ -24,14 +34,18 @@ public class AuthActivity extends AppCompatActivity {
     private Spinner spinner;
     private EditText editText;
     private Button Login;
+    private TextView tv_login;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
         spinner = findViewById(R.id.spinnerCountries);
-        spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, CountryData.countryNames));
-
+        spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, CountryData.countryNamesz));
+        spinner.setRight(12);
+        spinner.setGravity(12);
+        tv_login= findViewById(R.id.tv_login_reg);
         editText = findViewById(R.id.editTextPhone);
         Login = findViewById(R.id.btn_auth_login);
         Login.setOnClickListener(new View.OnClickListener() {
@@ -41,12 +55,20 @@ public class AuthActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        tv_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AuthActivity.this, LoginNumber.class);
+                startActivity(intent);
+            }
+        });
         findViewById(R.id.buttonContinue).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String code = CountryData.countryAreaCodes[spinner.getSelectedItemPosition()];
+                String code = CountryData.countryAreaCodesz[spinner.getSelectedItemPosition()];
 
                 String number = editText.getText().toString();
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("User");
 
                 if (number.isEmpty()) {
                     editText.setError("Valid number is required");

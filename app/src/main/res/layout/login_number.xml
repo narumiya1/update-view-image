@@ -5,7 +5,7 @@
     android:layout_gravity="center"
     android:layout_marginTop="@dimen/loginViewsMargin"
     android:layout_marginBottom="@dimen/loginViewsMargin"
-    android:background="@color/whiteCardColor"
+    android:background="#BC5353"
     android:elevation="5dp"
     app:cardCornerRadius="@dimen/loginCardRadius">
 
@@ -15,12 +15,47 @@
         android:layout_gravity="center"
         android:padding="@dimen/loginViewsMargin">
 
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <com.github.chrisbanes.photoview.PhotoView
+                android:id="@+id/viewImageCb"
+                android:layout_width="match_parent"
+                android:src="@drawable/beraslogo01"
+                android:background="@drawable/beraslogo01"
+                android:layout_height="180dp"
+                android:visibility="invisible" />
+            <ImageButton
+                android:id="@+id/ive_add"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="top|left"
+                android:background="#F8F6F6"
+                android:outlineAmbientShadowColor="@color/colorAccent"
+                android:src="@drawable/ic_baseline_add_a_photo_24" />
+
+
+            <EditText
+                android:layout_centerInParent="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"/>
+            <ImageView
+                android:id="@+id/imageview_log"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </ImageView>
+
+
+        </RelativeLayout>
         <TextView
+            android:fontFamily="@font/revans"
+            android:textSize="16dp"
             style="@style/headerTextPrimary"
             android:layout_marginTop="@dimen/loginViewsMargin"
-            android:fontFamily="@font/indigodaisy"
-            android:textSize="20sp"
-            android:text="INPUT PHONE , PASSWORD" />
+            android:text="LOGIN USING PHONE AND PASSWORD" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputEmail"
@@ -28,12 +63,12 @@
             android:layout_marginTop="@dimen/loginViewsMargin">
 
             <EditText
-                android:id="@+id/editTextPhoneLogin"
+                android:fontFamily="@font/revans"
+                android:id="@+id/et_login_number"
                 style="@style/modifiedEditText"
                 android:hint="@string/login_phone_hint"
                 android:inputType="phone"
-                android:maxLines="1"
-                android:textStyle="italic" />
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -43,7 +78,8 @@
             android:layout_marginTop="@dimen/loginViewsMargin">
 
             <EditText
-                android:id="@+id/editTextPasswordLogin"
+                android:fontFamily="@font/revans"
+                android:id="@+id/et_pw_number"
                 style="@style/modifiedEditText"
                 android:hint="@string/login_password_hint"
                 android:inputType="textPassword"
@@ -69,6 +105,7 @@
 
         <ProgressBar
             android:id="@+id/progressBar"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -91,11 +128,11 @@
                 android:layout_height="match_parent">
 
                 <Button
-                    android:id="@+id/btn_login"
+                    android:fontFamily="@font/revans"
+                    android:onClick="buttonLogin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimary"
-                    android:onClick="confirmLogin"
                     android:text="LOGIN"
                     android:textColor="@android:color/background_light"
                     android:textSize="24sp"
@@ -109,6 +146,7 @@
         </androidx.cardview.widget.CardView>
 
         <TextView
+            android:fontFamily="@font/revans"
             android:id="@+id/textview_signup"
             style="@style/parent"
             android:layout_marginTop="@dimen/loginViewsMargin"

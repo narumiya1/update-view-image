@@ -5,6 +5,7 @@
 
 
     <TextView
+
         android:layout_centerInParent="true"
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -13,7 +14,32 @@
         android:layout_marginTop="30dp"
         android:text="May I ask you phone number?"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-        android:textColor="@color/colorPrimary" />
+        android:textColor="@color/primaryTextColor"
+        />
+    <TextView
+        android:layout_below="@+id/textView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/ubunturegular"
+        android:text="Enter Mobile Number"
+        android:textAlignment="center"
+        android:textColor="#a3a3a3"
+        android:textSize="16sp" />
+    <TextView
+        android:id="@+id/tv_keterangan"
+        android:layout_below="@id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:digits="0123456789"
+        android:gravity="center"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:text="Format nomor dimulai telefon angka 8,\n contoh: 811234567, 896667890"
+        android:fontFamily="@font/ubunturegular" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -21,7 +47,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/textView"
         android:orientation="horizontal"
-        android:padding="15dp">
+        android:padding="1dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp">
 
         <Spinner
             android:id="@+id/spinnerCountries"
@@ -34,16 +62,20 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:digits="0123456789"
-            android:hint="enter your number \nex: 81320696782"
+            android:hint=" 81320696782"
+            android:inputType="phone"
+            android:fontFamily="@font/ubunturegular"
             android:maxLength="11" />
 
-    </LinearLayout>
 
-    <Button
+
+    </LinearLayout>
+     <Button
+         android:layout_marginTop="12dp"
         android:id="@+id/buttonContinue"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/linearLayout"
+        android:layout_below="@id/tv_keterangan"
         android:layout_centerHorizontal="true"
         android:background="@color/colorPrimary"
         android:text="Continue"
@@ -51,11 +83,20 @@
         android:textColor="#ffffff" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:id="@+id/tv_login_reg"
+        android:layout_width="match_parent"
+        android:layout_marginRight="14dp"
         android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:fontFamily="@font/ubunturegular"
+        android:textColor="@color/primaryTextColor"
         android:text="Have an account, login here"
         android:layout_below="@id/buttonContinue"/>
     <Button
+        android:visibility="gone"
         android:id="@+id/btn_auth_login"
         android:layout_marginTop="16dp"
         android:text="Login"

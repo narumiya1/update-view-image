@@ -7,6 +7,8 @@ import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.uploadandviewimage.auth.LoginActivity;
+import com.example.uploadandviewimage.auth.LoginNumber;
+import com.example.uploadandviewimage.auth.Preference;
 import com.example.uploadandviewimage.auth.ProfileActivity;
 import com.example.uploadandviewimage.auth.Sesion;
 
@@ -33,22 +35,16 @@ public class SplashActivity extends AppCompatActivity {
 
     void openMain() {
 
-        if (session.isLoggedIn()) {
+            Preference.setLoggedInStatus(getApplicationContext(), false);
             Intent i = null;
 
-          i = new Intent(this, ProfileActivity.class);
+          i = new Intent(this, LoginNumber.class);
 
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
             finish();
-        } else {
-            Intent i = new Intent(this, LoginActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
-            finish();
-        }
+
 
     }
 }

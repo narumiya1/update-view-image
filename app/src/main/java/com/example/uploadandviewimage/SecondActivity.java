@@ -42,7 +42,7 @@ public class SecondActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
         total = (TextView) findViewById(R.id.total_size);
-        tipe = findViewById(R.id.tipezs);
+        tipe = (TextView)findViewById(R.id.tipezs);
         share_btn=findViewById(R.id.share_btn);
         Bundle bundle = getIntent().getExtras();
 
@@ -56,7 +56,7 @@ public class SecondActivity extends AppCompatActivity {
             int b = (int) Math.round(a);
             String c = (String.valueOf(type[j].getValue()));
             String d = (String.valueOf(type[j].getName()));
-            builder.append(d).append(" - ").append(b).append(" ").append("\t\r\n");
+            builder.append(d).append(" - ").append(b).append(" , ").append("");
 //            tipe.setText(String.valueOf(a));
         }
         tipe.setText(builder.toString());
@@ -138,6 +138,7 @@ public class SecondActivity extends AppCompatActivity {
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         data.setValueTextSize(13f);
         data.setValueTextColor(Color.BLACK);
+//        dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
     }
 
 
@@ -154,7 +155,7 @@ public class SecondActivity extends AppCompatActivity {
             yvalues.add(new PieEntry((float) type[i].getValue(), type[i].getName(), i+1));
             String c = (String.valueOf(type[i].getValue()));
             String d = (String.valueOf(type[i].getName()));
-            builders.append(d).append(" - ").append(b).append(" ").append("\t\r\n");
+            builders.append(d).append("- -").append(b).append("\t").append("\t\r");
 
              }
         tipe.setText(builders);
@@ -174,7 +175,7 @@ public class SecondActivity extends AppCompatActivity {
         data.setValueTextSize(13f);
         data.setValueTextColor(Color.BLACK);
 
-        dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+//        dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
 
     }
 

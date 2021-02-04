@@ -21,9 +21,12 @@ public class Sesion {
     private static final String IS_FIRST = "IsFisrt";
     private static final String IS_NOT_ALARMT = "IsAlarm";
 
+    public static final String IS_REGISTER="IsRegistered";
     public static final String KEY_USER = "user";
     public static final String KEY_ALARM = "alarm";
-    public static final String KEY_IP = "IP";
+    public static final String KEY_PHONE = "phone";
+    public static final String KEY_PASSWORD = "passowrd";
+    public static final String KEY_API_JWT = "jwt";
 
 
     public Sesion(Context context) {
@@ -44,7 +47,7 @@ public class Sesion {
         editor.commit();
         editor.putBoolean(IS_LOGIN, false);
 
-        Intent i = new Intent(_context, LoginActivity.class);
+        Intent i = new Intent(_context, LoginNumber.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         _context.startActivity(i);
@@ -58,9 +61,15 @@ public class Sesion {
 
     public void setIsLogin(Boolean v) {
         editor.putBoolean(IS_LOGIN, v);
+//        editor.putBoolean(IS_LOGIN, v);
         editor.commit();
     }
 
+    //23 01 21
+    public void setRegisterUser(Boolean v){
+        editor.putBoolean(IS_REGISTER,v);
+        editor.commit();
+    }
     public boolean isFirst() {
         return pref.getBoolean(IS_FIRST, false);
     }
@@ -69,10 +78,15 @@ public class Sesion {
         return pref.getBoolean(IS_NOT_ALARMT, false);
     }
 
-    public String getIp() {
-        return pref.getString(KEY_IP, "192.168.1.1");
+    public String getPhone() {
+        return pref.getString(KEY_PHONE, "");
     }
-
+    public String getPassword() {
+        return pref.getString(KEY_PASSWORD, "");
+    }
+    public String getKeyApiJwt() {
+        return pref.getString(KEY_API_JWT, "");
+    }
     public void setIsFisrt(Boolean v) {
         editor.putBoolean(IS_FIRST, v);
         editor.commit();
@@ -83,8 +97,35 @@ public class Sesion {
         editor.commit();
     }
 
-    public void setIp(String ip) {
-        editor.putString(KEY_IP, ip);
+    public void setPhone(String phone) {
+        editor.putString(KEY_PHONE, phone);
         editor.commit();
+    }
+    public void setPassword(String password) {
+        editor.putString(KEY_PASSWORD, password);
+        editor.commit();
+    }
+    public void setKeyApiJwt(String apiJwt) {
+        editor.putString(KEY_API_JWT, apiJwt);
+        editor.commit();
+    }
+
+    public UserResponse getUser() {
+        Gson gson = new Gson();
+        String json = pref.getString(KEY_USER, "");
+        UserResponse obj = gson.fromJson(json, UserResponse.class);
+        return obj;
+    }
+
+    public void createLoginSession(UserResponse user) {
+        Gson gson = new Gson();
+        String json = gson.toJson(user);
+
+        editor.putString(KEY_USER, json);
+
+        editor.putBoolean(IS_LOGIN, true);
+
+        editor.commit();
+
     }
 }

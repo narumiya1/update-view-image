@@ -7,44 +7,54 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/tipezs" android:textStyle="bold"
-        android:layout_width="match_parent"
+        android:id="@+id/tipezs"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:fontFamily="@font/ubunturegular"
-        android:text="Presentase Type" />
+        android:text="Presentase Type"
+        android:gravity="left"
+        android:textSize="15sp"/>
 
     <View
-        android:layout_width="130dp"
+        android:layout_width="match_parent"
+        android:visibility="gone"
         android:layout_height="1dp"
         android:layout_below="@id/tipezs"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:background="#D5CBCB" />
+        android:background="#D5CBCB"/>
 
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/chart1"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="290dp"
+        android:layout_height="290dp"
         android:layout_below="@id/tipezs"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="6dp" />
 
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/chart2"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="310dp"
+        android:layout_height="310dp"
         android:layout_below="@id/total_size"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="6dp" />
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/chart1"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="#9C9191"/>
     <TextView
+        android:layout_marginTop="2dp"
         android:id="@+id/total_size"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/chart1"
         android:layout_centerInParent="true"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="30dp"
         android:fontFamily="@font/ubunturegular"
         android:gravity="left"
         android:inputType="number"
@@ -52,13 +62,7 @@
         android:textSize="15sp"
         android:textStyle="bold" />
 
-    <View
-        android:layout_width="130dp"
-        android:layout_height="1dp"
-        android:layout_below="@id/total_size"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:background="#D5CBCB" />
+
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -66,6 +70,7 @@
         <Button
             android:text="SHARE"
             android:id="@+id/share_btn"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"

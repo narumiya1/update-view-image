@@ -44,7 +44,6 @@ public class ProfileActivity extends AppCompatActivity {
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocTrack locationTrack;
     Sesion session;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,8 +59,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         name = findViewById(R.id.tvName);
         Intent intent = getIntent();
-        String names= intent.getStringExtra("numberPhone");
-        name.setText(names);
+//        String names= Preference.getLoggedInUser(getApplicationContext());
+//        name.setText(names);
+
 //        name.setText(mAuth.getCurrentUser().getPhoneNumber());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
@@ -126,8 +126,8 @@ public class ProfileActivity extends AppCompatActivity {
                 }
                 */
 
-                Intent intent = new Intent(ProfileActivity.this, FragmentActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(ProfileActivity.this, FragmentActivity.class);
+//                startActivity(intent);
             }
         });
 
@@ -223,11 +223,11 @@ public class ProfileActivity extends AppCompatActivity {
                 .show();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        locationTrack.stopListener();
-    }
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        locationTrack.stopListener();
+//    }
 
     @Override
     protected void onStart() {

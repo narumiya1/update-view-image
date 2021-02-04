@@ -33,6 +33,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:visibility="gone"
             style="@style/parent"
             android:layout_marginTop="@dimen/signup_text_margin_top">
             <EditText
@@ -66,7 +67,9 @@
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/parent"
-
+            app:errorEnabled="true"
+            app:passwordToggleEnabled="true"
+            android:paddingEnd="10dp"
             android:layout_marginTop="@dimen/signup_text_margin_top">
 
             <EditText
@@ -78,7 +81,9 @@
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             style="@style/parent"
-
+            app:errorEnabled="true"
+            app:passwordToggleEnabled="true"
+            android:paddingEnd="10dp"
             android:layout_marginTop="@dimen/signup_text_margin_top">
             <EditText
                 android:id="@+id/et_insert_password_retype"
@@ -114,6 +119,7 @@
                 android:layout_height="match_parent">
 
                 <Button
+                    android:onClick="confirmInput"
                     android:text="SEND"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

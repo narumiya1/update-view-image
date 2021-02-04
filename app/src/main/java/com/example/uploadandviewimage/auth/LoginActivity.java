@@ -41,6 +41,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -61,6 +62,17 @@ public class LoginActivity extends AppCompatActivity {
     Sesion session;
     public static final int REQUEST_CODE = 1;
     boolean status = true;
+    private static final Pattern PHONE_PATTERN =
+            Pattern.compile("^" +
+                            //"(?=.*[0-9])" +         //at least 1 digit
+                            //"(?=.*[a-z])" +         //at least 1 lower case letter
+                            //"(?=.*[A-Z])" +         //at least 1 upper case letter
+//                    "(?=.*[a-zA-Z])" +      //any letter
+                            "(?=.*[+])"+     //at least 1 special character
+//                    "(?=\\S+$)" +           //no white spaces
+                            ".{6,}"               //at least 4 characters
+//                    "$"
+            );
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
@@ -72,88 +84,27 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.editTextPasswordLogin);
         login = findViewById(R.id.btn_login);
         reg = findViewById(R.id.textview_signup);
-        reg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //auth here
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(LoginActivity.this, AuthActivity.class));
-                finish();
-            }
-        });
-
-        progressBar = findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.GONE);
-        //Mengecek Keberadaan User
-//        listener = new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//
-//                //Mengecek apakah ada user yang sudah login / belum logout
-//                FirebaseUser user = firebaseAuth.getCurrentUser();
-//                if(user != null){
-//                    //Jika ada, maka halaman akan langsung berpidah pada MainActivity
-//                    startActivity(new Intent(LoginActivity.this, FragmentActivity.class));
-//                    finish();
-//                }
-//            }
-//        };
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (view == login) {
-                    userLogin();
-                }
-            }
-        });
-//        rootDb = FirebaseDatabase.getInstance().getReference().child("accountz");
-//        login.setOnClickListener(new View.OnClickListener() {
+//        reg.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
-//
-//                rootDb.addValueEventListener(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//
-//                        List<Accounts> bpfragmentTableList = new ArrayList<>();
-//
-//                        for (DataSnapshot dataSnapshot1 : snapshot.getChildren()) {
-//
-//                            getPhone = numberPhone.getText().toString();
-//                            getPassword = password.getText().toString();
-//                            Accounts bpfragmentTable = dataSnapshot1.getValue(Accounts.class);
-//                            String hp = bpfragmentTable.getPhoneNumbers();
-//                            String passwordAuth = bpfragmentTable.getPassword();
-//                            //try 11 1 21
-//                            if (hp.equals(getPhone) && passwordAuth.equals(getPassword) ) {
-//                                startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
-//                                finish();
-//
-//                            }else {
-//                                Toast.makeText(LoginActivity.this, "Tidak Dapat Masuk, Silakan Coba Lagi", Toast.LENGTH_SHORT).show();
-//                                progressBar.setVisibility(View.GONE);
-//                            }
-//                            bpfragmentTableList.add(bpfragmentTable);
-//
-//
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//
-//                    }
-//
-//                });
+//                //auth here
+//                FirebaseAuth.getInstance().signOut();
+//                startActivity(new Intent(LoginActivity.this, com.example.uploadandviewimage.auth.AuthActivity.class));
+//                finish();
 //            }
 //        });
 
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.GONE);
+
+        openMain();
+
+        /*
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                databaseReference.child("accounts").addListenerForSingleValueEvent(new ValueEventListener() {
+                databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         String input1 = numberPhone.getText().toString();
@@ -161,11 +112,14 @@ public class LoginActivity extends AppCompatActivity {
 
                         if (dataSnapshot.child(input1).exists()) {
                             if (dataSnapshot.child(input1).child("password").getValue(String.class).equals(input2)) {
-
+//                                Preference.setLoggedInUser(getBaseContext(),input1);
+//                                Preference.setLoggedInStatus(getBaseContext(),true);
 //                                startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
                                 Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
                                 intent.putExtra(input1, "numberPhone");
                                 startActivityForResult(intent, REQUEST_CODE);
+                                session.setPhone(input1);
+                                session.setIsLogin(true);
 
                             } else {
                                 Toast.makeText(LoginActivity.this, "Kata sandi salah", Toast.LENGTH_SHORT).show();
@@ -187,9 +141,64 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
+        */
     }
 
-    private void userLogin() {
+    private boolean validatePhone(){
+        String numberPhoneInput = numberPhone.getText().toString().trim();
+        if (numberPhoneInput.isEmpty()) {
+            numberPhone.setError("number phone can't be empty");
+            return false;
+        } else if (!PHONE_PATTERN.matcher(numberPhoneInput).matches()) {
+            numberPhone.setError("nomor harus di awali +62");
+            return false;
+        } else {
+            numberPhone.setError(null);
+            return true;
+        }
+    }
+    public void confirmLogin(View v) {
+        if (!validatePhone()){
+            return;
+        }
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String input1 = numberPhone.getText().toString();
+                String input2 = password.getText().toString();
+
+                if (dataSnapshot.child(input1).exists()) {
+                    if (dataSnapshot.child(input1).child("password").getValue(String.class).equals(input2)) {
+//                                Preference.setLoggedInUser(getBaseContext(),input1);
+//                                Preference.setLoggedInStatus(getBaseContext(),true);
+//                                startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
+                        Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+                        intent.putExtra(input1, "numberPhone");
+                        startActivityForResult(intent, REQUEST_CODE);
+                        session.setPhone(input1);
+                        session.setPassword(input2);
+                        session.setIsLogin(true);
+
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Kata sandi salah", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(LoginActivity.this, "Data belum terdaftar", Toast.LENGTH_SHORT).show();
+                }
+
+                Bundle bundle = new Bundle();
+                bundle.putString("edttext", input1);
+                AccountFragment fragobj = new AccountFragment();
+                fragobj.setArguments(bundle);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     @Override
@@ -226,18 +235,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private void openMain() {
         if (session.isLoggedIn()) {
-            Intent i = null;
-            if (status) {
-
                 Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
                 startActivity(intent);
-            }
-        } else {
-            Intent i = new Intent(this, LoginActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
-            finish();
         }
     }
 

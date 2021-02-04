@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,6 +28,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -46,11 +49,21 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.uploadandviewimage.Account.Accounts;
 import com.example.uploadandviewimage.ExampleAdapter;
 import com.example.uploadandviewimage.GrainData;
 import com.example.uploadandviewimage.GrainHistory;
@@ -60,8 +73,17 @@ import com.example.uploadandviewimage.NetworkClient;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.SecondActivity;
 import com.example.uploadandviewimage.UploadApis;
+import com.example.uploadandviewimage.activity.FragmentActivity;
 import com.example.uploadandviewimage.activity.LocTrack;
 import com.example.uploadandviewimage.activity.PdfActivity;
+import com.example.uploadandviewimage.auth.LoginActivity;
+import com.example.uploadandviewimage.auth.LoginNumber;
+import com.example.uploadandviewimage.auth.Sesion;
+import com.example.uploadandviewimage.auth.TokenInterceptor;
+import com.example.uploadandviewimage.auth.User;
+import com.example.uploadandviewimage.cookies.AddCookiesInterceptor;
+import com.example.uploadandviewimage.cookies.JavaNetCookieJar;
+import com.example.uploadandviewimage.cookies.ReceivedCookiesInterceptor;
 import com.example.uploadandviewimage.location.GpsUtils;
 import com.example.uploadandviewimage.roomdbGhistory.AppDatabase;
 import com.example.uploadandviewimage.roomdbGhistory.GHistory;
@@ -77,11 +99,22 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -89,21 +122,30 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.RoundingMode;
+import java.net.CookieHandler;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import okhttp3.logging.HttpLoggingInterceptor;
+import okio.ByteString;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -111,7 +153,9 @@ import static android.app.Activity.RESULT_OK;
 
 public class HomeFragment extends Fragment{
 
-
+    public static final String API_KEY = "PMAK-6010c29f1b0e6b0034f81b57-6387c56febd52e92623f8fe195e60bc8d7";
+    final Handler handler = new Handler(Looper.getMainLooper());
+    ProgressDialog progressDialog;
     private AppDatabase db;
     PhotoView viewImage;
     Button btnRetry, chartf, pdf, hisdtory, view_history;
@@ -141,6 +185,8 @@ public class HomeFragment extends Fragment{
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocTrack locationTrack;
     TextView longi,lati;
+    Sesion session;
+    Accounts accounts = new Accounts();
     public HomeFragment() {
     }
 
@@ -149,6 +195,7 @@ public class HomeFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragmnet_home, container, false);
         //get view
+        session = new Sesion(getContext());
         findViews(view);
         //check connection
         if (isConnected()) {
@@ -225,7 +272,7 @@ public class HomeFragment extends Fragment{
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-
+        progressDialog = new ProgressDialog(getActivity());
         menu.setVisibility(View.VISIBLE);
 
         return view;
@@ -629,6 +676,14 @@ public class HomeFragment extends Fragment{
         }
         Bitmap rotateBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 
+// tambahkan login web api disini
+        // dicek apabila login berhasil jalankan uploadimage
+        // 110.50.85.28:8200/account/login
+        // http://110.50.85.28:8200/account/login
+        // x-www-form-urlencoded
+        // Phone : +6281907123427
+        // Password : 1m4dm1n
+        // post
 
         viewImage.setImageBitmap(rotateBitmap);
 
@@ -669,400 +724,632 @@ public class HomeFragment extends Fragment{
         return compressedOri;
     }
 
-    private void uploadImage(Bitmap bitmap) {
-        File file = new File(mImageFileLocation);
-        int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
+    public void volleyPost(){
+        String postUrl = "http://110.50.85.28:8200/Account/Login";
+        JSONObject postData = new JSONObject();
         try {
-            Retrofit retrofit = NetworkClient.getRetrofit();
+            postData.put("Phone", "+628156055410");
+            postData.put("Password", "123456");
 
-            RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
-            MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
-            String name = "Rifqi";
-            double latitude = locationTrack.getLatitude();
-            int val1=(int) latitude;
-            double longitude = locationTrack.getLongitude();
-            int val2=(int) longitude;
-//            RequestBody someData = RequestBody.create(MediaType.parse("text/plain"), "This is a new Image");
-            /*
-            //using format dec
-
-
-            // DecimalFormat, default is RoundingMode.HALF_EVEN
-            DecimalFormat decimalFormatter = new DecimalFormat();
-            decimalFormatter.setRoundingMode(RoundingMode.DOWN);
-            System.out.println("Down : " + decimalFormatter.format(lati));  //2.14
-            double p = Double.parseDouble(decimalFormatter.format(lati));
-            */
-
-
-            /*
-            RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), "This is a new Image");
-                    new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("USER_ID","Rifqi")
-                        .build();
-            RequestBody req2 = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("LATITUDE", "59")
-                    .build();
-            RequestBody req3 = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("LONGITUDE", "49" )
-                    .build();
-            */
-//            phoneNumberz = mAuth.getCurrentUser().getPhoneNumber();
-            RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(phoneNumberz));
-            RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
-            RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
-            UploadApis uploadApis = retrofit.create(UploadApis.class);
-            Call call = uploadApis.uploadImage(parts, req1, req2, req3);
-            call.enqueue(new Callback() {
-                @Override
-                public void onResponse(Call call, Response response) {
-                    if (response.code() == 200) {
-                        Object obj = response.body();
-                        GrainData grainData = (GrainData) response.body();
-                        //String gson = new Gson().toJson(response.body());
-                        //20201126
-                        //get pie chart
-                        //for GrainType and GrainSize
-                        GrainPie[] type = grainData.getTypePie();
-                        GrainPie[] size = grainData.getSizePie();
-//                        GrainType grainType = new GrainType();
-
-                        mAdapter = new ExampleAdapter(grainData);
-                        mRecyclerView.setAdapter(mAdapter);
-                        mRecyclerView.setVisibility(View.VISIBLE);
-                        no_data.setVisibility(View.GONE);
-                        warningtext.setVisibility(View.GONE);
-                        viewImage.setVisibility(View.VISIBLE);
-                        fab_chart.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
-//                                Bundle setData = new Bundle();
-                                intent.putExtra("DataSaya", type);
-                                intent.putExtra("Size", size);
-                                startActivityForResult(intent, 10);
-                            }
-                        });
-                        fab_pdf_intent.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent = new Intent((Context) getActivity(), PdfActivity.class);
-//                                Bundle setData = new Bundle();
-                                intent.putExtra("pdfType", type);
-                                intent.putExtra("pdfSize", size);
-                                startActivityForResult(intent, 19);
-                            }
-                        });
-                        fab_pdf.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                dateTime = new Date();
-                                GrainItem[] items = grainData.getItems();
-
-                                PdfDocument pdfDocument = new PdfDocument();
-                                Paint paint = new Paint();
-                                Paint titlePaint = new Paint();
-
-                                PdfDocument.PageInfo pageInfo
-                                        = new PdfDocument.PageInfo.Builder(1200, 2500, 1).create();
-                                PdfDocument.Page page = pdfDocument.startPage(pageInfo);
-
-                                Canvas canvas = page.getCanvas();
-                                titlePaint.setTextAlign(Paint.Align.CENTER);
-                                titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-                                titlePaint.setColor(Color.BLACK);
-                                titlePaint.setTextSize(70);
-                                canvas.drawText("Hasil Pengujian", pageWidth / 2, 200, titlePaint);
-
-                                paint.setColor(Color.BLACK);
-                                paint.setTextSize(35f);
-                                paint.setTextAlign(Paint.Align.RIGHT);
-                                //change 590-340 to
-                                canvas.drawText("No : " + "232425", pageWidth - 20, 250, paint);
-
-                                dateFormat = new SimpleDateFormat("dd/MM/yy");
-                                canvas.drawText("Tanggal: " + dateFormat.format(dateTime), pageWidth - 20, 300, paint);
-
-                                dateFormat = new SimpleDateFormat("HH:mm:ss");
-                                canvas.drawText("Pukul: " + dateFormat.format(dateTime), pageWidth - 20, 350, paint);
-
-                                paint.setStyle(Paint.Style.STROKE);
-                                paint.setStrokeWidth(2);
-                                canvas.drawRect(20, 360, pageWidth - 20, 420, paint);
-
-                                paint.setTextAlign(Paint.Align.LEFT);
-                                paint.setStyle(Paint.Style.FILL);
-                                canvas.drawText("Size", 200, 400, paint);
-                                canvas.drawText("Type", 500, 400, paint);
-                                canvas.drawText("Jumlah data", 800, 400, paint);
-
-
-                                int y = 450;
-                                for (int j = 0; j < items.length; j++) {
-                                    canvas.drawText(String.valueOf(items[j].getGrainType().getName()), 500, y, paint);
-                                    canvas.drawText(String.valueOf(items[j].getGrainSize().getName()), 200, y, paint);
-                                    y += 50;
-                                }
-
-
-//                                   canvas.drawText(String.valueOf(items[2].getShape().getWidth()), 800, 1000, paint);
-
-
-                                pdfDocument.finishPage(page);
-                                //pdf file name
-                                String mFileName = new SimpleDateFormat("yyyy_MMdd_HHmmss",
-                                        Locale.getDefault()).format(System.currentTimeMillis());
-                                //pdf file path
-                                String mFilePath = Environment.getExternalStorageDirectory() + "/" + mFileName + ".pdf";
-                                File file = new File(Environment.getExternalStorageDirectory(),  "/" + mFileName + ".pdf");
-
-
-                                try {
-                                    pdfDocument.writeTo(new FileOutputStream(file));
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-
-                                pdfDocument.close();
-                                Toast.makeText(getContext(), "PDF sudah dibuat", Toast.LENGTH_LONG).show();
-
-                            }
-
-                        });
-
-                        LocalDate date2 = LocalDate.now();
-                        Date date = new Date();
-                        //type
-                        for(int i=0; i<type.length; i++) {
-                            String name = type[i].getName();
-                            double val = type[i].getValue();
-                            double pct = type[i].getPercent();
-
-                            //call db model
-                            GHistory type2 = new GHistory();
-                            type2.setName(name);
-                            type2.setVal(val);
-                            type2.setPct(pct);
-                            type2.setDataType(1);
-                            type2.setCreatedAt(date);
-                            insertData(type2);
-                        }
-                        //size
-                        for(int i=0; i<size.length; i++) {
-                            String name_size = size[i].getName();
-                            double val_size = size[i].getValue();
-                            double pct_size = size[i].getPercent();
-
-                            //call db model
-                            GHistory type2 = new GHistory();
-                            type2.setName(name_size);
-                            type2.setVal(val_size);
-                            type2.setPct(pct_size);
-                            type2.setDataType(2);
-                            type2.setCreatedAt(date);
-                            insertData(type2);
-                        }
-//                        AlertDialog.Builder alertadd = new AlertDialog.Builder(getContext());
-//                        LayoutInflater factory = LayoutInflater.from(getContext());
-//                        final View viewz = factory.inflate(R.layout.fragment_sample_dialog, null);
-//                        TextView textView = viewz.findViewById(R.id.inEmail);
-//                        TextView textView1 = viewz.findViewById(R.id.inPassword);
-//
-//                        alertadd.setView(viewz);
-//                        alertadd.setNeutralButton("Here!", new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dlg, int sumthin) {
-//
-//
-//                            }
-//                        });
-//                        alertadd.setPositiveButton("Share", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialogInterface, int i) {
-//
-//                                GrainItem[] itemz = grainData.getItems();
-//
-//                                for (int j = 0; j < itemz.length; j++) {
-//                                    textView.setText(String.valueOf(itemz[j].getGrainSize().getName()));
-//                                    textView1.setText(String.valueOf(itemz[j].getGrainType().getName()));
-//                                }
-//                                Intent sendIntent = new Intent(Intent.ACTION_SEND);
-////                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                sendIntent.setType("text/plain");
-////                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Hey, download this app!");
-//
-//                                sendIntent.putExtra(Intent.EXTRA_TEXT, TextUtils.concat(textView.getText().toString(), textView1.getText().toString()).toString());
-//                                String someValue = (String) TextUtils.concat(textView.getText().toString(), textView1.getText().toString() );
-//
-//                                Intent shareIntent = Intent.createChooser(sendIntent, someValue);
-//                                startActivity(shareIntent);
-//                            }
-//                        });
-//
-//                        alertadd.show();
-                        Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
-//                                Bundle setData = new Bundle();
-                        intent.putExtra("DataSaya", type);
-                        intent.putExtra("Size", size);
-                        startActivityForResult(intent, 10);
-                        String message = "";
-
-                        /*using button
-                        pdf.setVisibility(View.VISIBLE);
-                        //pdf x & y
-                        pdf.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                dateTime = new Date();
-                                GrainItem[] items = grainData.getItems();
-
-                                PdfDocument pdfDocument = new PdfDocument();
-                                Paint paint = new Paint();
-                                Paint titlePaint = new Paint();
-
-                                PdfDocument.PageInfo pageInfo
-                                        = new PdfDocument.PageInfo.Builder(1200, 2500, 1).create();
-                                PdfDocument.Page page = pdfDocument.startPage(pageInfo);
-
-                                Canvas canvas = page.getCanvas();
-                                titlePaint.setTextAlign(Paint.Align.CENTER);
-                                titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-                                titlePaint.setColor(Color.BLACK);
-                                titlePaint.setTextSize(70);
-                                canvas.drawText("Report", pageWidth / 2, 200, titlePaint);
-
-                                paint.setColor(Color.BLACK);
-                                paint.setTextSize(35f);
-                                paint.setTextAlign(Paint.Align.RIGHT);
-                                //change 590-340 to
-                                canvas.drawText("No : " + "232425", pageWidth - 20, 250, paint);
-
-                                dateFormat = new SimpleDateFormat("dd/MM/yy");
-                                canvas.drawText("Tanggal: " + dateFormat.format(dateTime), pageWidth - 20, 300, paint);
-
-                                dateFormat = new SimpleDateFormat("HH:mm:ss");
-                                canvas.drawText("Pukul: " + dateFormat.format(dateTime), pageWidth - 20, 350, paint);
-
-                                paint.setStyle(Paint.Style.STROKE);
-                                paint.setStrokeWidth(2);
-                                canvas.drawRect(20, 360, pageWidth - 20, 420, paint);
-
-                                paint.setTextAlign(Paint.Align.LEFT);
-                                paint.setStyle(Paint.Style.FILL);
-                                canvas.drawText("Size", 200, 400, paint);
-                                canvas.drawText("Type", 500, 400, paint);
-                                canvas.drawText("Jumlah data", 800, 400, paint);
-
-
-                                int y = 450;
-                                for (int j = 0; j < items.length; j++) {
-                                    canvas.drawText(String.valueOf(items[j].getGrainType().getName()), 500, y, paint);
-                                    canvas.drawText(String.valueOf(items[j].getGrainSize().getName()), 200, y, paint);
-                                    y += 50;
-                                }
-
-
-//                                   canvas.drawText(String.valueOf(items[2].getShape().getWidth()), 800, 1000, paint);
-
-
-                                pdfDocument.finishPage(page);
-
-                                File file = new File(Environment.getExternalStorageDirectory(), "/Pesanan.pdf");
-
-
-                                try {
-                                    pdfDocument.writeTo(new FileOutputStream(file));
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-
-                                pdfDocument.close();
-                                Toast.makeText(getContext(), "PDF sudah dibuat", Toast.LENGTH_LONG).show();
-
-                            }
-                        });
-
-                        */
-
-
-                        //library pdf writter
-
-                        /*
-                        fab_pdf_button.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                GrainItem[] items = grainData.getItems();
-                                Document mDoc = new Document();
-                                //pdf file name
-                                String mFileName = new SimpleDateFormat("yyyyMMdd_HHmmss",
-                                        Locale.getDefault()).format(System.currentTimeMillis());
-                                //pdf file path
-                                String mFilePath = Environment.getExternalStorageDirectory() + "/" + mFileName + ".pdf";
-                                try {
-                                    //create instance of PdfWriter class
-                                    PdfWriter.getInstance(mDoc, new FileOutputStream(mFilePath));
-                                    //open the document for writing
-                                    mDoc.open();
-                                    //get text from EditText i.e. mTextEt
-                                    float [] pointColumnWidths = {150F, 150F};
-                                    PdfPTable pdfPTable = new PdfPTable(pointColumnWidths);
-                                    // Adding cells to the table
-//                                    pdfPTable.addCell("Jenis ");
-//                                    pdfPTable.addCell("Size");
-                                    for (int i = 0; i < items.length; i++) {
-//                                        String mText = items[0].getGrainSize().getName();
-
-                                        String mTexta = items[i].getGrainType().getName();
-                                        String mText = items[i].getGrainSize().getName();
-                                        String mTextb = items[i].getGrainSize().getName();
-
-                                        //add author of the document (optional)
-                                        mDoc.addAuthor("ACKERMAN");
-
-                                        pdfPTable.addCell(mTextb);
-                                        pdfPTable.addCell(mTexta);
-                                        mDoc.add(pdfPTable);
-                                        //add paragraph to the document
-//                                        mDoc.add(new Paragraph(mTexta));
-//                                        Paragraph paragraph = new Paragraph();
-//                                        paragraph.setSpacingAfter(1);
-//
-//                                        mDoc.add(new Paragraph(mText));
-////
-//                                        mDoc.add(new Paragraph(mTextb));
-
-                                    }
-                                    //close the document
-                                    mDoc.close();
-                                    //show message that file is saved, it will show file name and file path too
-                                    Toast.makeText(getActivity(), mFileName + ".pdf\nis saved to\n" + mFilePath, Toast.LENGTH_SHORT).show();
-
-                                } catch (Exception e) {
-                                    //if any thing goes wrong causing exception, get and show exception message
-                                    Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-
-                            }
-                        });
-                        */
-
-                    } else {
-                        Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call call, Throwable t) {
-                    String message = "";
-                }
-            });
-
-        } catch (Exception e) {
-            String errMessage = e.getMessage();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+
+        StringRequest jsonObjRequest = new StringRequest(
+
+                Request.Method.POST,
+                postUrl,
+                new com.android.volley.Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        System.out.println(response);
+                    }
+                },
+                new com.android.volley.Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        VolleyLog.d("volley", "Error: " + error.getMessage());
+                        error.printStackTrace();
+                    }
+                }) {
+
+            @Override
+            public String getBodyContentType() {
+                return "application/x-www-form-urlencoded; charset=UTF-8";
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Phone", "+628156055410");
+                params.put("Password", "123456");
+                return params;
+            }
+
+        };
+
+        requestQueue.add(jsonObjRequest);
+
+        //AppController.getInstance().addToRequestQueue(jsonObjRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+//
+//        JSONObject postData = new JSONObject();
+//        try {
+//            postData.put("Phone", "+628156055410");
+//            postData.put("Password", "123456");
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        //com.android.volley.Request
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+//                com.android.volley.Request.Method.POST,
+//                postUrl,
+//                postData,
+//                new com.android.volley.Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        System.out.println(response);
+//                    }
+//                }, new com.android.volley.Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        error.printStackTrace();
+//                    }
+//                });
+
+        //requestQueue.add(jsonObjectRequest);
+
+    }
+
+    protected String jwt;
+
+    private void uploadImage(Bitmap bitmap) {
+        //20210130
+        //volleyPost();
+
+        String urlDomain = "http://110.50.85.28:8200";
+
+//        jwt = "";
+        //String phone = "+6281907123427";
+        //String password = "1m4dm1n";
+        String phone = new Sesion(getContext()).getPhone();
+        Log.d("Body Phone", "String Phone : "+phone);
+        String password =  new Sesion(getContext()).getPassword();
+        Log.d("Body Password", "String Password : " +password);
+//        session.setKeyApiJwt(jwt);
+        String jwtKey =  new Sesion(getContext()).getKeyApiJwt();
+        Log.d("Body jwtKeys", "String jwtKey : " +jwtKey);
+
+//
+//        RequestBody reqq1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(phone));
+//        RequestBody reqq2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(password));
+
+
+
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+                //Do something after 100ms
+
+
+                File file = new File(mImageFileLocation);
+                int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
+                try {
+                    Log.d("Upload jwtKeys respons", "String respons jwtKey : " +jwtKey);
+//                    new Sesion(getContext()).getKeyApiJwt();
+//                    session.setKeyApiJwt(jwt);
+                    //20210130
+                    HttpLoggingInterceptor loggingInterceptor2 = new HttpLoggingInterceptor();
+                    loggingInterceptor2.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+                    TokenInterceptor tokenInterceptor = new TokenInterceptor(jwtKey);
+
+                    OkHttpClient okHttpClient2 = new OkHttpClient.Builder()
+                            .addInterceptor(new AddCookiesInterceptor(getActivity()))
+                            .addInterceptor(new ReceivedCookiesInterceptor(getActivity()))
+                            .addInterceptor(loggingInterceptor2)
+                            .addInterceptor(tokenInterceptor)
+                            .build();
+
+                    Gson gson2 = new GsonBuilder().serializeNulls().create();
+
+                    //Retrofit retrofit = NetworkClient.getRetrofit();
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl(urlDomain)
+                            .addConverterFactory(GsonConverterFactory.create(gson2))
+                            .client(okHttpClient2)
+                            .build();
+
+                    RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+                    MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
+                    String name = "Rifqi";
+                    double latitude = locationTrack.getLatitude();
+                    int val1=(int) latitude;
+                    double longitude = locationTrack.getLongitude();
+                    int val2=(int) longitude;
+                    RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(name)); //change to phone number
+                    RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
+                    RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
+                    UploadApis uploadApis = retrofit.create(UploadApis.class);
+                    Call call = uploadApis.uploadImage(parts, req1, req2, req3);
+                    call.enqueue(new Callback() {
+                        @Override
+                        public void onResponse(Call call, Response response) {
+                            if (response.code() == 200) {
+                                Object obj = response.body();
+                                GrainData grainData = (GrainData) response.body();
+                                //String gson = new Gson().toJson(response.body());
+                                //20201126
+                                //get pie chart
+                                //for GrainType and GrainSize
+                                GrainPie[] type = grainData.getTypePie();
+                                GrainPie[] size = grainData.getSizePie();
+//                        GrainType grainType = new GrainType();
+                                showProgress();
+                                mAdapter = new ExampleAdapter(grainData);
+                                mRecyclerView.setAdapter(mAdapter);
+                                mRecyclerView.setVisibility(View.VISIBLE);
+                                no_data.setVisibility(View.GONE);
+                                warningtext.setVisibility(View.GONE);
+                                viewImage.setVisibility(View.VISIBLE);
+                                fab_chart.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
+//                                Bundle setData = new Bundle();
+                                        intent.putExtra("DataSaya", type);
+                                        intent.putExtra("Size", size);
+                                        startActivityForResult(intent, 10);
+                                    }
+                                });
+                                fab_pdf_intent.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent((Context) getActivity(), PdfActivity.class);
+//                                Bundle setData = new Bundle();
+                                        intent.putExtra("pdfType", type);
+                                        intent.putExtra("pdfSize", size);
+                                        startActivityForResult(intent, 19);
+                                    }
+                                });
+                                fab_pdf.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dateTime = new Date();
+                                        GrainItem[] items = grainData.getItems();
+
+                                        PdfDocument pdfDocument = new PdfDocument();
+                                        Paint paint = new Paint();
+                                        Paint titlePaint = new Paint();
+
+                                        PdfDocument.PageInfo pageInfo
+                                                = new PdfDocument.PageInfo.Builder(1200, 2500, 1).create();
+                                        PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+
+                                        Canvas canvas = page.getCanvas();
+                                        titlePaint.setTextAlign(Paint.Align.CENTER);
+                                        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+                                        titlePaint.setColor(Color.BLACK);
+                                        titlePaint.setTextSize(70);
+                                        canvas.drawText("Hasil Pengujian", pageWidth / 2, 200, titlePaint);
+
+                                        paint.setColor(Color.BLACK);
+                                        paint.setTextSize(35f);
+                                        paint.setTextAlign(Paint.Align.RIGHT);
+                                        //change 590-340 to
+                                        canvas.drawText("No : " + "232425", pageWidth - 20, 250, paint);
+
+                                        dateFormat = new SimpleDateFormat("dd/MM/yy");
+                                        canvas.drawText("Tanggal: " + dateFormat.format(dateTime), pageWidth - 20, 300, paint);
+
+                                        dateFormat = new SimpleDateFormat("HH:mm:ss");
+                                        canvas.drawText("Pukul: " + dateFormat.format(dateTime), pageWidth - 20, 350, paint);
+
+                                        paint.setStyle(Paint.Style.STROKE);
+                                        paint.setStrokeWidth(2);
+                                        canvas.drawRect(20, 360, pageWidth - 20, 420, paint);
+
+                                        paint.setTextAlign(Paint.Align.LEFT);
+                                        paint.setStyle(Paint.Style.FILL);
+                                        canvas.drawText("Size", 200, 400, paint);
+                                        canvas.drawText("Type", 500, 400, paint);
+                                        canvas.drawText("Jumlah data", 800, 400, paint);
+
+
+                                        int y = 450;
+                                        for (int j = 0; j < items.length; j++) {
+                                            canvas.drawText(String.valueOf(items[j].getGrainType().getName()), 500, y, paint);
+                                            canvas.drawText(String.valueOf(items[j].getGrainSize().getName()), 200, y, paint);
+                                            y += 50;
+                                        }
+
+
+//                                   canvas.drawText(String.valueOf(items[2].getShape().getWidth()), 800, 1000, paint);
+
+
+                                        pdfDocument.finishPage(page);
+                                        //pdf file name
+                                        String mFileName = new SimpleDateFormat("yyyy_MMdd_HHmmss",
+                                                Locale.getDefault()).format(System.currentTimeMillis());
+                                        //pdf file path
+                                        String mFilePath = Environment.getExternalStorageDirectory() + "/" + mFileName + ".pdf";
+                                        File file = new File(Environment.getExternalStorageDirectory(),  "/" + mFileName + ".pdf");
+
+
+                                        try {
+                                            pdfDocument.writeTo(new FileOutputStream(file));
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        pdfDocument.close();
+                                        Toast.makeText(getContext(), "PDF sudah dibuat", Toast.LENGTH_LONG).show();
+
+                                    }
+
+                                });
+
+                                LocalDate date2 = LocalDate.now();
+                                Date date = new Date();
+                                //type
+                                for(int i=0; i<type.length; i++) {
+                                    String name = type[i].getName();
+                                    double val = type[i].getValue();
+                                    double pct = type[i].getPercent();
+
+                                    //call db model
+                                    GHistory type2 = new GHistory();
+                                    type2.setName(name);
+                                    type2.setVal(val);
+                                    type2.setPct(pct);
+                                    type2.setDataType(1);
+                                    type2.setCreatedAt(date);
+                                    insertData(type2);
+                                }
+                                //size
+                                for(int i=0; i<size.length; i++) {
+                                    String name_size = size[i].getName();
+                                    double val_size = size[i].getValue();
+                                    double pct_size = size[i].getPercent();
+
+                                    //call db model
+                                    GHistory type2 = new GHistory();
+                                    type2.setName(name_size);
+                                    type2.setVal(val_size);
+                                    type2.setPct(pct_size);
+                                    type2.setDataType(2);
+                                    type2.setCreatedAt(date);
+                                    insertData(type2);
+                                }
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
+//                                Bundle setData = new Bundle();
+                                        intent.putExtra("DataSaya", type);
+                                        intent.putExtra("Size", size);
+                                        startActivityForResult(intent, 10);
+                                        String message = "";
+                                        closeProgress();
+
+
+                                    }
+                                },1000);
+
+
+
+                                //library pdf writter
+
+
+                            } else {
+                                Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                                closeProgress();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call call, Throwable t) {
+                            String message = "";
+                            closeProgress();
+                        }
+                    });
+
+                } catch (Exception e) {
+                    String errMessage = e.getMessage();
+                }
+
+//            }
+
+//        }, 500);
+//        Call<ResponseBody> calls = uploadApiss.insertLogin(phone, password);
+
+        /*
+        jwt = "";
+        calls.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.code() == 200){
+                    closeProgress();
+                    Log.d("Body <>", "Response: "+response.body().toString());
+                    //add delay
+                    //String jwt = "";
+                    ResponseBody responseBody = response.body();
+                    try {
+                        byte[] myByte = responseBody.bytes();
+                        jwt = new String(myByte, StandardCharsets.UTF_8);
+                        jwt = jwt.substring(1, jwt.length()-1);
+                        //String strResponse = responseBody.string();
+                        //String coba = "disini";
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            //Do something after 100ms
+                            closeProgress();
+
+                            File file = new File(mImageFileLocation);
+                            int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
+                            try {
+                                ResponseBody responseBody = response.body();
+                                byte[] myByte = responseBody.bytes();
+                                jwt = new String(myByte, StandardCharsets.UTF_8);
+                                jwt = jwt.substring(1, jwt.length()-1);
+                                Log.d("Upload jwtKeys respons", "String respons jwtKey : " +new Sesion(getContext()).getKeyApiJwt());
+                                //20210130
+                                HttpLoggingInterceptor loggingInterceptor2 = new HttpLoggingInterceptor();
+                                loggingInterceptor2.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+                                TokenInterceptor tokenInterceptor = new TokenInterceptor(jwt);
+
+                                OkHttpClient okHttpClient2 = new OkHttpClient.Builder()
+                                        .addInterceptor(new AddCookiesInterceptor(getActivity()))
+                                        .addInterceptor(new ReceivedCookiesInterceptor(getActivity()))
+                                        .addInterceptor(loggingInterceptor2)
+                                        .addInterceptor(tokenInterceptor)
+                                        .build();
+
+                                Gson gson2 = new GsonBuilder().serializeNulls().create();
+
+                                //Retrofit retrofit = NetworkClient.getRetrofit();
+                                Retrofit retrofit = new Retrofit.Builder()
+                                        .baseUrl(urlDomain)
+                                        .addConverterFactory(GsonConverterFactory.create(gson2))
+                                        .client(okHttpClient2)
+                                        .build();
+
+                                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+                                MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
+                                String name = "Rifqi";
+                                double latitude = locationTrack.getLatitude();
+                                int val1=(int) latitude;
+                                double longitude = locationTrack.getLongitude();
+                                int val2=(int) longitude;
+                                RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(name)); //change to phone number
+                                RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
+                                RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
+                                UploadApis uploadApis = retrofit.create(UploadApis.class);
+                                Call call = uploadApis.uploadImage(parts, req1, req2, req3);
+                                call.enqueue(new Callback() {
+                                    @Override
+                                    public void onResponse(Call call, Response response) {
+                                        if (response.code() == 200) {
+                                            Object obj = response.body();
+                                            GrainData grainData = (GrainData) response.body();
+                                            //String gson = new Gson().toJson(response.body());
+                                            //20201126
+                                            //get pie chart
+                                            //for GrainType and GrainSize
+                                            GrainPie[] type = grainData.getTypePie();
+                                            GrainPie[] size = grainData.getSizePie();
+//                        GrainType grainType = new GrainType();
+                                            showProgress();
+                                            mAdapter = new ExampleAdapter(grainData);
+                                            mRecyclerView.setAdapter(mAdapter);
+                                            mRecyclerView.setVisibility(View.VISIBLE);
+                                            no_data.setVisibility(View.GONE);
+                                            warningtext.setVisibility(View.GONE);
+                                            viewImage.setVisibility(View.VISIBLE);
+                                            fab_chart.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
+//                                Bundle setData = new Bundle();
+                                                    intent.putExtra("DataSaya", type);
+                                                    intent.putExtra("Size", size);
+                                                    startActivityForResult(intent, 10);
+                                                }
+                                            });
+                                            fab_pdf_intent.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    Intent intent = new Intent((Context) getActivity(), PdfActivity.class);
+//                                Bundle setData = new Bundle();
+                                                    intent.putExtra("pdfType", type);
+                                                    intent.putExtra("pdfSize", size);
+                                                    startActivityForResult(intent, 19);
+                                                }
+                                            });
+                                            fab_pdf.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    dateTime = new Date();
+                                                    GrainItem[] items = grainData.getItems();
+
+                                                    PdfDocument pdfDocument = new PdfDocument();
+                                                    Paint paint = new Paint();
+                                                    Paint titlePaint = new Paint();
+
+                                                    PdfDocument.PageInfo pageInfo
+                                                            = new PdfDocument.PageInfo.Builder(1200, 2500, 1).create();
+                                                    PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+
+                                                    Canvas canvas = page.getCanvas();
+                                                    titlePaint.setTextAlign(Paint.Align.CENTER);
+                                                    titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+                                                    titlePaint.setColor(Color.BLACK);
+                                                    titlePaint.setTextSize(70);
+                                                    canvas.drawText("Hasil Pengujian", pageWidth / 2, 200, titlePaint);
+
+                                                    paint.setColor(Color.BLACK);
+                                                    paint.setTextSize(35f);
+                                                    paint.setTextAlign(Paint.Align.RIGHT);
+                                                    //change 590-340 to
+                                                    canvas.drawText("No : " + "232425", pageWidth - 20, 250, paint);
+
+                                                    dateFormat = new SimpleDateFormat("dd/MM/yy");
+                                                    canvas.drawText("Tanggal: " + dateFormat.format(dateTime), pageWidth - 20, 300, paint);
+
+                                                    dateFormat = new SimpleDateFormat("HH:mm:ss");
+                                                    canvas.drawText("Pukul: " + dateFormat.format(dateTime), pageWidth - 20, 350, paint);
+
+                                                    paint.setStyle(Paint.Style.STROKE);
+                                                    paint.setStrokeWidth(2);
+                                                    canvas.drawRect(20, 360, pageWidth - 20, 420, paint);
+
+                                                    paint.setTextAlign(Paint.Align.LEFT);
+                                                    paint.setStyle(Paint.Style.FILL);
+                                                    canvas.drawText("Size", 200, 400, paint);
+                                                    canvas.drawText("Type", 500, 400, paint);
+                                                    canvas.drawText("Jumlah data", 800, 400, paint);
+
+
+                                                    int y = 450;
+                                                    for (int j = 0; j < items.length; j++) {
+                                                        canvas.drawText(String.valueOf(items[j].getGrainType().getName()), 500, y, paint);
+                                                        canvas.drawText(String.valueOf(items[j].getGrainSize().getName()), 200, y, paint);
+                                                        y += 50;
+                                                    }
+
+
+//                                   canvas.drawText(String.valueOf(items[2].getShape().getWidth()), 800, 1000, paint);
+
+
+                                                    pdfDocument.finishPage(page);
+                                                    //pdf file name
+                                                    String mFileName = new SimpleDateFormat("yyyy_MMdd_HHmmss",
+                                                            Locale.getDefault()).format(System.currentTimeMillis());
+                                                    //pdf file path
+                                                    String mFilePath = Environment.getExternalStorageDirectory() + "/" + mFileName + ".pdf";
+                                                    File file = new File(Environment.getExternalStorageDirectory(),  "/" + mFileName + ".pdf");
+
+
+                                                    try {
+                                                        pdfDocument.writeTo(new FileOutputStream(file));
+                                                    } catch (IOException e) {
+                                                        e.printStackTrace();
+                                                    }
+
+                                                    pdfDocument.close();
+                                                    Toast.makeText(getContext(), "PDF sudah dibuat", Toast.LENGTH_LONG).show();
+
+                                                }
+
+                                            });
+
+                                            LocalDate date2 = LocalDate.now();
+                                            Date date = new Date();
+                                            //type
+                                            for(int i=0; i<type.length; i++) {
+                                                String name = type[i].getName();
+                                                double val = type[i].getValue();
+                                                double pct = type[i].getPercent();
+
+                                                //call db model
+                                                GHistory type2 = new GHistory();
+                                                type2.setName(name);
+                                                type2.setVal(val);
+                                                type2.setPct(pct);
+                                                type2.setDataType(1);
+                                                type2.setCreatedAt(date);
+                                                insertData(type2);
+                                            }
+                                            //size
+                                            for(int i=0; i<size.length; i++) {
+                                                String name_size = size[i].getName();
+                                                double val_size = size[i].getValue();
+                                                double pct_size = size[i].getPercent();
+
+                                                //call db model
+                                                GHistory type2 = new GHistory();
+                                                type2.setName(name_size);
+                                                type2.setVal(val_size);
+                                                type2.setPct(pct_size);
+                                                type2.setDataType(2);
+                                                type2.setCreatedAt(date);
+                                                insertData(type2);
+                                            }
+                                            new Handler().postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
+//                                Bundle setData = new Bundle();
+                                                    intent.putExtra("DataSaya", type);
+                                                    intent.putExtra("Size", size);
+                                                    startActivityForResult(intent, 10);
+                                                    String message = "";
+                                                    closeProgress();
+
+
+                                                }
+                                            },1000);
+
+
+
+                                            //library pdf writter
+
+
+                                        } else {
+                                            Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                                            closeProgress();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call call, Throwable t) {
+                                        String message = "";
+                                        closeProgress();
+                                    }
+                                });
+
+                            } catch (Exception e) {
+                                String errMessage = e.getMessage();
+                            }
+
+                        }
+
+                    }, 500);
+                }else {
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                String message = "";
+                Log.d("Body -->>", "Error: ");
+
+            }
+        });
+        */
+
+    }
+
+    private void showProgress() {
+
+        progressDialog.setMessage("Loading . . .");
+        progressDialog.show();
+
+    }
+
+    private void closeProgress() {
+        progressDialog.dismiss();
     }
 
     private void insertData(final GHistory type2) {

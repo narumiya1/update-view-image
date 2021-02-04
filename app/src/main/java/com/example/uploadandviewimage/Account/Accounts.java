@@ -3,20 +3,107 @@ package com.example.uploadandviewimage.Account;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-@IgnoreExtraProperties
+
 public class Accounts implements Serializable {
+
+//    @SerializedName("Id")
+//    private String Id;
+//    @SerializedName("Username")
+//    private String Username;
+//    @SerializedName("Email")
+//    private String Email;
+//    @SerializedName("Address")
+//    private String Address;
+//    @SerializedName("Phone")
+//    private String Phone;
+//    @SerializedName("Password")
+//    private String Password;
+//
+//    public Accounts(){
+//
+//    }
+//
+//    public Accounts(String Id, String Username, String Email, String Address, String Phone, String Password) {
+//        this.Id = Id;
+//        this.Username = Username;
+//        this.Email = Email;
+//        this.Address = Address;
+//        this.Phone = Phone;
+//        this.Password = Password;
+//    }
+//
+//    public String getId() {
+//        return Id;
+//    }
+//
+//    public void setId(String Id) {
+//        Id = Id;
+//    }
+//
+//    public String getUsername() {
+//        return Username;
+//    }
+//
+//    public void setUsername(String Username) {
+//        Username = Username;
+//    }
+//
+//    public String getEmail() {
+//        return Email;
+//    }
+//
+//    public void setEmail(String Email) {
+//        Email = Email;
+//    }
+//
+//    public String getAddress() {
+//        return Address;
+//    }
+//
+//    public void setAddress(String Address) {
+//        Address = Address;
+//    }
+//
+//    public String getPhone() {
+//        return Phone;
+//    }
+//
+//    public void setPhone(String Phone) {
+//        Phone = Phone;
+//    }
+//
+//    public String getPassword() {
+//        return Password;
+//    }
+//
+//    public void setPassword(String Password) {
+//        Password = Password;
+//    }
+
+    @SerializedName("id")
     private String id;
-    private String nama;
+    @SerializedName("username")
+    private String username;
+    @SerializedName("email")
     private String email;
-    private String alamat;
-    private String phoneNumbers;
+    @SerializedName("address")
+    private String address;
+    @SerializedName("phone")
+    private String phone;
+    @SerializedName("password")
     private String password;
-    private String retypePassword;
-
     public Accounts(){
-
+    }
+    public Accounts(String id, String username, String email, String address, String phone, String password) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.address = address;
+        this.phone = phone;
+        this.password = password;
     }
 
     public String getId() {
@@ -27,30 +114,12 @@ public class Accounts implements Serializable {
         this.id = id;
     }
 
-    public String getNama() {
-        return nama;
+    public String getUsername() {
+        return username;
     }
 
-    public String getPhoneNumbers() {
-        return phoneNumbers;
-    }
-
-    public void setPhoneNumbers(String phoneNumbers) {
-        this.phoneNumbers = phoneNumbers;
-    }
-
-    public Accounts(String id, String nama, String email, String alamat, String phoneNumbers, String password, String retypePassword) {
-        this.id = id;
-        this.nama = nama;
-        this.email = email;
-        this.alamat = alamat;
-        this.phoneNumbers = phoneNumbers;
-        this.password = password;
-        this.retypePassword = retypePassword;
-    }
-
-    public void setNama(String nama) {
-        this.nama = nama;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -61,12 +130,20 @@ public class Accounts implements Serializable {
         this.email = email;
     }
 
-    public String getAlamat() {
-        return alamat;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAlamat(String alamat) {
-        this.alamat = alamat;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getPassword() {
@@ -75,14 +152,6 @@ public class Accounts implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRetypePassword() {
-        return retypePassword;
-    }
-
-    public void setRetypePassword(String retypePassword) {
-        this.retypePassword = retypePassword;
     }
 }
 

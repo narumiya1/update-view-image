@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.uploadandviewimage.R;
+import com.example.uploadandviewimage.auth.Sesion;
 import com.example.uploadandviewimage.fragment.AccountFragment;
 import com.example.uploadandviewimage.fragment.AboutFragment;
 import com.example.uploadandviewimage.fragment.HistoryFragment;
@@ -22,11 +23,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class FragmentActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener, MeinenDialogFragment.DialogListener {
 
+    Sesion sesion;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragmnet);
+        sesion = new Sesion(this);
+        if (sesion.isLoggedIn()){
 
+        }
         loadFragment(new HomeFragment());
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.btn_main);
@@ -55,7 +60,7 @@ public class FragmentActivity extends AppCompatActivity implements BottomNavigat
             case R.id.account_menu:
                 fragment = new AccountFragment();
                 break;
-                // 13 1 21 coba history fragment
+            // 13 1 21 coba history fragment
             case R.id.history:
                 fragment = new HistoryFragment();
         }

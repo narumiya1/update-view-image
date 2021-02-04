@@ -1,6 +1,7 @@
 package com.example.uploadandviewimage.auth;
 
 public class CountryData {
+    public static final String[] countryNamesz ={"+62"};
     public static final String[] countryNames = {"Afghanistan", "Albania",
             "Algeria", "Andorra", "Angola", "Antarctica", "Argentina",
             "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan",
@@ -45,6 +46,7 @@ public class CountryData {
             "Uruguay", "United States", "Uzbekistan", "Vanuatu",
             "Holy See (vatican City State)", "Venezuela", "Viet Nam",
             "Wallis And Futuna", "Yemen", "Zambia", "Zimbabwe"};
+    public static final String[] countryAreaCodesz = {"62"};
 
     public static final String[] countryAreaCodes = {"93", "355", "213",
             "376", "244", "672", "54", "374", "297", "61", "43", "994", "973",
