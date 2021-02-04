@@ -39,7 +39,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -60,16 +59,10 @@ import com.example.uploadandviewimage.activity.PdfActivity;
 import com.example.uploadandviewimage.cookies.AddCookiesInterceptor;
 import com.example.uploadandviewimage.cookies.JavaNetCookieJar;
 import com.example.uploadandviewimage.cookies.ReceivedCookiesInterceptor;
-import com.example.uploadandviewimage.fragment.AccountFragment;
 import com.example.uploadandviewimage.roomdbGhistory.GHistory;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -123,11 +116,10 @@ public class LoginNumber extends AppCompatActivity {
     Sesion session;
     private static final Pattern PHONE_PATTERN =
             Pattern.compile("^" +
-                    "(?=.*[+])" +     //at least 1 special character
-                    ".{6,}"               //at least 4 characters
+                            "(?=.*[+])"+     //at least 1 special character
+                            ".{6,}"               //at least 4 characters
 
             );
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,7 +131,6 @@ public class LoginNumber extends AppCompatActivity {
         session = new Sesion(this);
         progressDialog = new ProgressDialog(LoginNumber.this);
         openMain();
-
         reg = findViewById(R.id.textview_signup);
         reg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,8 +148,7 @@ public class LoginNumber extends AppCompatActivity {
             }
         });
     }
-
-    private boolean validatePhone() {
+    private boolean validatePhone(){
         String numberPhoneInput = numbr.getText().toString().trim();
         if (numberPhoneInput.isEmpty()) {
             numbr.setError("number phone can't be empty");
@@ -171,9 +161,8 @@ public class LoginNumber extends AppCompatActivity {
             return true;
         }
     }
-
-    public void buttonLogin(View v) {
-        if (!validatePhone()) {
+    public void buttonLogin(View v){
+        if (!validatePhone()){
             return;
         }
         String urlDomain = "http://110.50.85.28:8200";
@@ -198,7 +187,7 @@ public class LoginNumber extends AppCompatActivity {
 
         String phone = "+628156055410";
         String password = "123456";
-        Log.d("PHONE <->", "Response: " + passwordInput);
+        Log.d("PHONE <->", "Response: "+passwordInput);
         phoneInput = numbr.getText().toString();
         passwordInput = passwrd.getText().toString();
 //                String phone = new Sesion(getApplicationContext()).getPhone();
@@ -211,27 +200,25 @@ public class LoginNumber extends AppCompatActivity {
         UploadApis uploadApiss = retrofits.create(UploadApis.class);
 
         Call<ResponseBody> calls = uploadApiss.insertLogin(phoneInput, passwordInput);
-        Log.d("Body PHONE", "Response: " + phoneInput);
-        Log.d("Body passwrd", "Response: " + passwordInput);
+        Log.d("Body PHONE", "Response: "+phoneInput);
+        Log.d("Body passwrd", "Response: "+passwordInput);
         jwt = "";
         calls.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.code() == 200) {
+                if (response.code() == 200){
                     closeProgress();
-                    Log.d("Body API <>", "Response: " + response.body().toString());
+                    Log.d("Body API <>", "Response: "+response.body().toString());
                     session.setKeyApiJwt(jwt);
-                    Log.d("Body Token 1 <>", "Response: " + jwt);
+                    Log.d("Body Token 1 <>", "Response: "+jwt);
                     //add delay
                     //String jwt = "";
-
-
                     ResponseBody responseBody = response.body();
                     try {
                         byte[] myByte = responseBody.bytes();
                         jwt = new String(myByte, StandardCharsets.UTF_8);
-                        jwt = jwt.substring(1, jwt.length() - 1);
-                        Log.d("Body Token 2 <>", "Response: " + jwt);
+                        jwt = jwt.substring(1, jwt.length()-1);
+                        Log.d("Body Token 2 <>", "Response: "+jwt);
                         //String strResponse = responseBody.string();
                         //String coba = "disini";
                     } catch (IOException e) {
@@ -251,7 +238,7 @@ public class LoginNumber extends AppCompatActivity {
 
                                 TokenInterceptor tokenInterceptor = new TokenInterceptor(jwt);
 
-                                Log.d("Body Token <>", "Response: " + jwt);
+                                Log.d("Body Token <>", "Response: "+jwt);
 
                                 session.setPhone(phoneInput);
                                 session.setPassword(passwordInput);
@@ -273,7 +260,7 @@ public class LoginNumber extends AppCompatActivity {
                                         .client(okHttpClient2)
                                         .build();
 
-                                Log.d("Body <>", "Response: " + response.body().toString());
+                                Log.d("Body <>", "Response: "+response.body().toString());
                                 Intent intent = new Intent(LoginNumber.this, ProfileActivity.class);
                                 startActivity(intent);
 
@@ -284,7 +271,7 @@ public class LoginNumber extends AppCompatActivity {
                         }
 
                     }, 1000);
-                } else {
+                }else {
 
                 }
             }
@@ -302,7 +289,6 @@ public class LoginNumber extends AppCompatActivity {
 
     private void openMain() {
         if (session.isLoggedIn()) {
-
             Intent intent = new Intent(LoginNumber.this, ProfileActivity.class);
             startActivity(intent);
         }
@@ -311,7 +297,6 @@ public class LoginNumber extends AppCompatActivity {
     private void closeProgress() {
         progressDialog.dismiss();
     }
-
     private void selectImage() {
         final CharSequence[] options = {"Take Photo", "Choose from Gallery"};
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginNumber.this);

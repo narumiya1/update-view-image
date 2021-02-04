@@ -166,7 +166,7 @@
                     android:layout_gravity="center_vertical"
                     android:fontFamily="@font/montserratlight"
                     android:paddingLeft="20dp"
-                    android:text=" email@gmail.com"
+                    android:text=" null "
                     android:textSize="16dp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -190,7 +190,7 @@
                     android:layout_gravity="center_vertical"
                     android:paddingLeft="20dp"
                     android:fontFamily="@font/montserratlight"
-                    android:text="+662 81 225 225"
+                    android:text="null"
                     android:textSize="16dp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -216,7 +216,7 @@
                     android:fontFamily="@font/montserratlight"
                     android:paddingLeft="20dp"
                     android:textSize="16dp"
-                    android:text="Alamat  "
+                    android:text="null  "
                     android:textStyle="bold" />
             </LinearLayout>
 

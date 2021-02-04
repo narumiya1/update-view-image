@@ -62,22 +62,13 @@ public class AccountFragment extends Fragment {
         txtPasswrd = rootView.findViewById(R.id.tv_password_view);
         txtPasswrdRetype = rootView.findViewById(R.id.tv_password_view_retype);
         session = new Sesion(getContext());
-//        txtData.setText(mAuth.getCurrentUser().getPhoneNumber());
-        // logout
-        getPphoneNumbbr = session.getPhone();
+
         btnLogout = rootView.findViewById(R.id.btn_lougout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
-//                Intent intent = new Intent(getContext(), LoginActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//
-//                startActivity(intent);
                 session.logoutUser();
-//                Preference.clearLoggedInUser(getContext());
-//                startActivity(new Intent(getContext(),LoginActivity.class));
-//                session.logoutUser();
 
             }
         });
@@ -134,10 +125,10 @@ public class AccountFragment extends Fragment {
 //
 //            }
 //        });
-
+        getPphoneNumbbr = session.getPhone();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         Sesion session = new Sesion(getActivity());
-        Query query = reference.child("User").child(session.getPhone());
+        Query query = reference.child("User").child(getPphoneNumbbr);
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
