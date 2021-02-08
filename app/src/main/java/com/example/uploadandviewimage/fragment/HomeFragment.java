@@ -27,6 +27,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -38,8 +39,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -133,6 +136,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -187,6 +191,16 @@ public class HomeFragment extends Fragment{
     TextView longi,lati;
     Sesion session;
     Accounts accounts = new Accounts();
+    private CountDownTimer countDownTimer;
+    private TextView textViewTime;
+    private ProgressBar progressBarCircle;
+    private enum TimerStatus {
+        STARTED,
+        STOPPED
+    }
+
+    private HomeFragment.TimerStatus timerStatus = HomeFragment.TimerStatus.STOPPED;
+    private long timeCountInMilliSeconds = 1 * 60000;
     public HomeFragment() {
     }
 
@@ -296,9 +310,98 @@ public class HomeFragment extends Fragment{
         longi = view.findViewById(R.id.tv_long);
         lati = view.findViewById(R.id.tv_lang);
         mAuth = FirebaseAuth.getInstance();
+        progressBarCircle = (ProgressBar)  view.findViewById(R.id.progressBarCircle);
+        textViewTime = (TextView)  view.findViewById(R.id.textViewTime);
+        startStops();
+    }
+
+    private void startStops() {
+        if (timerStatus == HomeFragment.TimerStatus.STOPPED) {
+            // call to initialize the timer values
+            setTimerValues();
+            // call to initialize the progress bar values
+            setProgressBarValues();
+            // changing the timer status to started
+            timerStatus = HomeFragment.TimerStatus.STARTED;
+            // call to start the count down timer
+            startCountDownTimer();
+        } else {
+            // changing the timer status to stopped
+            timerStatus = HomeFragment.TimerStatus.STOPPED;
+            stopCountDownTimer();
+
+        }
+    }
+
+    private void stopCountDownTimer() {
+        countDownTimer.cancel();
 
     }
 
+    private void startCountDownTimer() {
+        countDownTimer = new CountDownTimer(timeCountInMilliSeconds, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+                textViewTime.setText(hmsTimeFormatter(millisUntilFinished));
+
+                progressBarCircle.setProgress((int) (millisUntilFinished / 1000));
+
+            }
+
+            @Override
+            public void onFinish() {
+
+                textViewTime.setText(hmsTimeFormatter(timeCountInMilliSeconds));
+                // call to initialize the progress bar values
+                setProgressBarValues();
+                // changing the timer status to stopped
+                timerStatus = HomeFragment.TimerStatus.STOPPED;
+//                Toast.makeText(getActivity(), "TIME OUT SILAHKAN LOGIN KEMBAILI", Toast.LENGTH_LONG).show();
+                closeProgress();
+                String jwtNull = "";
+                session.setKeyApiJwt(jwtNull);
+                session.setIsLogin(false);
+                session.logoutUser();
+
+                Log.d("Body jwtNull", "String jwtNull : "+jwtNull);
+            }
+
+        }.start();
+        countDownTimer.start();
+    }
+
+    private void setProgressBarValues() {
+        progressBarCircle.setMax((int) timeCountInMilliSeconds / 1000);
+        progressBarCircle.setProgress((int) timeCountInMilliSeconds / 1000);
+    }
+
+    private void setTimerValues() {
+        int minute = 30 ;
+        int minuteDiemn = Integer.parseInt(getString(R.string.minutes));
+
+        // assigning values after converting to milliseconds
+        timeCountInMilliSeconds = minuteDiemn * 60 * 1000;
+        Log.d("Body jwtNull", "String jwtNull : "+timeCountInMilliSeconds);
+
+    }
+    /**
+     * method to convert millisecond to time format
+     *
+     * @param milliSeconds
+     * @return HH:mm:ss time formatted string
+     */
+    private String hmsTimeFormatter(long milliSeconds) {
+
+        String hms = String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(milliSeconds),
+                TimeUnit.MILLISECONDS.toMinutes(milliSeconds) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(milliSeconds)),
+                TimeUnit.MILLISECONDS.toSeconds(milliSeconds) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliSeconds)));
+
+        return hms;
+
+
+    }
     private boolean isConnected() {
         boolean connected = false;
         try {
@@ -824,7 +927,10 @@ public class HomeFragment extends Fragment{
 //        session.setKeyApiJwt(jwt);
         String jwtKey =  new Sesion(getContext()).getKeyApiJwt();
         Log.d("Body jwtKeys", "String jwtKey : " +jwtKey);
-
+        if (jwtKey.equals(jwt)){
+            session.setIsLogin(false);
+            session.logoutUser();
+        }
 //
 //        RequestBody reqq1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(phone));
 //        RequestBody reqq2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(password));

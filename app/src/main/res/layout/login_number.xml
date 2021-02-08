@@ -63,7 +63,8 @@
             android:layout_marginTop="@dimen/loginViewsMargin">
 
             <EditText
-                android:fontFamily="@font/revans"
+                android:fontFamily="@font/montserratlight"
+                android:textStyle="bold"
                 android:id="@+id/et_login_number"
                 style="@style/modifiedEditText"
                 android:hint="@string/login_phone_hint"
@@ -78,7 +79,8 @@
             android:layout_marginTop="@dimen/loginViewsMargin">
 
             <EditText
-                android:fontFamily="@font/revans"
+                android:fontFamily="@font/montserratlight"
+                android:textStyle="bold"
                 android:id="@+id/et_pw_number"
                 style="@style/modifiedEditText"
                 android:hint="@string/login_password_hint"

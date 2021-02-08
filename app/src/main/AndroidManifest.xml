@@ -49,6 +49,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".auth.LoginActivity"/>
         <activity android:name=".auth.ProfileActivity"/>
+        <activity android:name=".ViewPagerActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

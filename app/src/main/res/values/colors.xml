@@ -11,4 +11,7 @@
 
     <!--colros for card-->
     <color name="whiteCardColor">#fff</color>
+    <color name="colorBackground">#151B29</color>
+    <color name="colorYellow">#FFC107</color>
+    <color name="colorPrimaryDarker">#0E121B</color>
 </resources>

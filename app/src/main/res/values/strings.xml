@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Grain Visionn 2020</string>
+    <string name="app_name">Grain Vision 2020</string>
     <string name="title_activity_home">MainActivity</string>
     <string name="login_password_hint2">Repeat Password</string>
     <string name="reg_password_hint">Retype Password</string>

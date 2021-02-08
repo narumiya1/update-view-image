@@ -4,7 +4,7 @@
 
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-
+    <string name="minutes">30</string>
     <string name="table_layout_4_open">Open</string>
     <string name="table_layout_4_open_shortcut">Open shortcut</string>
     <string name="table_layout_4_save">Save</string>
