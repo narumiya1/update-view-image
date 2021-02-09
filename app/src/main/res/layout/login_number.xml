@@ -51,7 +51,7 @@
 
         </RelativeLayout>
         <TextView
-            android:fontFamily="@font/revans"
+            android:fontFamily="@font/montserratlight"
             android:textSize="16dp"
             style="@style/headerTextPrimary"
             android:layout_marginTop="@dimen/loginViewsMargin"

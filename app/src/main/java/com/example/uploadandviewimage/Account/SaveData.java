@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.activity.FragmentActivity;
 import com.example.uploadandviewimage.auth.LoginActivity;
+import com.example.uploadandviewimage.auth.LoginNumber;
 import com.example.uploadandviewimage.auth.ProfileActivity;
 import com.example.uploadandviewimage.auth.Sesion;
 import com.google.firebase.auth.FirebaseAuth;
@@ -141,7 +142,7 @@ public class SaveData extends AppCompatActivity {
 //                sesion.setIsLogin(true);
         Accounts accounts = new Accounts(userId, userName, userEmail, userAlamat, mobilephone_sreg, passwordUser);
         databaseReference.child(mobilephone_sreg).setValue(accounts);
-        Intent intent = new Intent(SaveData.this, LoginActivity.class);
+        Intent intent = new Intent(SaveData.this, LoginNumber.class);
         startActivity(intent);
         Toast.makeText(SaveData.this, "Silahkan login untuk melanjutkan", Toast.LENGTH_SHORT).show();
 
