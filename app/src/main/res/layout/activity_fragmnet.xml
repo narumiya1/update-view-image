@@ -5,7 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-
+    <TextView
+        android:id="@+id/textViewCountTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="00:01:00"
+        android:layout_margin="6dp"
+        android:gravity="right"
+        android:textColor="@color/colorBackground"
+        android:textSize="14sp" />
     <FrameLayout
         android:id="@+id/frl_main"
         android:layout_width="match_parent"
