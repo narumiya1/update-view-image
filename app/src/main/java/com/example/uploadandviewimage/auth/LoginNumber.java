@@ -111,7 +111,7 @@ public class LoginNumber extends AppCompatActivity {
     private Uri image_uri;
     private String phoneInput, passwordInput;
     protected String jwt;
-    TextView reg;
+    TextView reg, forgot_password;
     ProgressDialog progressDialog;
     Sesion session;
     private static final Pattern PHONE_PATTERN =
@@ -129,6 +129,7 @@ public class LoginNumber extends AppCompatActivity {
         viewImage = (PhotoView) findViewById(R.id.viewImageCb);
         add_photo = findViewById(R.id.ive_add);
         session = new Sesion(this);
+        forgot_password = findViewById(R.id.forgot_password);
         progressDialog = new ProgressDialog(LoginNumber.this);
         openMain();
         reg = findViewById(R.id.textview_signup);
@@ -136,6 +137,14 @@ public class LoginNumber extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //auth here
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(LoginNumber.this, com.example.uploadandviewimage.auth.AuthActivity.class));
+                finish();
+            }
+        });
+        forgot_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(LoginNumber.this, com.example.uploadandviewimage.auth.AuthActivity.class));
                 finish();
@@ -266,7 +275,11 @@ public class LoginNumber extends AppCompatActivity {
                         }
 
                     }, 1000);
+                    Toast.makeText(LoginNumber.this, "LOGIN BERHASIL !", Toast.LENGTH_LONG).show();
+
                 }else {
+
+                    Toast.makeText(LoginNumber.this, "Nomor/Password tidak sesuai, silahkan cek kembali  !", Toast.LENGTH_LONG).show();
 
                 }
             }
@@ -275,6 +288,7 @@ public class LoginNumber extends AppCompatActivity {
             public void onFailure(Call call, Throwable t) {
                 String message = "";
                 Log.d("Body -->>", "Error: ");
+                Toast.makeText(LoginNumber.this, "Password salah !", Toast.LENGTH_SHORT).show();
 
             }
         });
