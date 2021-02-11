@@ -5,15 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="4dp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_main"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="60dp"
         android:layout_gravity="center_horizontal"
         android:layout_margin="4dp"
-        android:padding="10dp"
+        android:padding="4dp"
         card_view:cardBackgroundColor="@color/background_material_light"
         card_view:cardCornerRadius="3dp"
         card_view:cardElevation="2.5dp">
@@ -112,7 +112,8 @@
                 android:gravity="center"
                 android:text="2021"
                 android:textColor="@android:color/black"
-                android:textSize="18sp" />
+                android:textSize="16sp"
+                android:textStyle="bold"/>
 
             <TextView android:visibility="gone"
                 android:id="@+id/item_jumlah"

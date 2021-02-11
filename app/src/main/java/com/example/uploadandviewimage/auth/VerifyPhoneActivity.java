@@ -80,17 +80,19 @@ public class VerifyPhoneActivity extends AppCompatActivity {
 
                             String phone = mAuth.getCurrentUser().getPhoneNumber();
                             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("User").child(phone);
-                            if (databaseReference!=null){
-                                Intent intent = new Intent(VerifyPhoneActivity.this, LoginActivity.class);
+                            if (databaseReference.child("email")!=null){
+                                Intent intent = new Intent(VerifyPhoneActivity.this, SaveData.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                Toast.makeText(getApplicationContext(), " isi data  untuk melanjutkn", Toast.LENGTH_LONG).show();
 
 
                                 startActivity(intent);
 
-                            }else {
+                            }else if (databaseReference.child("email").equals(null)){
 
                                 Intent intent = new Intent(VerifyPhoneActivity.this, SaveData.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                Toast.makeText(getApplicationContext(), "! Silahkan isi data untuk melanjutkan", Toast.LENGTH_LONG).show();
 
                                 startActivity(intent);
 

@@ -288,7 +288,7 @@ public class LoginNumber extends AppCompatActivity {
             public void onFailure(Call call, Throwable t) {
                 String message = "";
                 Log.d("Body -->>", "Error: ");
-                Toast.makeText(LoginNumber.this, "Password salah !", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginNumber.this, "Server Error !", Toast.LENGTH_SHORT).show();
 
             }
         });

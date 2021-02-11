@@ -3,6 +3,7 @@ package com.example.uploadandviewimage.Account;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -47,6 +49,7 @@ public class SaveData extends AppCompatActivity {
                             ".{6,}"               //at least 4 characters
 //                    "$"
             );
+    Accounts accounts = new Accounts();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,9 +62,32 @@ public class SaveData extends AppCompatActivity {
         retyope_password = findViewById(R.id.et_insert_password_retype);
         mobilephone_reg = findViewById(R.id.mobilephone_reg);
         mAuth = FirebaseAuth.getInstance();
+        String phone = mAuth.getCurrentUser().getPhoneNumber();
         sesion = new Sesion(this);
         btnInsert = findViewById(R.id.textView_insert);
         databaseReference = FirebaseDatabase.getInstance().getReference().child("User");
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child("User").child(phone);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    accounts = snapshot.getValue(Accounts.class);
+                    nameA.setText(accounts.getUsername());
+                    alamat.setText(accounts.getAddress());
+                    email.setText(accounts.getEmail());
+                    Log.d("Body NAME", "onDataChange: "+accounts.getUsername());
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private boolean validateEmail() {
@@ -131,7 +157,7 @@ public class SaveData extends AppCompatActivity {
         retypePasswordUser = retyope_password.getText().toString();
         if (!TextUtils.isEmpty(passwordUser) && !TextUtils.isEmpty(retypePasswordUser)) {
             if (passwordUser.equals(retypePasswordUser)) {
-                Toast.makeText(SaveData.this, " Sucessfully  ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SaveData.this, " Isi data sukses, silahkan login untuk melanjutkan ", Toast.LENGTH_LONG).show();
 
             } else {
                 Toast.makeText(SaveData.this, "password doesnt match", Toast.LENGTH_SHORT).show();

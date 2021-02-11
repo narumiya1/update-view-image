@@ -12,13 +12,15 @@
                 android:orientation="vertical" android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <TextView
-                    android:background="@color/colorAccent"
+                    android:background="@color/colorPrimary"
                     android:padding="5dp"
                     android:textAppearance="@android:style/TextAppearance.Material.Medium"
                     android:layout_margin="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Daftar_History"/>
+                    android:text="History"
+                    android:fontFamily="@font/montserratlight"
+                    android:textColor="@color/whiteCardColor"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_history"

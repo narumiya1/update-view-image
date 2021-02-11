@@ -70,6 +70,23 @@ public class ProfileActivity extends AppCompatActivity {
                 requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
         }
         session = new Sesion(this);
+        locationTrack = new LocTrack(ProfileActivity.this);
+
+
+        if (locationTrack.canGetLocation()) {
+
+
+            double longitude = locationTrack.getLongitude();
+            double latitude = locationTrack.getLatitude();
+
+            Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
+            Intent intents = new Intent(ProfileActivity.this, FragmentActivity.class);
+            startActivity(intents);
+        }else{
+            settingsEnable();
+            Intent intents = new Intent(ProfileActivity.this, FragmentActivity.class);
+            startActivity(intents);
+        }
 //        openMain();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean Islogin = prefs.getBoolean("Islogin", false);
@@ -83,29 +100,22 @@ public class ProfileActivity extends AppCompatActivity {
         {
             // condition false take it user on login form
         }
+
+
+
+
+
+    }
+
+    private void settingsEnable() {
         Button btn = (Button) findViewById(R.id.btn_enable);
-
-
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 locationTrack = new LocTrack(ProfileActivity.this);
+                locationTrack.showSettingsAlert();
 
-
-                if (locationTrack.canGetLocation()) {
-
-
-                    double longitude = locationTrack.getLongitude();
-                    double latitude = locationTrack.getLatitude();
-
-                    Toast.makeText(getApplicationContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent( ProfileActivity.this, FragmentActivity.class);
-                    startActivity(intent);
-                } else {
-
-                    locationTrack.showSettingsAlert();
-                }
 
 //                 9 1 try insert user data automatically
                 // 11 1 21 not using automatically
@@ -130,7 +140,6 @@ public class ProfileActivity extends AppCompatActivity {
 //                startActivity(intent);
             }
         });
-
     }
 
     private void openMain() {

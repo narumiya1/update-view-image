@@ -27,7 +27,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".auth.LoginNumber"
+            android:name=".SplashActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,6 +50,8 @@
         <activity android:name=".auth.LoginActivity"/>
         <activity android:name=".auth.ProfileActivity"/>
         <activity android:name=".ViewPagerActivity"/>
+        <activity android:name=".auth.LoginNumber"/>
+        <activity android:name=".auth.ForgotPasswordActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

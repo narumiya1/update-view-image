@@ -138,6 +138,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -382,7 +383,7 @@ public class HomeFragment extends Fragment{
 
         // assigning values after converting to milliseconds
         timeCountInMilliSeconds = minuteDiemn * 60 * 1000;
-        Log.d("Body jwtNull", "String jwtNull : "+timeCountInMilliSeconds);
+        Log.d("Body Time Count", "String jwtNull : "+timeCountInMilliSeconds);
 
     }
     /**
@@ -1154,7 +1155,13 @@ public class HomeFragment extends Fragment{
 
                             } else {
                                 Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), "Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+                                showDialogs();
                                 closeProgress();
+                                String jwtNull = "";
+                                session.setKeyApiJwt(jwtNull);
+                                session.setIsLogin(false);
+                                session.logoutUser();
                             }
                         }
 
@@ -1162,6 +1169,10 @@ public class HomeFragment extends Fragment{
                         public void onFailure(Call call, Throwable t) {
                             String message = "";
                             closeProgress();
+                            String jwtNull = "";
+                            session.setKeyApiJwt(jwtNull);
+                            session.setIsLogin(false);
+                            session.logoutUser();
                         }
                     });
 
@@ -1445,6 +1456,30 @@ public class HomeFragment extends Fragment{
         });
         */
 
+    }
+    private void showDialogs() {
+        new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("Session Login telah habis")
+                .setContentText("silahkan lakukan login kembali untuk menggunakan aplikasi")
+                .setConfirmText("ok")
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog
+                                .setTitleText("!")
+                                .setContentText("")
+                                .setConfirmText("OK")
+                                .setConfirmClickListener(null)
+                                .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                    }
+                })
+//                .setCancelButton("Cancel", new SweetAlertDialog.OnSweetClickListener() {
+//                    @Override
+//                    public void onClick(SweetAlertDialog sDialog) {
+//                        sDialog.dismissWithAnimation();
+//                    }
+//                })
+                .show();
     }
 
     private void showProgress() {
