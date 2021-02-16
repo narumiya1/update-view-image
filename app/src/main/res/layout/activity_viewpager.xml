@@ -5,12 +5,12 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="16dp">
+    android:layout_marginTop="6dp">
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="400dp"
         android:layout_marginTop="16dp"/>
 
     <LinearLayout
@@ -18,7 +18,7 @@
         android:id="@+id/SliderDots"
         android:layout_below="@+id/viewPager"
         android:orientation="horizontal"
-        android:gravity="center_vertical|center_horizontal"
+        android:gravity="center_vertical|center_horizontal|bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
