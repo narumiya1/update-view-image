@@ -27,6 +27,7 @@ public class Sesion {
     public static final String KEY_PHONE = "phone";
     public static final String KEY_PASSWORD = "passowrd";
     public static final String KEY_API_JWT = "jwt";
+    public static final String KEY_IMAGE = "image";
 
 
     public Sesion(Context context) {
@@ -87,6 +88,9 @@ public class Sesion {
     public String getKeyApiJwt() {
         return pref.getString(KEY_API_JWT, "");
     }
+    public String getImage() {
+        return pref.getString(KEY_IMAGE, "");
+    }
     public void setIsFisrt(Boolean v) {
         editor.putBoolean(IS_FIRST, v);
         editor.commit();
@@ -109,7 +113,10 @@ public class Sesion {
         editor.putString(KEY_API_JWT, apiJwt);
         editor.commit();
     }
-
+    public void setImage(String img) {
+        editor.putString(KEY_API_JWT, img);
+        editor.commit();
+    }
     public UserResponse getUser() {
         Gson gson = new Gson();
         String json = pref.getString(KEY_USER, "");

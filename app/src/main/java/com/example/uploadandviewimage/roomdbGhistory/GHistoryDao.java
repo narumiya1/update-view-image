@@ -10,6 +10,7 @@ import androidx.room.Update;
 
 import com.example.uploadandviewimage.GrainHistory;
 
+import java.util.Date;
 import java.util.List;
 
 @Dao
@@ -29,5 +30,11 @@ public interface GHistoryDao  {
 
     @Query("SELECT * FROM tbGrainHistory WHERE id = :id ")
     GHistory selectBarangDetail(int id);
+
+    @Query("SELECT image FROM tbGrainHistory")
+    List<String> getImageStorage();
+
+//    @Query("SELECT created_at FROM tbGrainHistory")
+//    List<Date> getDate();
 
 }

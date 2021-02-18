@@ -29,6 +29,8 @@ public class GHistory implements Serializable {
     @TypeConverters({TimeStampConverters.class})
     private Date createdAt;
 
+    @ColumnInfo(name = "image")
+    public String image;
 
     @ColumnInfo(name = "data_type")
     @TypeConverters({TimeStampConverters.class})
@@ -73,6 +75,14 @@ public class GHistory implements Serializable {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public int getDataType() {

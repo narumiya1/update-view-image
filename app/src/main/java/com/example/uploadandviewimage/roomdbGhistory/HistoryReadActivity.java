@@ -48,7 +48,7 @@ public class HistoryReadActivity extends AppCompatActivity {
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "tbGrainHistory")
                 .allowMainThreadQueries()
                 .fallbackToDestructiveMigration()
-                .addMigrations(AppDatabase.MIGRATION_2_3)
+                .addMigrations(AppDatabase.MIGRATION_4_5)
                 .build();
         /**
          * Initialize recyclerview dan layout manager

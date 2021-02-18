@@ -7,18 +7,29 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {GHistory.class}, version = 3)
+@Database(entities = {GHistory.class}, version = 5)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract GHistoryDao gHistoryDao();
 
     //migrate for add table
     @VisibleForTesting
-    public static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+    public static final Migration MIGRATION_4_5 = new Migration(4, 5) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE tbGrainHistory "
+                    + " ADD COLUMN image String");
+        }
+    };
+
+    //migrate for add table
+    @VisibleForTesting
+    public static final Migration MIGRATION_3_4 = new Migration(3, 4) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE tbarang "
-                    + " ADD COLUMN created_at String");
+                    + " ADD COLUMN image String");
         }
     };
+
 }
