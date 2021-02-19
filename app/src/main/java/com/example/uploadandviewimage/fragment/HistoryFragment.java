@@ -45,7 +45,7 @@ public class HistoryFragment extends Fragment implements FragmentResultListener 
         db = Room.databaseBuilder(getContext(), AppDatabase.class, "tbGrainHistory")
                 .allowMainThreadQueries()
                 .fallbackToDestructiveMigration()
-                .addMigrations(AppDatabase.MIGRATION_2_3)
+                .addMigrations(AppDatabase.MIGRATION_4_5)
                 .build();
         rvView = view.findViewById(R.id.rv_history);
         rvView.setHasFixedSize(true);
