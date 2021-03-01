@@ -12,7 +12,7 @@
         android:id="@+id/nomor_telepon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="2dp"
         android:gravity="center"
         android:textColor="#000" />
     <RelativeLayout
@@ -91,39 +91,48 @@
                 android:text="Select Photo First"
                 android:textColor="#6E6262"
                 android:textSize="18sp"
-                android:visibility="visible" />
-
-            <com.github.chrisbanes.photoview.PhotoView
-                android:id="@+id/viewImage"
-                android:layout_width="match_parent"
-                android:src="@drawable/beraslogo01"
-                android:background="@drawable/beraslogo01"
-                android:layout_height="220dp"
                 android:visibility="invisible" />
 
             <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
-                android:layout_margin="10dp"
-                android:background="@drawable/line_background"
-                android:backgroundTint="@color/design_default_color_error"
-                android:outlineAmbientShadowColor="@color/design_default_color_error"
-                android:outlineSpotShadowColor="@color/design_default_color_error"
-                app:cardBackgroundColor="@color/colorPrimaryDark"
-                app:cardCornerRadius="6dp"
-                app:cardElevation="4dp">
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                app:cardCornerRadius="8dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                app:cardElevation="4.5dp"
+                android:background="@color/colorPrimary"
+                app:cardBackgroundColor="@color/main_blue_color"
+               >
+                <com.github.chrisbanes.photoview.PhotoView
+                    android:id="@+id/viewImage"
+                    android:layout_gravity="center"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/beras"
+                    android:layout_height="220dp"/>
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/line_background"
+                    android:backgroundTint="@color/design_default_color_error"
+                    android:outlineAmbientShadowColor="@color/design_default_color_error"
+                    android:outlineSpotShadowColor="@color/design_default_color_error"
+                    app:cardBackgroundColor="@color/colorPrimaryDark"
+                    app:cardCornerRadius="6dp"
+                    app:cardElevation="4dp">
 
-                <ImageButton
-                    android:id="@+id/iv_add"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_gravity="top|left"
-                    android:background="#F8F6F6"
-                    android:outlineAmbientShadowColor="@color/colorAccent"
-                    android:src="@drawable/ic_baseline_add_a_photo_24" />
+                    <ImageButton
+                        android:id="@+id/iv_add"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="top|left"
+                        android:background="#F8F6F6"
+                        android:visibility="visible"
+                        android:outlineAmbientShadowColor="@color/colorAccent"
+                        android:src="@drawable/ic_baseline_add_a_photo_24" />
 
-
+                </androidx.cardview.widget.CardView>
             </androidx.cardview.widget.CardView>
 
         </FrameLayout>
@@ -133,29 +142,69 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
-            android:backgroundTint="@color/colorAccent">
+            android:backgroundTint="@color/colorPrimaryDarker">
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cv_maine"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="4dp"
+                    android:padding="10dp"
+                    android:background="@color/whiteCardColor"
+                    android:visibility="gone">
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerView_fragmenth"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/whiteCardColor"
+                        android:scrollbars="vertical"
+                        android:visibility="gone" />
+
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom">
+
+                        <TextView
+                            android:id="@+id/item_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginRight="6dp"
+                            android:layout_marginBottom="2dp"
+                            android:fontFamily="@font/montserratlight"
+                            android:gravity="right|bottom"
+                            android:text="2021"
+                            android:textColor="@android:color/black"
+                            android:textSize="12sp"
+                            android:visibility="gone"/>
+                    </FrameLayout>
+                </androidx.cardview.widget.CardView>
                 <TextView
                     android:id="@+id/tv_warn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:fontFamily="@font/dosisivarfont"
-                    android:gravity="center"
-                    android:text="No data available"
-                    android:textColor="#6E6262"
-                    android:textSize="20sp"
+                    android:fontFamily="@font/ubunturegular"
+                    android:gravity="left"
+                    android:layout_marginLeft="4dp"
+                    android:padding="4dp"
+                    android:text=" Karawang, kepala \n (890,954) (576,928) \n\n Pandan Wangi, kepala \n (13,854) (334,754) \n\n IR42,menir \n (528,858) (28,758) \n\n IR42,menir \n (528,858) (28,758) \n \n Karawang,Patah \n (528,858) (28,758) \n \n Pandan Wangi,Patah \n (528,858) (28,758) \n \n "
+                    android:textColor="#0B0A0A"
+                    android:textSize="16sp"
                     android:visibility="visible" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/cardview_dark_background"
+                    android:background="@color/whiteCardColor"
                     android:scrollbars="vertical"
                     android:visibility="invisible" />
 
@@ -170,7 +219,7 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginBottom="60dp"
                     android:src="@drawable/ic_baseline_how_to_reg_24"
-                    android:visibility="invisible"
+                    android:visibility="visible"
                     app:fab_size="normal"
                     app:menu_backgroundColor="@android:color/transparent"
                     app:menu_colorNormal="#05B6A2"

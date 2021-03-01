@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:padding="4dp">
+
+
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
+        android:maxLines="1"
+        android:text="name"
+        android:textColor="@color/main_blue_color"
+        android:textSize="16dp" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/chef"
+        android:text="chef"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:maxLines="1"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/chef"
+        android:maxLines="1"
+        android:text="2 min ago"
+        android:textColor="@color/main_blue_color"
+        android:textSize="16dp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/description"
+        android:text="desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/chef"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:textColor="@color/main_blue_color"
+        android:textSize="16dp" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/description"
+        android:textColor="@color/main_blue_color"
+        android:textSize="16dp"
+        android:text="price"
+        android:textStyle="bold" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/wd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/price"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16dp"
+        android:text="wd"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#673AB7"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        />
+    <TableLayout
+        android:layout_below="@id/wd"
+        android:layout_marginTop="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp">
+
+        <TableRow>
+
+            <TextView
+                android:layout_marginTop="2dp"
+                android:layout_marginLeft="10dp"
+                android:fontFamily="@font/ubunturegular"
+                android:id="@+id/text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Grain Type, Grain Size"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:fontFamily="@font/ubunturegular"
+                android:id="@+id/text2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="14dp"
+                android:text="Grain Type (Class, Id)"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+
+            <TextView
+                android:fontFamily="@font/ubunturegular"
+                android:id="@+id/text3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="14dp"
+                android:text="GrainSize(Class, Id)"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+        </TableRow>
+
+
+    </TableLayout>
+</RelativeLayout>

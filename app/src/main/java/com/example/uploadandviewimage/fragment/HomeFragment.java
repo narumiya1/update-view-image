@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -18,6 +19,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfDocument;
 import android.location.Location;
 import android.media.ExifInterface;
@@ -31,9 +33,11 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +50,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -68,10 +73,13 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.uploadandviewimage.Account.Accounts;
 import com.example.uploadandviewimage.ExampleAdapter;
+import com.example.uploadandviewimage.ExampleItem;
 import com.example.uploadandviewimage.GrainData;
 import com.example.uploadandviewimage.GrainHistory;
+import com.example.uploadandviewimage.GrainHistoryCollection;
 import com.example.uploadandviewimage.GrainItem;
 import com.example.uploadandviewimage.GrainPie;
+import com.example.uploadandviewimage.GrainShape;
 import com.example.uploadandviewimage.NetworkClient;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.SecondActivity;
@@ -79,6 +87,8 @@ import com.example.uploadandviewimage.UploadApis;
 import com.example.uploadandviewimage.activity.FragmentActivity;
 import com.example.uploadandviewimage.activity.LocTrack;
 import com.example.uploadandviewimage.activity.PdfActivity;
+import com.example.uploadandviewimage.adapter.AdapterFragmentHome;
+import com.example.uploadandviewimage.adapter.CustomRecyclerview;
 import com.example.uploadandviewimage.auth.LoginActivity;
 import com.example.uploadandviewimage.auth.LoginNumber;
 import com.example.uploadandviewimage.auth.Sesion;
@@ -88,14 +98,17 @@ import com.example.uploadandviewimage.cookies.AddCookiesInterceptor;
 import com.example.uploadandviewimage.cookies.JavaNetCookieJar;
 import com.example.uploadandviewimage.cookies.ReceivedCookiesInterceptor;
 import com.example.uploadandviewimage.location.GpsUtils;
+import com.example.uploadandviewimage.roomdbGhistory.AdapterTypeRecyclerView;
 import com.example.uploadandviewimage.roomdbGhistory.AppDatabase;
 import com.example.uploadandviewimage.roomdbGhistory.GHistory;
+import com.example.uploadandviewimage.roomdbGhistory.Gitem;
 import com.example.uploadandviewimage.roomdbGhistory.HistoryReadActivity;
 import com.example.uploadandviewimage.utils.AppUtils;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -110,6 +123,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
@@ -119,6 +134,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -132,8 +148,10 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -157,7 +175,7 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.app.Activity.RESULT_OK;
 
 public class HomeFragment extends Fragment{
-
+    private String image;
     public static final String API_KEY = "PMAK-6010c29f1b0e6b0034f81b57-6387c56febd52e92623f8fe195e60bc8d7";
     final Handler handler = new Handler(Looper.getMainLooper());
     ProgressDialog progressDialog;
@@ -181,7 +199,9 @@ public class HomeFragment extends Fragment{
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-
+    private ArrayList<Gitem> listGrainType;
+    private RecyclerView mrRecyclerView;
+    private CardView cardView;
     private ArrayList<String> permissionsToRequest;
     private ArrayList<String> permissionsRejected = new ArrayList();
     private ArrayList <String> permissions = new ArrayList();
@@ -199,7 +219,8 @@ public class HomeFragment extends Fragment{
         STARTED,
         STOPPED
     }
-
+    Context _context;
+    int PRIVATE_MODE = 0;
     private HomeFragment.TimerStatus timerStatus = HomeFragment.TimerStatus.STOPPED;
     private long timeCountInMilliSeconds = 1 * 60000;
     public HomeFragment() {
@@ -211,8 +232,121 @@ public class HomeFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragmnet_home, container, false);
         //get view
         session = new Sesion(getContext());
+        mrRecyclerView = view.findViewById(R.id.recyclerView_fragmenth);
+        cardView = view.findViewById(R.id.cv_maine);
+        warningtext = view.findViewById(R.id.warning_frame);
         findViews(view);
         //check connection
+
+        db = Room.databaseBuilder(getActivity(), AppDatabase.class, "tbGrainHistory")
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .addMigrations(AppDatabase.MIGRATION_4_5)
+                .build();
+
+        //malam
+        GHistory type2 = new GHistory();
+        decodeBase64(mImageFileLocation);
+        type2.getImage();
+        List<String> statusImg = db.gHistoryDao().getImageStorage();
+        statusImg.size();
+        if(statusImg.size()==0){
+            Log.d("AAABL", "No file");
+
+            warningtext.setVisibility(View.VISIBLE);
+            /* get via drawable
+            String uri = "@drawable/beraslogo01.jpg";  // where myresource (without the extension) is the file
+            viewImage = (PhotoView) view.findViewById(R.id.viewImage);
+            viewImage.setVisibility(View.VISIBLE);
+            int imageResource = getResources().getIdentifier(uri, null, getActivity().getPackageName());
+            Drawable res = getResources().getDrawable(R.drawable.beras);
+//            Drawable res = ContextCompat.getDrawable(getActivity(),R.drawable.beraslogo01);
+            viewImage.setImageDrawable(res);
+            PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(viewImage);
+            photoViewAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            */
+        }
+        else if(statusImg.size()>0) {
+            String json = db.gHistoryDao().selectJsonHistory();
+            GrainData grainData2 = new Gson().fromJson(json, GrainData.class);
+            listGrainType = new ArrayList<>();
+            if (json.equals(null) && grainData2.equals(null)){
+                Log.d("AAABL", "No file");
+                Log.d("AAABL", "No file");
+            }
+            GrainItem[] items = grainData2.getItems();
+            for (int j = 0; j < items.length; j++) {
+                Log.d("Body items", "here is an value jsonArray"+items);
+                GrainItem item = items[j];
+                ExampleItem grain = new ExampleItem(item);
+//            double val = items[j].getShape().getWidth();
+//            double pct = items[j].getShape().getLeft();
+//            double shpe = items[j].getShape().getTop();
+
+                String name = grain.getName();
+                String score = grain.getScore();
+                Gitem gitem = new Gitem();
+                gitem.setName(name);
+                gitem.setScore(score);
+                gitem.setId(j);
+
+                listGrainType.add(gitem);
+                //call db model
+//            Gitems type2 = new Gitems();
+//            type2.setName(name1);
+//            type2.setScore(score);
+//
+//            insertItems(type2);
+            }
+
+            mrRecyclerView.setHasFixedSize(true);
+            mrRecyclerView.setVisibility(View.VISIBLE);
+            cardView.setVisibility(View.VISIBLE);
+            mLayoutManager = new LinearLayoutManager(getContext());
+            mrRecyclerView.setLayoutManager(mLayoutManager);
+
+            mAdapter = new CustomRecyclerview(getActivity(), listGrainType );
+            mrRecyclerView.setAdapter(mAdapter);
+            mImageFileLocation =  statusImg.get(statusImg.size()-1);
+            File imgFile = new File(mImageFileLocation);
+            int length = (int) imgFile.length();
+            Log.d("Upload length respons", "String respons length : " +length);
+            if (imgFile.exists())
+            {
+                Bitmap bitmap ;
+                BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+                bitmap = BitmapFactory.decodeFile(mImageFileLocation,
+                        bitmapOptions);
+                bitmap = Bitmap.createScaledBitmap(bitmap, 200,200, true);
+
+                encodeTobase64(bitmap);
+//                decodeBase64(mImageFileLocation);
+                viewImage = (PhotoView) view.findViewById(R.id.viewImage);
+                viewImage.setVisibility(View.VISIBLE);
+                viewImage.setImageBitmap(BitmapFactory.decodeFile(mImageFileLocation));
+
+                PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(viewImage);
+                photoViewAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            }
+            else
+            {
+                Log.d("AAABL", "No file");
+            }
+        }
+
+
+//        listGrainType.addAll(Arrays.asList(db.gHistoryDao().selectJsonHistory()));
+
+        //22 02 21
+        // ambil text json dri database
+        // rubah class ke object grain data --> GrainData grainData2 = new Gson().fromJson(gson, GrainData.class);
+        // dirubah ke format recyclerView
+        // insert ke variabel listGrainType
+
+//        Gson gson = new Gson();
+
+
+
         if (isConnected()) {
             Toast.makeText(view.getContext(), "Internet Connected", Toast.LENGTH_SHORT).show();
         } else {
@@ -710,6 +844,23 @@ public class HomeFragment extends Fragment{
                 String picturePath = c.getString(columnIndex);
                 mImageFileLocation = picturePath;
 
+                Bitmap compressedOri = BitmapFactory.decodeFile(mImageFileLocation);
+
+                Bitmap compressed = null;
+                //save bitmap to byte array
+
+                try {
+                    File file = new File(mImageFileLocation);
+                    int length = (int) file.length();
+                    Log.d("Body length", "String length : "+length);
+                    FileOutputStream fOut = new FileOutputStream(file);
+                    compressedOri.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
+                    fOut.flush();
+                    fOut.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 c.close();
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = 4; // InSampleSize = 4;
@@ -721,8 +872,19 @@ public class HomeFragment extends Fragment{
                 try {
                     InputStream inputStream = getActivity().getContentResolver().openInputStream(data.getData());
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    viewImage.setImageBitmap(bitmap);
+//                    rotateImage(setReducedImageSize());
+                    int length = (int) mImageFileLocation.length();
+                    if (length<40000){
+                        Log.d("Body Max Size", "5mb " +length);
+                    }
+                    Toast.makeText(getContext(), " Max Size !=> 5mb", Toast.LENGTH_LONG).show();
+                    Bitmap converetdImage = getResizedBitmap(bitmap, 650);
 
+
+
+                    viewImage.setImageBitmap(converetdImage);
+                    encodeTobase64(converetdImage);
+//                    decodeBase64(mImageFileLocation);
                     /*
                     //draw circle
                     Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
@@ -740,7 +902,7 @@ public class HomeFragment extends Fragment{
 
                     PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(viewImage);
                     photoViewAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    uploadImage(bitmap);
+                    uploadImage(converetdImage);
 //                    Uri imageUri = data.getData();
 //                    cropImage(bitmap);
 
@@ -758,6 +920,23 @@ public class HomeFragment extends Fragment{
             }
 
         }
+    }
+
+    private Bitmap getResizedBitmap(Bitmap bitmap, int i) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        Log.d("Upload Bitmap bitmap respons", "String Bitmap bitmap  : " +bitmap);
+        float bitmapRatio = (float)width / (float) height;
+        Log.d("Upload Bitmap bitmap respons", "String Bitmap bitmap  : " +bitmapRatio);
+        if (bitmapRatio > 1) {
+            width = i;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = i;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(bitmap, width, height, true);
+
     }
 
     private void rotateImage(Bitmap bitmap) {
@@ -817,6 +996,8 @@ public class HomeFragment extends Fragment{
 
         try {
             File file = new File(mImageFileLocation);
+            int length = (int) file.length();
+            Log.d("Body length", "String length : "+length);
             FileOutputStream fOut = new FileOutputStream(file);
             compressedOri.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
             fOut.flush();
@@ -911,11 +1092,28 @@ public class HomeFragment extends Fragment{
     }
 
     protected String jwt;
+    public static String encodeTobase64(Bitmap image) {
+        Bitmap immage = image;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        immage.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] b = baos.toByteArray();
+        String imageEncoded = Base64.encodeToString(b, Base64.DEFAULT);
+        Log.d("Image Log:", imageEncoded);
+        return imageEncoded;
+    }
+    public static Bitmap decodeBase64(String input) {
+        byte[] decodedByte = Base64.decode(input, 0);
+        return BitmapFactory
+                .decodeByteArray(decodedByte, 0, decodedByte.length);
+    }
 
     private void uploadImage(Bitmap bitmap) {
         //20210130
         //volleyPost();
-
+        mrRecyclerView.setVisibility(View.GONE);
+        cardView.setVisibility(View.GONE);
+//        cardView.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
         String urlDomain = "http://110.50.85.28:8200";
 
 //        jwt = "";
@@ -941,244 +1139,315 @@ public class HomeFragment extends Fragment{
 //        handler.postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
-                //Do something after 100ms
+        //Do something after 100ms
 
 
-                File file = new File(mImageFileLocation);
-                int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
-                try {
-                    Log.d("Upload jwtKeys respons", "String respons jwtKey : " +jwtKey);
+        File file = new File(mImageFileLocation);
+        int length = (int) file.length();
+        Log.d("Upload length respons", "String respons length : " +length);
+        Toast.makeText(getContext(), " Max Size = 5mb", Toast.LENGTH_LONG).show();
+        if (length>50000){
+
+        }
+        Toast.makeText(getContext(), " Max Size ======== 5mb", Toast.LENGTH_LONG).show();
+
+        int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
+        Log.d("Body Max Size", "------------5mb " +file_size);
+
+        try {
+            Log.d("Upload jwtKeys respons", "String respons jwtKey : " +jwtKey);
 //                    new Sesion(getContext()).getKeyApiJwt();
 //                    session.setKeyApiJwt(jwt);
-                    //20210130
-                    HttpLoggingInterceptor loggingInterceptor2 = new HttpLoggingInterceptor();
-                    loggingInterceptor2.setLevel(HttpLoggingInterceptor.Level.BODY);
+            //20210130
+            HttpLoggingInterceptor loggingInterceptor2 = new HttpLoggingInterceptor();
+            loggingInterceptor2.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-                    TokenInterceptor tokenInterceptor = new TokenInterceptor(jwtKey);
+            TokenInterceptor tokenInterceptor = new TokenInterceptor(jwtKey);
 
-                    OkHttpClient okHttpClient2 = new OkHttpClient.Builder()
-                            .addInterceptor(new AddCookiesInterceptor(getActivity()))
-                            .addInterceptor(new ReceivedCookiesInterceptor(getActivity()))
-                            .addInterceptor(loggingInterceptor2)
-                            .addInterceptor(tokenInterceptor)
-                            .build();
+            OkHttpClient okHttpClient2 = new OkHttpClient.Builder()
+                    .addInterceptor(new AddCookiesInterceptor(getActivity()))
+                    .addInterceptor(new ReceivedCookiesInterceptor(getActivity()))
+                    .addInterceptor(loggingInterceptor2)
+                    .addInterceptor(tokenInterceptor)
+                    .build();
 
-                    Gson gson2 = new GsonBuilder().serializeNulls().create();
+            Gson gson2 = new GsonBuilder().serializeNulls().create();
 
-                    //Retrofit retrofit = NetworkClient.getRetrofit();
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl(urlDomain)
-                            .addConverterFactory(GsonConverterFactory.create(gson2))
-                            .client(okHttpClient2)
-                            .build();
+            //Retrofit retrofit = NetworkClient.getRetrofit();
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(urlDomain)
+                    .addConverterFactory(GsonConverterFactory.create(gson2))
+                    .client(okHttpClient2)
+                    .build();
 
-                    RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
-                    MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
-                    String name = "Rifqi";
-                    double latitude = locationTrack.getLatitude();
-                    int val1=(int) latitude;
-                    double longitude = locationTrack.getLongitude();
-                    int val2=(int) longitude;
-                    RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(name)); //change to phone number
-                    RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
-                    RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
-                    UploadApis uploadApis = retrofit.create(UploadApis.class);
-                    Call call = uploadApis.uploadImage(parts, req1, req2, req3);
-                    call.enqueue(new Callback() {
-                        @Override
-                        public void onResponse(Call call, Response response) {
-                            if (response.code() == 200) {
-                                Object obj = response.body();
-                                GrainData grainData = (GrainData) response.body();
-                                //String gson = new Gson().toJson(response.body());
-                                //20201126
-                                //get pie chart
-                                //for GrainType and GrainSize
-                                GrainPie[] type = grainData.getTypePie();
-                                GrainPie[] size = grainData.getSizePie();
-//                        GrainType grainType = new GrainType();
-                                showProgress();
-                                mAdapter = new ExampleAdapter(grainData);
-                                mRecyclerView.setAdapter(mAdapter);
-                                mRecyclerView.setVisibility(View.VISIBLE);
-                                no_data.setVisibility(View.GONE);
-                                warningtext.setVisibility(View.GONE);
-                                viewImage.setVisibility(View.VISIBLE);
-                                fab_chart.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
+            RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+            MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
+            String name = "Rifqi";
+            double latitude = locationTrack.getLatitude();
+            int val1=(int) latitude;
+            double longitude = locationTrack.getLongitude();
+            int val2=(int) longitude;
+            RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(name)); //change to phone number
+            RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
+            RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
+            UploadApis uploadApis = retrofit.create(UploadApis.class);
+            Call call = uploadApis.uploadImage(parts, req1, req2, req3);
+            call.enqueue(new Callback() {
+                @Override
+                public void onResponse(Call call, Response response) {
+                    if (response.code() == 200) {
+                        Object obj = response.body();
+                        GrainData grainData = (GrainData) response.body();
+
+                        //insert room datbase gson, created_at
+                        //  22 2 21
+                        Date dates = new Date();
+                        String gson = new Gson().toJson(grainData);
+
+                        Gitem typeC = new Gitem();
+                        typeC.setCreatedAt(dates);
+                        typeC.setJson(gson);
+                        insertItems(typeC);
+
+
+
+                        /*
+                        for (int i = 0; i < items.length; i++) {
+                            Gitems type2 = new Gitems();
+
+                            GrainItem item = items[i];
+                            ExampleItem grain = new ExampleItem(item);
+
+                            String name1 = grain.getName();
+                            String score = grain.getScore();
+                            String json = type2.getJson();
+
+                            type2.setName(name1);
+                            type2.setScore(score);
+                            type2.setJson(gson);
+                            type2.setCreatedAt(dates);
+                            insertItems(type2);
+                        }
+
+                        */
+                        //20 2 21
+                        /*
+                        GrainItem[] items = grainData.getItems();
+                        for (int j = 0; j < items.length; j++) {
+                            Log.d("Body items", "here is an value jsonArray"+items);
+                            GrainItem item = items[j];
+                            ExampleItem grain = new ExampleItem(item);
+                            double val = items[j].getShape().getWidth();
+                            double pct = items[j].getShape().getLeft();
+                            double shpe = items[j].getShape().getTop();
+
+                            String name1 = grain.getName();
+                            String score = grain.getScore();
+
+                            //call db model
+                            Gitems type2 = new Gitems();
+                            type2.setName(name1);
+                            type2.setScore(score);
+
+                            insertItems(type2);
+                        }
+                        */
+
+
+                        grainData.getItems();
+
+                        GrainPie[] type = grainData.getTypePie();
+                        GrainPie[] size = grainData.getSizePie();
+
+                        showProgress();
+
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        mAdapter = new ExampleAdapter(grainData);
+                        mRecyclerView.setAdapter(mAdapter);
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        no_data.setVisibility(View.GONE);
+                        warningtext.setVisibility(View.GONE);
+                        viewImage.setVisibility(View.VISIBLE);
+                        fab_chart.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
 //                                Bundle setData = new Bundle();
-                                        intent.putExtra("DataSaya", type);
-                                        intent.putExtra("Size", size);
-                                        startActivityForResult(intent, 10);
-                                    }
-                                });
-                                fab_pdf_intent.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Intent intent = new Intent((Context) getActivity(), PdfActivity.class);
+                                intent.putExtra("DataSaya", type);
+                                intent.putExtra("Size", size);
+                                startActivityForResult(intent, 10);
+                            }
+                        });
+                        fab_pdf_intent.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent((Context) getActivity(), PdfActivity.class);
 //                                Bundle setData = new Bundle();
-                                        intent.putExtra("pdfType", type);
-                                        intent.putExtra("pdfSize", size);
-                                        startActivityForResult(intent, 19);
-                                    }
-                                });
-                                fab_pdf.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        dateTime = new Date();
-                                        GrainItem[] items = grainData.getItems();
+                                intent.putExtra("pdfType", type);
+                                intent.putExtra("pdfSize", size);
+                                startActivityForResult(intent, 19);
+                            }
+                        });
+                        fab_pdf.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dateTime = new Date();
+                                GrainItem[] items = grainData.getItems();
 
-                                        PdfDocument pdfDocument = new PdfDocument();
-                                        Paint paint = new Paint();
-                                        Paint titlePaint = new Paint();
+                                PdfDocument pdfDocument = new PdfDocument();
+                                Paint paint = new Paint();
+                                Paint titlePaint = new Paint();
 
-                                        PdfDocument.PageInfo pageInfo
-                                                = new PdfDocument.PageInfo.Builder(1200, 2500, 1).create();
-                                        PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+                                PdfDocument.PageInfo pageInfo
+                                        = new PdfDocument.PageInfo.Builder(1200, 2500, 1).create();
+                                PdfDocument.Page page = pdfDocument.startPage(pageInfo);
 
-                                        Canvas canvas = page.getCanvas();
-                                        titlePaint.setTextAlign(Paint.Align.CENTER);
-                                        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-                                        titlePaint.setColor(Color.BLACK);
-                                        titlePaint.setTextSize(70);
-                                        canvas.drawText("Hasil Pengujian", pageWidth / 2, 200, titlePaint);
+                                Canvas canvas = page.getCanvas();
+                                titlePaint.setTextAlign(Paint.Align.CENTER);
+                                titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+                                titlePaint.setColor(Color.BLACK);
+                                titlePaint.setTextSize(70);
+                                canvas.drawText("Hasil Pengujian", pageWidth / 2, 200, titlePaint);
 
-                                        paint.setColor(Color.BLACK);
-                                        paint.setTextSize(35f);
-                                        paint.setTextAlign(Paint.Align.RIGHT);
-                                        //change 590-340 to
-                                        canvas.drawText("No : " + "232425", pageWidth - 20, 250, paint);
+                                paint.setColor(Color.BLACK);
+                                paint.setTextSize(35f);
+                                paint.setTextAlign(Paint.Align.RIGHT);
+                                //change 590-340 to
+                                canvas.drawText("No : " + "232425", pageWidth - 20, 250, paint);
 
-                                        dateFormat = new SimpleDateFormat("dd/MM/yy");
-                                        canvas.drawText("Tanggal: " + dateFormat.format(dateTime), pageWidth - 20, 300, paint);
+                                dateFormat = new SimpleDateFormat("dd/MM/yy");
+                                canvas.drawText("Tanggal: " + dateFormat.format(dateTime), pageWidth - 20, 300, paint);
 
-                                        dateFormat = new SimpleDateFormat("HH:mm:ss");
-                                        canvas.drawText("Pukul: " + dateFormat.format(dateTime), pageWidth - 20, 350, paint);
+                                dateFormat = new SimpleDateFormat("HH:mm:ss");
+                                canvas.drawText("Pukul: " + dateFormat.format(dateTime), pageWidth - 20, 350, paint);
 
-                                        paint.setStyle(Paint.Style.STROKE);
-                                        paint.setStrokeWidth(2);
-                                        canvas.drawRect(20, 360, pageWidth - 20, 420, paint);
+                                paint.setStyle(Paint.Style.STROKE);
+                                paint.setStrokeWidth(2);
+                                canvas.drawRect(20, 360, pageWidth - 20, 420, paint);
 
-                                        paint.setTextAlign(Paint.Align.LEFT);
-                                        paint.setStyle(Paint.Style.FILL);
-                                        canvas.drawText("Size", 200, 400, paint);
-                                        canvas.drawText("Type", 500, 400, paint);
-                                        canvas.drawText("Jumlah data", 800, 400, paint);
+                                paint.setTextAlign(Paint.Align.LEFT);
+                                paint.setStyle(Paint.Style.FILL);
+                                canvas.drawText("Size", 200, 400, paint);
+                                canvas.drawText("Type", 500, 400, paint);
+                                canvas.drawText("Jumlah data", 800, 400, paint);
 
 
-                                        int y = 450;
-                                        for (int j = 0; j < items.length; j++) {
-                                            canvas.drawText(String.valueOf(items[j].getGrainType().getName()), 500, y, paint);
-                                            canvas.drawText(String.valueOf(items[j].getGrainSize().getName()), 200, y, paint);
-                                            y += 50;
-                                        }
+                                int y = 450;
+                                for (int j = 0; j < items.length; j++) {
+                                    canvas.drawText(String.valueOf(items[j].getGrainType().getName()), 500, y, paint);
+                                    canvas.drawText(String.valueOf(items[j].getGrainSize().getName()), 200, y, paint);
+                                    y += 50;
+                                }
 
 
 //                                   canvas.drawText(String.valueOf(items[2].getShape().getWidth()), 800, 1000, paint);
 
 
-                                        pdfDocument.finishPage(page);
-                                        //pdf file name
-                                        String mFileName = new SimpleDateFormat("yyyy_MMdd_HHmmss",
-                                                Locale.getDefault()).format(System.currentTimeMillis());
-                                        //pdf file path
-                                        String mFilePath = Environment.getExternalStorageDirectory() + "/" + mFileName + ".pdf";
-                                        File file = new File(Environment.getExternalStorageDirectory(),  "/" + mFileName + ".pdf");
+                                pdfDocument.finishPage(page);
+                                //pdf file name
+                                String mFileName = new SimpleDateFormat("yyyy_MMdd_HHmmss",
+                                        Locale.getDefault()).format(System.currentTimeMillis());
+                                //pdf file path
+                                String mFilePath = Environment.getExternalStorageDirectory() + "/" + mFileName + ".pdf";
+                                File file = new File(Environment.getExternalStorageDirectory(),  "/" + mFileName + ".pdf");
 
 
-                                        try {
-                                            pdfDocument.writeTo(new FileOutputStream(file));
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                        pdfDocument.close();
-                                        Toast.makeText(getContext(), "PDF sudah dibuat", Toast.LENGTH_LONG).show();
-
-                                    }
-
-                                });
-
-                                LocalDate date2 = LocalDate.now();
-                                Date date = new Date();
-                                //type
-                                for(int i=0; i<type.length; i++) {
-                                    String name = type[i].getName();
-                                    double val = type[i].getValue();
-                                    double pct = type[i].getPercent();
-
-                                    //call db model
-                                    GHistory type2 = new GHistory();
-                                    type2.setName(name);
-                                    type2.setVal(val);
-                                    type2.setPct(pct);
-                                    type2.setDataType(1);
-                                    type2.setCreatedAt(date);
-                                    insertData(type2);
+                                try {
+                                    pdfDocument.writeTo(new FileOutputStream(file));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
                                 }
-                                //size
-                                for(int i=0; i<size.length; i++) {
-                                    String name_size = size[i].getName();
-                                    double val_size = size[i].getValue();
-                                    double pct_size = size[i].getPercent();
 
-                                    //call db model
-                                    GHistory type2 = new GHistory();
-                                    type2.setName(name_size);
-                                    type2.setVal(val_size);
-                                    type2.setPct(pct_size);
-                                    type2.setDataType(2);
-                                    type2.setCreatedAt(date);
-                                    insertData(type2);
-                                }
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
-//                                Bundle setData = new Bundle();
-                                        intent.putExtra("DataSaya", type);
-                                        intent.putExtra("Size", size);
-                                        startActivityForResult(intent, 10);
-                                        String message = "";
-                                        closeProgress();
+                                pdfDocument.close();
+                                Toast.makeText(getContext(), "PDF sudah dibuat", Toast.LENGTH_LONG).show();
 
-
-                                    }
-                                },1000);
-
-
-
-                                //library pdf writter
-
-
-                            } else {
-                                Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
-                                Toast.makeText(getContext(), "Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
-                                showDialogs();
-                                closeProgress();
-                                String jwtNull = "";
-                                session.setKeyApiJwt(jwtNull);
-                                session.setIsLogin(false);
-                                session.logoutUser();
                             }
-                        }
 
-                        @Override
-                        public void onFailure(Call call, Throwable t) {
-                            String message = "";
-                            closeProgress();
-                            String jwtNull = "";
-                            session.setKeyApiJwt(jwtNull);
-                            session.setIsLogin(false);
-                            session.logoutUser();
-                        }
-                    });
+                        });
 
-                } catch (Exception e) {
-                    String errMessage = e.getMessage();
+                        LocalDate date2 = LocalDate.now();
+                        Date date = new Date();
+                        //type
+                        for(int i=0; i<type.length; i++) {
+                            String name = type[i].getName();
+                            double val = type[i].getValue();
+                            double pct = type[i].getPercent();
+
+                            //call db model
+                            GHistory type2 = new GHistory();
+                            type2.setName(name);
+                            type2.setVal(val);
+                            type2.setPct(pct);
+                            type2.setDataType(1);
+                            type2.setCreatedAt(date);
+                            type2.setImage(mImageFileLocation);
+                            insertData(type2);
+                        }
+                        //size
+                        for(int i=0; i<size.length; i++) {
+                            String name_size = size[i].getName();
+                            double val_size = size[i].getValue();
+                            double pct_size = size[i].getPercent();
+
+                            //call db model
+                            GHistory type2 = new GHistory();
+                            type2.setName(name_size);
+                            type2.setVal(val_size);
+                            type2.setPct(pct_size);
+                            type2.setDataType(2);
+                            type2.setCreatedAt(date);
+                            type2.setImage(mImageFileLocation);
+                            insertData(type2);
+                        }
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent((Context) getActivity(), SecondActivity.class);
+//                                Bundle setData = new Bundle();
+                                intent.putExtra("DataSaya", type);
+                                intent.putExtra("Size", size);
+                                startActivityForResult(intent, 10);
+                                String message = "";
+                                closeProgress();
+
+
+                            }
+                        },1000);
+
+
+
+                        //library pdf writter
+
+
+                    } else {
+                        Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+
+                        closeProgress();
+                        String jwtNull = "";
+                        session.setKeyApiJwt(jwtNull);
+                        session.setIsLogin(false);
+                        session.logoutUser();
+                        showDialogs();
+                    }
                 }
+
+                @Override
+                public void onFailure(Call call, Throwable t) {
+                    String message = "";
+                    closeProgress();
+                    String jwtNull = "";
+                    Toast.makeText(getContext(), "Status Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+
+                    session.setKeyApiJwt(jwtNull);
+                    session.setIsLogin(false);
+                    session.logoutUser();
+                }
+            });
+
+        } catch (Exception e) {
+            String errMessage = e.getMessage();
+        }
 
 //            }
 
@@ -1457,6 +1726,23 @@ public class HomeFragment extends Fragment{
         */
 
     }
+
+    private void insertItems(Gitem type2) {
+        new AsyncTask<Void, Void, Long>() {
+            @Override
+            protected Long doInBackground(Void... voids) {
+                long status = db.gHistoryDao().insertAllItem(type2);
+                return status;
+            }
+
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            protected void onPostExecute(Long status) {
+                Toast.makeText(getActivity().getApplicationContext(), "status row " + status, Toast.LENGTH_SHORT).show();
+            }
+        }.execute();
+    }
+
     private void showDialogs() {
         new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
                 .setTitleText("Session Login telah habis")
@@ -1508,5 +1794,794 @@ public class HomeFragment extends Fragment{
             }
         }.execute();
     }
+
+//    20 2 21
+
+//    private void insertItems(final GrainItem item) {
+//        new AsyncTask<Void, Void, ArrayList<GrainItem>>() {
+//            @Override
+//            protected ArrayList<GrainItem> doInBackground(Void... voids) {
+//                ArrayList<GrainItem> status = db.gHistoryDao().insertAllItem(item);
+//                return status;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(ArrayList<GrainItem> grainItems) {
+//                super.onPostExecute(grainItems);
+//
+//            }
+//
+//        }.execute();
+//    }
+
+     /*
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d("Body onDestroyView", "String onDestroyView : ");
+        String urlDomain = "http://110.50.85.28:8200";
+        String jwtKey =  new Sesion(getContext()).getKeyApiJwt();
+        File imgFile = new File(mImageFileLocation);
+        if (imgFile.exists() || mImageFileLocation!="") {
+            decodeBase64(mImageFileLocation);
+            File file = new File(mImageFileLocation);
+            int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
+            try {
+                Log.d("Upload jwtKeys respons", "String respons jwtKey : " +jwtKey);
+                HttpLoggingInterceptor loggingInterceptor2 = new HttpLoggingInterceptor();
+                loggingInterceptor2.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+                TokenInterceptor tokenInterceptor = new TokenInterceptor(jwtKey);
+
+                OkHttpClient okHttpClient2 = new OkHttpClient.Builder()
+                        .addInterceptor(new AddCookiesInterceptor(getActivity()))
+                        .addInterceptor(new ReceivedCookiesInterceptor(getActivity()))
+                        .addInterceptor(loggingInterceptor2)
+                        .addInterceptor(tokenInterceptor)
+                        .build();
+
+                Gson gson2 = new GsonBuilder().serializeNulls().create();
+
+                //Retrofit retrofit = NetworkClient.getRetrofit();
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(urlDomain)
+                        .addConverterFactory(GsonConverterFactory.create(gson2))
+                        .client(okHttpClient2)
+                        .build();
+
+                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+                MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
+                String name = "Rifqi";
+                double latitude = locationTrack.getLatitude();
+                int val1=(int) latitude;
+                double longitude = locationTrack.getLongitude();
+                int val2=(int) longitude;
+                RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(name)); //change to phone number
+                RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
+                RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
+                UploadApis uploadApis = retrofit.create(UploadApis.class);
+                Call call = uploadApis.uploadImage(parts, req1, req2, req3);
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onResponse(Call call, Response response) {
+                        if (response.code() == 200) {
+                            Object obj = response.body();
+                            GrainData grainData = (GrainData) response.body();
+
+                            //for GrainType and GrainSize
+                            GrainPie[] type = grainData.getTypePie();
+                            GrainPie[] size = grainData.getSizePie();
+
+                            showProgress();
+                            mAdapter = new ExampleAdapter(grainData);
+                            mRecyclerView.setAdapter(mAdapter);
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                            no_data.setVisibility(View.GONE);
+                            warningtext.setVisibility(View.GONE);
+                            viewImage.setVisibility(View.VISIBLE);
+
+                            LocalDate date2 = LocalDate.now();
+                            Date date = new Date();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    closeProgress();
+
+
+                                }
+                            },1000);
+
+
+
+                        } else {
+                            Toast.makeText(getActivity(), response.message(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+                            showDialogs();
+                            closeProgress();
+                            String jwtNull = "";
+                            session.setKeyApiJwt(jwtNull);
+                            session.setIsLogin(false);
+                            session.logoutUser();
+                            showDialogs();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+                        String message = "";
+                        closeProgress();
+                        String jwtNull = "";
+                        session.setKeyApiJwt(jwtNull);
+                        session.setIsLogin(false);
+                        session.logoutUser();
+                        showDialogs();
+                    }
+                });
+
+            } catch (Exception e) {
+                String errMessage = e.getMessage();
+            }
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d("Body onDetach", "String onDetach : ");
+        String urlDomain = "http://110.50.85.28:8200";
+        String jwtKey =  new Sesion(getContext()).getKeyApiJwt();
+        File imgFile = new File(mImageFileLocation);
+        if (imgFile.exists() || mImageFileLocation!="") {
+            decodeBase64(mImageFileLocation);
+            File file = new File(mImageFileLocation);
+            int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
+            try {
+                Log.d("Upload jwtKeys respons", "String respons jwtKey : " +jwtKey);
+                HttpLoggingInterceptor loggingInterceptor2 = new HttpLoggingInterceptor();
+                loggingInterceptor2.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+                TokenInterceptor tokenInterceptor = new TokenInterceptor(jwtKey);
+
+                OkHttpClient okHttpClient2 = new OkHttpClient.Builder()
+                        .addInterceptor(new AddCookiesInterceptor(getActivity()))
+                        .addInterceptor(new ReceivedCookiesInterceptor(getActivity()))
+                        .addInterceptor(loggingInterceptor2)
+                        .addInterceptor(tokenInterceptor)
+                        .build();
+
+                Gson gson2 = new GsonBuilder().serializeNulls().create();
+
+                //Retrofit retrofit = NetworkClient.getRetrofit();
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(urlDomain)
+                        .addConverterFactory(GsonConverterFactory.create(gson2))
+                        .client(okHttpClient2)
+                        .build();
+
+                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+                MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
+                String name = "Rifqi";
+                double latitude = locationTrack.getLatitude();
+                int val1=(int) latitude;
+                double longitude = locationTrack.getLongitude();
+                int val2=(int) longitude;
+                RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(name)); //change to phone number
+                RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
+                RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
+                UploadApis uploadApis = retrofit.create(UploadApis.class);
+                Call call = uploadApis.uploadImage(parts, req1, req2, req3);
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onResponse(Call call, Response response) {
+                        if (response.code() == 200) {
+                            Object obj = response.body();
+                            GrainData grainData = (GrainData) response.body();
+
+                            //for GrainType and GrainSize
+                            GrainPie[] type = grainData.getTypePie();
+                            GrainPie[] size = grainData.getSizePie();
+
+                            showProgress();
+                            mAdapter = new ExampleAdapter(grainData);
+                            mRecyclerView.setAdapter(mAdapter);
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                            no_data.setVisibility(View.GONE);
+                            warningtext.setVisibility(View.GONE);
+                            viewImage.setVisibility(View.VISIBLE);
+
+                            LocalDate date2 = LocalDate.now();
+                            Date date = new Date();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    closeProgress();
+
+
+                                }
+                            },1000);
+
+
+
+                        } else {
+                            Toast.makeText(getActivity(), response.message(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+                            showDialogs();
+                            closeProgress();
+                            String jwtNull = "";
+                            session.setKeyApiJwt(jwtNull);
+                            session.setIsLogin(false);
+                            session.logoutUser();
+                            showDialogs();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+                        String message = "";
+                        closeProgress();
+                        String jwtNull = "";
+                        session.setKeyApiJwt(jwtNull);
+                        session.setIsLogin(false);
+                        session.logoutUser();
+                        showDialogs();
+                    }
+                });
+
+            } catch (Exception e) {
+                String errMessage = e.getMessage();
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("Body onDetach", "String onDetach : ");
+        String urlDomain = "http://110.50.85.28:8200";
+        String jwtKey =  new Sesion(getContext()).getKeyApiJwt();
+        File imgFile = new File(mImageFileLocation);
+        if (imgFile.exists() || mImageFileLocation!="") {
+            decodeBase64(mImageFileLocation);
+            File file = new File(mImageFileLocation);
+            int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
+            try {
+                Log.d("Upload jwtKeys respons", "String respons jwtKey : " +jwtKey);
+                HttpLoggingInterceptor loggingInterceptor2 = new HttpLoggingInterceptor();
+                loggingInterceptor2.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+                TokenInterceptor tokenInterceptor = new TokenInterceptor(jwtKey);
+
+                OkHttpClient okHttpClient2 = new OkHttpClient.Builder()
+                        .addInterceptor(new AddCookiesInterceptor(getActivity()))
+                        .addInterceptor(new ReceivedCookiesInterceptor(getActivity()))
+                        .addInterceptor(loggingInterceptor2)
+                        .addInterceptor(tokenInterceptor)
+                        .build();
+
+                Gson gson2 = new GsonBuilder().serializeNulls().create();
+
+                //Retrofit retrofit = NetworkClient.getRetrofit();
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(urlDomain)
+                        .addConverterFactory(GsonConverterFactory.create(gson2))
+                        .client(okHttpClient2)
+                        .build();
+
+                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+                MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
+                String name = "Rifqi";
+                double latitude = locationTrack.getLatitude();
+                int val1=(int) latitude;
+                double longitude = locationTrack.getLongitude();
+                int val2=(int) longitude;
+                RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(name)); //change to phone number
+                RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
+                RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
+                UploadApis uploadApis = retrofit.create(UploadApis.class);
+                Call call = uploadApis.uploadImage(parts, req1, req2, req3);
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onResponse(Call call, Response response) {
+                        if (response.code() == 200) {
+                            Object obj = response.body();
+                            GrainData grainData = (GrainData) response.body();
+
+                            //for GrainType and GrainSize
+                            GrainPie[] type = grainData.getTypePie();
+                            GrainPie[] size = grainData.getSizePie();
+
+                            showProgress();
+                            mAdapter = new ExampleAdapter(grainData);
+                            mRecyclerView.setAdapter(mAdapter);
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                            no_data.setVisibility(View.GONE);
+                            warningtext.setVisibility(View.GONE);
+                            viewImage.setVisibility(View.VISIBLE);
+
+                            LocalDate date2 = LocalDate.now();
+                            Date date = new Date();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    closeProgress();
+
+
+                                }
+                            },1000);
+
+
+
+                        } else {
+                            Toast.makeText(getActivity(), response.message(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+                            showDialogs();
+                            closeProgress();
+                            String jwtNull = "";
+                            session.setKeyApiJwt(jwtNull);
+                            session.setIsLogin(false);
+                            session.logoutUser();
+                            showDialogs();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+                        String message = "";
+                        closeProgress();
+                        String jwtNull = "";
+                        session.setKeyApiJwt(jwtNull);
+                        session.setIsLogin(false);
+                        session.logoutUser();
+                        showDialogs();
+                    }
+                });
+
+            } catch (Exception e) {
+                String errMessage = e.getMessage();
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        Log.d("Body onPause", "String onDetach : ");
+        String urlDomain = "http://110.50.85.28:8200";
+        String jwtKey =  new Sesion(getContext()).getKeyApiJwt();
+        File imgFile = new File(mImageFileLocation);
+        if (imgFile.exists() || mImageFileLocation!="") {
+            decodeBase64(mImageFileLocation);
+            File file = new File(mImageFileLocation);
+            int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
+            try {
+                Log.d("Upload jwtKeys respons", "String respons jwtKey : " +jwtKey);
+                HttpLoggingInterceptor loggingInterceptor2 = new HttpLoggingInterceptor();
+                loggingInterceptor2.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+                TokenInterceptor tokenInterceptor = new TokenInterceptor(jwtKey);
+
+                OkHttpClient okHttpClient2 = new OkHttpClient.Builder()
+                        .addInterceptor(new AddCookiesInterceptor(getActivity()))
+                        .addInterceptor(new ReceivedCookiesInterceptor(getActivity()))
+                        .addInterceptor(loggingInterceptor2)
+                        .addInterceptor(tokenInterceptor)
+                        .build();
+
+                Gson gson2 = new GsonBuilder().serializeNulls().create();
+
+                //Retrofit retrofit = NetworkClient.getRetrofit();
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(urlDomain)
+                        .addConverterFactory(GsonConverterFactory.create(gson2))
+                        .client(okHttpClient2)
+                        .build();
+
+                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+                MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
+                String name = "Rifqi";
+                double latitude = locationTrack.getLatitude();
+                int val1=(int) latitude;
+                double longitude = locationTrack.getLongitude();
+                int val2=(int) longitude;
+                RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(name)); //change to phone number
+                RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
+                RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
+                UploadApis uploadApis = retrofit.create(UploadApis.class);
+                Call call = uploadApis.uploadImage(parts, req1, req2, req3);
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onResponse(Call call, Response response) {
+                        if (response.code() == 200) {
+                            Object obj = response.body();
+                            GrainData grainData = (GrainData) response.body();
+
+                            //for GrainType and GrainSize
+                            GrainPie[] type = grainData.getTypePie();
+                            GrainPie[] size = grainData.getSizePie();
+
+                            showProgress();
+                            mAdapter = new ExampleAdapter(grainData);
+                            mRecyclerView.setAdapter(mAdapter);
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                            no_data.setVisibility(View.GONE);
+                            warningtext.setVisibility(View.GONE);
+                            viewImage.setVisibility(View.VISIBLE);
+
+                            LocalDate date2 = LocalDate.now();
+                            Date date = new Date();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    closeProgress();
+
+
+                                }
+                            },1000);
+
+
+
+                        } else {
+                            Toast.makeText(getActivity(), response.message(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+                            showDialogs();
+                            closeProgress();
+                            String jwtNull = "";
+                            session.setKeyApiJwt(jwtNull);
+                            session.setIsLogin(false);
+                            session.logoutUser();
+                            showDialogs();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+                        String message = "";
+                        closeProgress();
+                        String jwtNull = "";
+                        session.setKeyApiJwt(jwtNull);
+                        session.setIsLogin(false);
+                        session.logoutUser();
+                        showDialogs();
+                    }
+                });
+
+            } catch (Exception e) {
+                String errMessage = e.getMessage();
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        decodeBase64(mImageFileLocation);
+        Log.d("Body onDestroy", "String onDestroy : ");
+        String urlDomain = "http://110.50.85.28:8200";
+        String jwtKey =  new Sesion(getContext()).getKeyApiJwt();
+        File imgFile = new File(mImageFileLocation);
+        if (imgFile.exists() || mImageFileLocation!="") {
+            decodeBase64(mImageFileLocation);
+            File file = new File(mImageFileLocation);
+            int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
+            try {
+                Log.d("Upload jwtKeys respons", "String respons jwtKey : " +jwtKey);
+                HttpLoggingInterceptor loggingInterceptor2 = new HttpLoggingInterceptor();
+                loggingInterceptor2.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+                TokenInterceptor tokenInterceptor = new TokenInterceptor(jwtKey);
+
+                OkHttpClient okHttpClient2 = new OkHttpClient.Builder()
+                        .addInterceptor(new AddCookiesInterceptor(getActivity()))
+                        .addInterceptor(new ReceivedCookiesInterceptor(getActivity()))
+                        .addInterceptor(loggingInterceptor2)
+                        .addInterceptor(tokenInterceptor)
+                        .build();
+
+                Gson gson2 = new GsonBuilder().serializeNulls().create();
+
+                //Retrofit retrofit = NetworkClient.getRetrofit();
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(urlDomain)
+                        .addConverterFactory(GsonConverterFactory.create(gson2))
+                        .client(okHttpClient2)
+                        .build();
+
+                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+                MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
+                String name = "Rifqi";
+                double latitude = locationTrack.getLatitude();
+                int val1=(int) latitude;
+                double longitude = locationTrack.getLongitude();
+                int val2=(int) longitude;
+                RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(name)); //change to phone number
+                RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
+                RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
+                UploadApis uploadApis = retrofit.create(UploadApis.class);
+                Call call = uploadApis.uploadImage(parts, req1, req2, req3);
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onResponse(Call call, Response response) {
+                        if (response.code() == 200) {
+                            Object obj = response.body();
+                            GrainData grainData = (GrainData) response.body();
+
+                            //for GrainType and GrainSize
+                            GrainPie[] type = grainData.getTypePie();
+                            GrainPie[] size = grainData.getSizePie();
+
+                            showProgress();
+                            mAdapter = new ExampleAdapter(grainData);
+                            mRecyclerView.setAdapter(mAdapter);
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                            no_data.setVisibility(View.GONE);
+                            warningtext.setVisibility(View.GONE);
+                            viewImage.setVisibility(View.VISIBLE);
+
+                            LocalDate date2 = LocalDate.now();
+                            Date date = new Date();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    closeProgress();
+
+
+                                }
+                            },1000);
+
+
+
+                        } else {
+                            Toast.makeText(getActivity(), response.message(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+                            showDialogs();
+                            closeProgress();
+                            String jwtNull = "";
+                            session.setKeyApiJwt(jwtNull);
+                            session.setIsLogin(false);
+                            session.logoutUser();
+                            showDialogs();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+                        String message = "";
+                        closeProgress();
+                        String jwtNull = "";
+                        session.setKeyApiJwt(jwtNull);
+                        session.setIsLogin(false);
+                        session.logoutUser();
+                        showDialogs();
+                    }
+                });
+
+            } catch (Exception e) {
+                String errMessage = e.getMessage();
+            }
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d("Body onStop", "String onStop : ");
+        String urlDomain = "http://110.50.85.28:8200";
+        String jwtKey =  new Sesion(getContext()).getKeyApiJwt();
+        File imgFile = new File(mImageFileLocation);
+        if (imgFile.exists() || mImageFileLocation!="") {
+            decodeBase64(mImageFileLocation);
+            File file = new File(mImageFileLocation);
+            int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
+            try {
+                Log.d("Upload jwtKeys respons", "String respons jwtKey : " +jwtKey);
+                HttpLoggingInterceptor loggingInterceptor2 = new HttpLoggingInterceptor();
+                loggingInterceptor2.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+                TokenInterceptor tokenInterceptor = new TokenInterceptor(jwtKey);
+
+                OkHttpClient okHttpClient2 = new OkHttpClient.Builder()
+                        .addInterceptor(new AddCookiesInterceptor(getActivity()))
+                        .addInterceptor(new ReceivedCookiesInterceptor(getActivity()))
+                        .addInterceptor(loggingInterceptor2)
+                        .addInterceptor(tokenInterceptor)
+                        .build();
+
+                Gson gson2 = new GsonBuilder().serializeNulls().create();
+
+                //Retrofit retrofit = NetworkClient.getRetrofit();
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(urlDomain)
+                        .addConverterFactory(GsonConverterFactory.create(gson2))
+                        .client(okHttpClient2)
+                        .build();
+
+                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+                MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
+                String name = "Rifqi";
+                double latitude = locationTrack.getLatitude();
+                int val1=(int) latitude;
+                double longitude = locationTrack.getLongitude();
+                int val2=(int) longitude;
+                RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(name)); //change to phone number
+                RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
+                RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
+                UploadApis uploadApis = retrofit.create(UploadApis.class);
+                Call call = uploadApis.uploadImage(parts, req1, req2, req3);
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onResponse(Call call, Response response) {
+                        if (response.code() == 200) {
+                            Object obj = response.body();
+                            GrainData grainData = (GrainData) response.body();
+
+                            //for GrainType and GrainSize
+                            GrainPie[] type = grainData.getTypePie();
+                            GrainPie[] size = grainData.getSizePie();
+
+                            showProgress();
+                            mAdapter = new ExampleAdapter(grainData);
+                            mRecyclerView.setAdapter(mAdapter);
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                            no_data.setVisibility(View.GONE);
+                            warningtext.setVisibility(View.GONE);
+                            viewImage.setVisibility(View.VISIBLE);
+
+                            LocalDate date2 = LocalDate.now();
+                            Date date = new Date();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    closeProgress();
+
+
+                                }
+                            },1000);
+
+
+
+                        } else {
+                            Toast.makeText(getActivity(), response.message(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+                            showDialogs();
+                            closeProgress();
+                            String jwtNull = "";
+                            session.setKeyApiJwt(jwtNull);
+                            session.setIsLogin(false);
+                            session.logoutUser();
+                            showDialogs();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+                        String message = "";
+                        closeProgress();
+                        String jwtNull = "";
+                        session.setKeyApiJwt(jwtNull);
+                        session.setIsLogin(false);
+                        session.logoutUser();
+                        showDialogs();
+                    }
+                });
+
+            } catch (Exception e) {
+                String errMessage = e.getMessage();
+            }
+        }
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d("Body onDetach", "String onDetach : ");
+        String urlDomain = "http://110.50.85.28:8200";
+        String jwtKey =  new Sesion(getContext()).getKeyApiJwt();
+        File imgFile = new File(mImageFileLocation);
+        if (imgFile.exists() || mImageFileLocation!="") {
+            decodeBase64(mImageFileLocation);
+            File file = new File(mImageFileLocation);
+            int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
+            try {
+                Log.d("Upload jwtKeys respons", "String respons jwtKey : " +jwtKey);
+                HttpLoggingInterceptor loggingInterceptor2 = new HttpLoggingInterceptor();
+                loggingInterceptor2.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+                TokenInterceptor tokenInterceptor = new TokenInterceptor(jwtKey);
+
+                OkHttpClient okHttpClient2 = new OkHttpClient.Builder()
+                        .addInterceptor(new AddCookiesInterceptor(getActivity()))
+                        .addInterceptor(new ReceivedCookiesInterceptor(getActivity()))
+                        .addInterceptor(loggingInterceptor2)
+                        .addInterceptor(tokenInterceptor)
+                        .build();
+
+                Gson gson2 = new GsonBuilder().serializeNulls().create();
+
+                //Retrofit retrofit = NetworkClient.getRetrofit();
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(urlDomain)
+                        .addConverterFactory(GsonConverterFactory.create(gson2))
+                        .client(okHttpClient2)
+                        .build();
+
+                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+                MultipartBody.Part parts = MultipartBody.Part.createFormData("newimage", file.getName(), requestBody);
+                String name = "Rifqi";
+                double latitude = locationTrack.getLatitude();
+                int val1=(int) latitude;
+                double longitude = locationTrack.getLongitude();
+                int val2=(int) longitude;
+                RequestBody req1 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(name)); //change to phone number
+                RequestBody req2 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(latitude));
+                RequestBody req3 = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(longitude));
+                UploadApis uploadApis = retrofit.create(UploadApis.class);
+                Call call = uploadApis.uploadImage(parts, req1, req2, req3);
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onResponse(Call call, Response response) {
+                        if (response.code() == 200) {
+                            Object obj = response.body();
+                            GrainData grainData = (GrainData) response.body();
+
+                            //for GrainType and GrainSize
+                            GrainPie[] type = grainData.getTypePie();
+                            GrainPie[] size = grainData.getSizePie();
+
+                            showProgress();
+                            mAdapter = new ExampleAdapter(grainData);
+                            mRecyclerView.setAdapter(mAdapter);
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                            no_data.setVisibility(View.GONE);
+                            warningtext.setVisibility(View.GONE);
+                            viewImage.setVisibility(View.VISIBLE);
+
+                            LocalDate date2 = LocalDate.now();
+                            Date date = new Date();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    closeProgress();
+
+
+                                }
+                            },1000);
+
+
+
+                        } else {
+                            Toast.makeText(getActivity(), response.message(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+                            showDialogs();
+                            closeProgress();
+                            String jwtNull = "";
+                            session.setKeyApiJwt(jwtNull);
+                            session.setIsLogin(false);
+                            session.logoutUser();
+                            showDialogs();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+                        String message = "";
+                        closeProgress();
+                        String jwtNull = "";
+                        session.setKeyApiJwt(jwtNull);
+                        session.setIsLogin(false);
+                        session.logoutUser();
+                        showDialogs();
+                    }
+                });
+
+            } catch (Exception e) {
+                String errMessage = e.getMessage();
+            }
+        }
+    }
+
+    */
 }
 

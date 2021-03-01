@@ -88,18 +88,18 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(intents);
         }
 //        openMain();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean Islogin = prefs.getBoolean("Islogin", false);
-        if(Islogin)
-        {   // condition true means user is already login
-            Intent i = new Intent(this, LoginActivity.class);
-            startActivityForResult(i, 1);
-        }
-
-        else
-        {
-            // condition false take it user on login form
-        }
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//        boolean Islogin = prefs.getBoolean("Islogin", false);
+//        if(Islogin)
+//        {   // condition true means user is already login
+//            Intent i = new Intent(this, LoginActivity.class);
+//            startActivityForResult(i, 1);
+//        }
+//
+//        else
+//        {
+//            // condition false take it user on login form
+//        }
 
 
 

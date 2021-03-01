@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
+import com.example.uploadandviewimage.auth.ProfileActivity;
+
 public class LocTrack extends Service implements LocationListener {
 
     private final Context mContext;
@@ -156,7 +158,7 @@ public class LocTrack extends Service implements LocationListener {
 
         alertDialog.setTitle("GPS is not Enabled!");
 
-        alertDialog.setMessage("Do you want to turn on GPS?");
+        alertDialog.setMessage(" turn on your GPS?");
 
 
         alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -169,8 +171,7 @@ public class LocTrack extends Service implements LocationListener {
 
         alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
+               showSettingsAlert();            }
         });
 
 
