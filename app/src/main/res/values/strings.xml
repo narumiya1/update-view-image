@@ -6,7 +6,7 @@
     <string name="alamat_hint">Alamat</string>
     <string name="login_phone_hint">phone number format : +62811220202 </string>
 
-    <string name="upload">Aplikasi ini merupakan aplikasi kecerasan buatan pendeteksi jenis beras. \n untuk penggunaannya Upload foto dengan mengklik icon photo Setelah foto selesai di upload, maka aplikasi akan secara otomatis mengenerate angka statistik sesuai dengan di foto "</string>
+    <string name="upload">Grain Vision 2021 v1 adalah aplikasi kecerdasan buatan pendeteksi jenis gandum. \n untuk penggunaannya Upload foto dengan mengklik icon photo, aplikasi akan secara otomatis mendeteksi jenis gandum sesuai dengan foto yang di upload "</string>
     <string name="uploaded">  Setelah foto selesai di upload, maka aplikasi akan secara otomatis mengenerate angka statistik "</string>
     <string name="hasil"> Secara otomatis hasil dari tampilan akan tersimpan di history</string>
     <string name="chart"> Secara otomatis akan menampilkan chart</string>
