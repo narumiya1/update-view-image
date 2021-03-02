@@ -348,7 +348,8 @@ public class HomeFragment extends Fragment{
 
 
         if (isConnected()) {
-            Toast.makeText(view.getContext(), "Internet Connected", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(view.getContext(), "Internet Connected", Toast.LENGTH_SHORT).show();
+            Log.d("Body Internet Connected", "Internet Connected");
         } else {
             btnRetry.setVisibility(View.VISIBLE);
             btnRetry.setOnClickListener(new View.OnClickListener() {
@@ -397,8 +398,9 @@ public class HomeFragment extends Fragment{
 
             lati.setText("latitude" +latitude);
             longi.setText("longitudesz" +longitude);
-
-            Toast.makeText(getActivity(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
+            Log.d("Body latitude", "latitude val"+latitude);
+            Log.d("Body longitudesz", "latitude val"+longitude);
+//            Toast.makeText(getActivity(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
         } else {
 
             locationTrack.showSettingsAlert();
@@ -678,7 +680,7 @@ public class HomeFragment extends Fragment{
             double latitude = locationTrack.getLatitude();
             lati.setText("latitude" +latitude);
             longi.setText("longitudesz" +longitude);
-            Toast.makeText(getContext(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
+            Log.d("Body Longitude", "longitude : "+longitude+""+latitude);
         } else {
             locationTrack.showSettingsAlert();
         }
@@ -877,7 +879,7 @@ public class HomeFragment extends Fragment{
                     if (length<40000){
                         Log.d("Body Max Size", "5mb " +length);
                     }
-                    Toast.makeText(getContext(), " Max Size !=> 5mb", Toast.LENGTH_LONG).show();
+                    Log.d("Body Longitude", "longitude : "+length);
                     Bitmap converetdImage = getResizedBitmap(bitmap, 650);
 
 
@@ -1145,12 +1147,11 @@ public class HomeFragment extends Fragment{
         File file = new File(mImageFileLocation);
         int length = (int) file.length();
         Log.d("Upload length respons", "String respons length : " +length);
-        Toast.makeText(getContext(), " Max Size = 5mb", Toast.LENGTH_LONG).show();
-        if (length>50000){
+         if (length>50000){
 
         }
-        Toast.makeText(getContext(), " Max Size ======== 5mb", Toast.LENGTH_LONG).show();
-
+//        Toast.makeText(getContext(), " File Size"+length, Toast.LENGTH_LONG).show();
+        Log.d("Body Max Size", "File Size------------5mb " +length);
         int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
         Log.d("Body Max Size", "------------5mb " +file_size);
 
@@ -1738,7 +1739,9 @@ public class HomeFragment extends Fragment{
             @SuppressLint("StaticFieldLeak")
             @Override
             protected void onPostExecute(Long status) {
-                Toast.makeText(getActivity().getApplicationContext(), "status row " + status, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity().getApplicationContext(), "status row " + status, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity().getApplicationContext(), "history row added sucessfully" + status, Toast.LENGTH_SHORT).show();
+                Log.d("Upload history row added sucessfullys", "String status  : " +status);
             }
         }.execute();
     }
@@ -1754,7 +1757,7 @@ public class HomeFragment extends Fragment{
                         sDialog
                                 .setTitleText("!")
                                 .setContentText("")
-                                .setConfirmText("OK")
+                                .setConfirmText(" ")
                                 .setConfirmClickListener(null)
                                 .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
                     }
@@ -1790,7 +1793,8 @@ public class HomeFragment extends Fragment{
             @SuppressLint("StaticFieldLeak")
             @Override
             protected void onPostExecute(Long status) {
-                Toast.makeText(getActivity().getApplicationContext(), "status row " + status, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity().getApplicationContext(), "status row " + status, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(), "history row added sucessfully" + status, Toast.LENGTH_SHORT).show();
             }
         }.execute();
     }
