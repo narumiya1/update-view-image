@@ -2,6 +2,7 @@ package com.example.uploadandviewimage.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -20,6 +21,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.uploadandviewimage.R;
+import com.example.uploadandviewimage.auth.LoginNumber;
 import com.example.uploadandviewimage.auth.Sesion;
 import com.example.uploadandviewimage.fragment.AccountFragment;
 import com.example.uploadandviewimage.fragment.AboutFragment;
@@ -52,7 +54,15 @@ public class FragmentActivity extends AppCompatActivity implements BottomNavigat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragmnet);
         sesion = new Sesion(this);
-        if (sesion.isLoggedIn()){
+        if (sesion.isLoggedIn()) {
+
+        } else {
+            String jwtNull = "";
+            Intent intent = new Intent(FragmentActivity.this, LoginNumber.class);;
+            sesion.setKeyApiJwt(jwtNull);
+            sesion.setIsLogin(false);
+            sesion.logoutUser();
+            startActivity(intent);
 
         }
         loadFragment(new HomeFragment());

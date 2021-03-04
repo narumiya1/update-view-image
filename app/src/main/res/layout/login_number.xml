@@ -89,10 +89,11 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
-            android:id="@+id/forgot_password"
+            android:id="@+id/forgot_passwordz"
             style="@style/viewParent"
+            android:visibility="invisible"
             android:layout_gravity="end"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:onClick="viewForgotPAssword"
             android:text="Forgot Password?"
             android:textColor="@color/primaryTextColor"
@@ -161,4 +162,16 @@
 
 
     </LinearLayout>
+    <TextView
+        android:id="@+id/forgot_password"
+        style="@style/viewParent"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="60dp"
+        android:layout_marginRight="18dp"
+        android:textStyle="bold"
+        android:onClick="viewForgotPAssword"
+        android:text="Forgot Password ??"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="@dimen/newsMoreTextSize" />
+
 </androidx.cardview.widget.CardView>

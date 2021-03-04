@@ -77,7 +77,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/line_background"
+            android:background="@drawable/card_edge_line"
             android:backgroundTintMode="src_over">
 
             <TextView
@@ -96,9 +96,9 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
-                app:cardCornerRadius="8dp"
-                android:layout_marginLeft="3dp"
-                android:layout_marginRight="3dp"
+                app:cardCornerRadius="14dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
                 app:cardElevation="4.5dp"
                 android:background="@color/colorPrimary"
                 app:cardBackgroundColor="@color/main_blue_color"
@@ -136,161 +136,179 @@
             </androidx.cardview.widget.CardView>
 
         </FrameLayout>
-
-        <ScrollView
-
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@color/colorPrimaryDarker">
-
-            <FrameLayout
+            app:cardCornerRadius="8dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginBottom="50dp"
+            android:layout_marginTop="12dp"
+            app:cardElevation="4.5dp">
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cv_maine"
+                android:layout_height="match_parent"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:outlineSpotShadowColor="@color/design_default_color_primary"
+                android:outlineAmbientShadowColor="@color/design_default_color_primary"
+
+                android:backgroundTint="@color/colorPrimaryDarker">
+
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_margin="4dp"
-                    android:padding="10dp"
-                    android:background="@color/whiteCardColor"
-                    android:visibility="gone">
+                    android:layout_height="match_parent">
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cv_maine"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin="2dp"
+                        android:layout_marginTop="2dp"
+                        android:background="@color/whiteCardColor"
+                        android:visibility="gone"
+                        app:cardCornerRadius="8dp">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerView_fragmenth"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:background="@color/whiteCardColor"
+                            android:scrollbars="vertical"
+                            android:visibility="gone" />
+
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom">
+
+                            <TextView
+                                android:id="@+id/item_time"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:layout_marginRight="6dp"
+                                android:layout_marginBottom="2dp"
+                                android:fontFamily="@font/montserratlight"
+                                android:gravity="right|bottom"
+                                android:text="2021"
+                                android:textColor="@android:color/black"
+                                android:textSize="12sp"
+                                android:visibility="gone"/>
+                        </FrameLayout>
+                    </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:id="@+id/tv_warn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:fontFamily="@font/ubunturegular"
+                        android:gravity="left"
+                        android:layout_marginLeft="4dp"
+                        android:padding="4dp"
+                        android:text=" Karawang, kepala \n (890,954) (576,928) \n\n Pandan Wangi, kepala \n (13,854) (334,754) \n\n IR42,menir \n (528,858) (28,758) \n\n IR42,menir \n (528,858) (28,758) \n \n Karawang,Patah \n (528,858) (28,758) \n \n Pandan Wangi,Patah \n (528,858) (28,758) \n \n "
+                        android:textColor="#0B0A0A"
+                        android:textSize="16sp"
+                        android:visibility="visible" />
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerView_fragmenth"
+                        android:layout_marginTop="4dp"
+                        android:id="@+id/recyclerView_fragment"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@color/whiteCardColor"
                         android:scrollbars="vertical"
-                        android:visibility="gone" />
+                        android:visibility="invisible" />
 
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
+                    <com.github.clans.fab.FloatingActionMenu
+                        android:id="@+id/fab_popUp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="bottom">
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_gravity="center_vertical|right"
+                        android:layout_marginRight="6dp"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginBottom="60dp"
+                        android:src="@drawable/ic_baseline_how_to_reg_24"
+                        android:visibility="visible"
+                        app:fab_size="normal"
+                        app:menu_backgroundColor="@android:color/transparent"
+                        app:menu_colorNormal="#05B6A2"
+                        app:menu_colorPressed="#939C9B"
+                        app:menu_icon="@drawable/ic_notifications_black_24dp"
+                        app:menu_labels_colorNormal="@color/colorPrimary"
+                        app:menu_labels_colorPressed="#E91E63"
+                        app:menu_labels_showShadow="true"
+                        app:menu_labels_textColor="#F8F7F5"
+                        app:menu_openDirection="up"
+                        app:menu_showShadow="true">
 
-                        <TextView
-                            android:id="@+id/item_time"
-                            android:layout_width="match_parent"
+                        <com.github.clans.fab.FloatingActionButton
+                            android:id="@+id/fab_chart"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:layout_marginRight="6dp"
-                            android:layout_marginBottom="2dp"
-                            android:fontFamily="@font/montserratlight"
-                            android:gravity="right|bottom"
-                            android:text="2021"
-                            android:textColor="@android:color/black"
-                            android:textSize="12sp"
+                            android:src="@drawable/ic_home_black_24dp"
+                            app:fab_colorNormal="@color/colorPrimary"
+                            app:fab_colorPressed="#FF00786D"
+                            app:fab_label="View in Chart"
+                            app:fab_size="mini"
                             android:visibility="gone"/>
-                    </FrameLayout>
-                </androidx.cardview.widget.CardView>
-                <TextView
-                    android:id="@+id/tv_warn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:fontFamily="@font/ubunturegular"
-                    android:gravity="left"
-                    android:layout_marginLeft="4dp"
-                    android:padding="4dp"
-                    android:text=" Karawang, kepala \n (890,954) (576,928) \n\n Pandan Wangi, kepala \n (13,854) (334,754) \n\n IR42,menir \n (528,858) (28,758) \n\n IR42,menir \n (528,858) (28,758) \n \n Karawang,Patah \n (528,858) (28,758) \n \n Pandan Wangi,Patah \n (528,858) (28,758) \n \n "
-                    android:textColor="#0B0A0A"
-                    android:textSize="16sp"
-                    android:visibility="visible" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView_fragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/whiteCardColor"
-                    android:scrollbars="vertical"
-                    android:visibility="invisible" />
 
-                <com.github.clans.fab.FloatingActionMenu
-                    android:id="@+id/fab_popUp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_gravity="bottom|right"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="60dp"
-                    android:src="@drawable/ic_baseline_how_to_reg_24"
-                    android:visibility="visible"
-                    app:fab_size="normal"
-                    app:menu_backgroundColor="@android:color/transparent"
-                    app:menu_colorNormal="#05B6A2"
-                    app:menu_colorPressed="#939C9B"
-                    app:menu_icon="@drawable/ic_notifications_black_24dp"
-                    app:menu_labels_colorNormal="@color/colorPrimary"
-                    app:menu_labels_colorPressed="#E91E63"
-                    app:menu_labels_showShadow="true"
-                    app:menu_labels_textColor="#F8F7F5"
-                    app:menu_openDirection="up"
-                    app:menu_showShadow="true">
+                        <com.github.clans.fab.FloatingActionButton
+                            android:id="@+id/fab_pdf"
+                            android:visibility="gone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_dashboard_black_24dp"
+                            app:fab_colorNormal="@color/colorPrimary"
+                            app:fab_colorPressed="#FF00786D"
+                            app:fab_label="Export pdf"
+                            app:fab_size="mini" />
 
-                    <com.github.clans.fab.FloatingActionButton
-                        android:id="@+id/fab_chart"
+                        <com.github.clans.fab.FloatingActionButton
+                            android:id="@+id/fab_view_history"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_baseline_drafts_24"
+                            app:fab_colorNormal="@color/colorPrimary"
+                            app:fab_colorPressed="#FF00786D"
+                            app:fab_label="View History "
+                            app:fab_size="mini"
+                            android:visibility="gone"/>
+
+                        <com.github.clans.fab.FloatingActionButton
+                            android:id="@+id/fab_pdf_intent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_baseline_drafts_24"
+                            app:fab_colorNormal="@color/colorPrimary"
+                            app:fab_colorPressed="#FF00786D"
+                            app:fab_label="Export to PDF "
+                            app:fab_size="mini"
+                            android:visibility="visible"/>
+
+                    </com.github.clans.fab.FloatingActionMenu>
+                    <Button android:layout_marginBottom="40dp"
+                        android:id="@+id/btnRetry"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_home_black_24dp"
-                        app:fab_colorNormal="@color/colorPrimary"
-                        app:fab_colorPressed="#FF00786D"
-                        app:fab_label="View in Chart"
-                        app:fab_size="mini"
-                        android:visibility="gone"/>
-
-
-                    <com.github.clans.fab.FloatingActionButton
-                        android:id="@+id/fab_pdf"
+                        android:layout_gravity="center"
+                        android:text="Retry"
+                        android:backgroundTint="@color/colorAccent"
+                        android:textColor="#fff"
                         android:visibility="gone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_dashboard_black_24dp"
-                        app:fab_colorNormal="@color/colorPrimary"
-                        app:fab_colorPressed="#FF00786D"
-                        app:fab_label="Export pdf"
-                        app:fab_size="mini" />
+                        android:layout_centerHorizontal="true"/>
+                </FrameLayout>
 
-                    <com.github.clans.fab.FloatingActionButton
-                        android:id="@+id/fab_view_history"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_baseline_drafts_24"
-                        app:fab_colorNormal="@color/colorPrimary"
-                        app:fab_colorPressed="#FF00786D"
-                        app:fab_label="View History "
-                        app:fab_size="mini"
-                        android:visibility="gone"/>
+            </ScrollView>
 
-                    <com.github.clans.fab.FloatingActionButton
-                        android:id="@+id/fab_pdf_intent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_baseline_drafts_24"
-                        app:fab_colorNormal="@color/colorPrimary"
-                        app:fab_colorPressed="#FF00786D"
-                        app:fab_label="Export to PDF "
-                        app:fab_size="mini"
-                        android:visibility="visible"/>
+        </androidx.cardview.widget.CardView>
 
-                </com.github.clans.fab.FloatingActionMenu>
-                <Button android:layout_marginBottom="40dp"
-                    android:id="@+id/btnRetry"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Retry"
-                    android:backgroundTint="@color/colorAccent"
-                    android:textColor="#fff"
-                    android:visibility="gone"
-                    android:layout_centerHorizontal="true"/>
-            </FrameLayout>
-
-        </ScrollView>
 
     </LinearLayout>
 </LinearLayout>

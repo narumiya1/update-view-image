@@ -265,7 +265,7 @@ public class LoginNumber extends AppCompatActivity {
                                         .build();
 
                                 Log.d("Body <>", "Response: "+response.body().toString());
-                                Intent intent = new Intent(LoginNumber.this, ProfileActivity.class);
+                                Intent intent = new Intent(LoginNumber.this, FragmentActivity.class);
                                 startActivity(intent);
 
                             } catch (Exception e) {
@@ -298,7 +298,7 @@ public class LoginNumber extends AppCompatActivity {
 
     private void openMain() {
         if (session.isLoggedIn()) {
-            Intent intent = new Intent(LoginNumber.this, ProfileActivity.class);
+            Intent intent = new Intent(LoginNumber.this, FragmentActivity.class);
             startActivity(intent);
         }
     }

@@ -170,7 +170,7 @@ public class SaveData extends AppCompatActivity {
         databaseReference.child(mobilephone_sreg).setValue(accounts);
         Intent intent = new Intent(SaveData.this, LoginNumber.class);
         startActivity(intent);
-        Toast.makeText(SaveData.this, "Silahkan login untuk melanjutkan", Toast.LENGTH_SHORT).show();
+        Toast.makeText(SaveData.this, "Silahkan login untuk melanjutkan agar tidak lupa password", Toast.LENGTH_LONG).show();
 
     }
 }
