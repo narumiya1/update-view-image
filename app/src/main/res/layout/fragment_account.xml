@@ -33,6 +33,19 @@
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="54dp"/>
+                <Button
+                    android:id="@+id/Btn_Save_Setup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save Photo"
+                    android:textAllCaps="false"
+                    android:layout_margin="4dp"
+                    android:background="@color/colorPrimary"
+                    android:textColor="@color/whiteCardColor"
+                    android:textSize="18dp"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                     />
                 <TextView
                     android:fontFamily="@font/ubunturegular"
                     android:id="@+id/nameOneTv"
