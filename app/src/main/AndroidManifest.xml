@@ -56,6 +56,7 @@
         <activity android:name=".ViewPagerActivity"/>
         <activity android:name=".auth.LoginNumber"/>
         <activity android:name=".auth.ForgotPasswordActivity"/>
+        <activity android:name=".activity.SlidePanelActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

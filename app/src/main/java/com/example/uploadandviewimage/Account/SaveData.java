@@ -164,11 +164,12 @@ public class SaveData extends AppCompatActivity {
 //                        return;
             }
         }
-//                sesion.setPhone(mobilephone_sreg);
-//                sesion.setIsLogin(true);
+//                sesion.setPhone(mobilephone_sreg)
         Accounts accounts = new Accounts(userId, userName, userEmail, userAlamat, mobilephone_sreg, passwordUser);
         databaseReference.child(mobilephone_sreg).setValue(accounts);
         Intent intent = new Intent(SaveData.this, LoginNumber.class);
+        FirebaseAuth.getInstance().signOut();
+        sesion.logoutUser();
         startActivity(intent);
         Toast.makeText(SaveData.this, "Silahkan login untuk melanjutkan agar tidak lupa password", Toast.LENGTH_LONG).show();
 

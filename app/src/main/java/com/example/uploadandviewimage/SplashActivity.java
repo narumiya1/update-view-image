@@ -27,7 +27,7 @@ public class SplashActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         progressDialog = new ProgressDialog(this);
         session = new Sesion(this);
-        showProgress();
+//        showProgress();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -50,7 +50,7 @@ public class SplashActivity extends AppCompatActivity {
             startActivity(i);
         }
             finish();
-            closeProgress();
+//            closeProgress();
 
     }
     private void showProgress() {

@@ -12,6 +12,7 @@
     <string name="chart"> Secara otomatis akan menampilkan chart</string>
     <string name="details">dengan mengklik salah satu list yang ada di history, maka halaman akan berpindah ke page Detail"</string>
     <string name="reg_password_hint">password</string>
-
+    <string name="beras_contoh">Berikut Contoh posisi beras yang benar untuk meningkatkan akurasi"</string>
+    <string name="beras_contohb">Contoh posisi beras yang benar \n untuk mendapatkan hasil dan akurasi yang maksimal"</string>
 
 </resources>

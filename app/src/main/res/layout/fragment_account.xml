@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
+        android:layout_marginTop="19dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/cardview_shadow_end_color"
@@ -16,6 +17,22 @@
             android:layout_width="match_parent"
             android:layout_height="250dp">
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="190dp"
+                    android:layout_height="190dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="14dp"
+                    android:src="@drawable/ic_baseline_how_to_reg_24"
+                    app:civ_border_color="#8E8998"
+                    app:civ_border_width="3dp" />
+            </FrameLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
@@ -24,46 +41,50 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profile_image"
-                    android:layout_gravity="center"
-                    android:layout_width="160dp"
-                    android:layout_height="160dp"
-                    android:src="@drawable/ic_baseline_how_to_reg_24"
-                    app:civ_border_color="#BFB9CA"
-                    app:civ_border_width="3dp"
+                    android:layout_width="180dp"
+                    android:layout_height="180dp"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="54dp"/>
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/ic_baseline_how_to_reg_24"
+                    app:civ_border_color="#BFB9CA"
+                    app:civ_border_width="3dp" />
+
+
                 <Button
                     android:id="@+id/Btn_Save_Setup"
-                    android:layout_width="wrap_content"
+                    android:layout_width="160dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/colorPrimary"
+                    android:gravity="center"
                     android:text="Save Photo"
                     android:textAllCaps="false"
-                    android:layout_margin="4dp"
-                    android:background="@color/colorPrimary"
                     android:textColor="@color/whiteCardColor"
-                    android:textSize="18dp"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                     />
+                    android:textSize="18dp" />
+
                 <TextView
-                    android:fontFamily="@font/ubunturegular"
                     android:id="@+id/nameOneTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/ubunturegular"
                     android:text="Nama"
                     android:textColor="#403C3C"
                     android:textSize="21sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
+
                 <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="24dp"
-                android:layout_marginRight="24dp"
-                android:layout_marginTop="14dp"
-                android:background="@color/colorPrimary" />
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginRight="24dp"
+                    android:background="@color/colorPrimary"
+                    android:visibility="gone" />
 
             </LinearLayout>
             <!--   <androidx.cardview.widget.CardView
@@ -161,9 +182,9 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 android:paddingLeft="45dp">
 
@@ -201,8 +222,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:paddingLeft="20dp"
                     android:fontFamily="@font/montserratlight"
+                    android:paddingLeft="20dp"
                     android:text="null"
                     android:textSize="16dp"
                     android:textStyle="bold" />
@@ -228,8 +249,8 @@
                     android:layout_gravity="center_vertical"
                     android:fontFamily="@font/montserratlight"
                     android:paddingLeft="20dp"
-                    android:textSize="16dp"
                     android:text="null  "
+                    android:textSize="16dp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -253,9 +274,9 @@
                     android:layout_gravity="center_vertical"
                     android:fontFamily="@font/montserratlight"
                     android:paddingLeft="20dp"
-                    android:textSize="16dp"
                     android:text="Alamat  "
-                    android:textStyle="bold"/>
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tv_password_view_retype"
@@ -264,71 +285,75 @@
                     android:layout_gravity="center_vertical"
                     android:fontFamily="@font/montserratlight"
                     android:paddingLeft="20dp"
-                    android:textSize="16dp"
                     android:text="Alamat  "
-                    android:textStyle="bold"/>
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
-        <LinearLayout
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_updatedataacount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/button"
+                    android:fontFamily="@font/ubunturegular"
+                    android:text="update data"
+                    android:textColor="#F6F4F4" />
+
+                <Button
+                    android:id="@+id/btn_lougout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginLeft="6dp"
+                    android:background="@drawable/button"
+                    android:fontFamily="@font/ubunturegular"
+                    android:text="Logout"
+                    android:textColor="#F6F4F4" />
+
+                <Button
+                    android:id="@+id/btn_insertdataacount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/button"
+                    android:text="Insert Data"
+                    android:textColor="#F6F4F4"
+                    android:visibility="gone" />
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center"
-            android:layout_marginTop="40dp">
-            <Button
-                android:id="@+id/btn_updatedataacount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="6dp"
-                android:fontFamily="@font/ubunturegular"
-                android:background="@drawable/button"
-                android:text="update data"
-                android:textColor="#F6F4F4" />
-            <Button
-                android:id="@+id/btn_lougout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/button"
-                android:text="Logout" android:fontFamily="@font/ubunturegular"
-                android:textColor="#F6F4F4" />
+            android:layout_marginTop="20dp"
+            android:text="No data received"
+            android:textSize="20sp"
+            android:visibility="gone" />
 
-            <Button
-                android:id="@+id/btn_insertdataacount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/button"
-                android:text="Insert Data"
-                android:visibility="gone"
-                android:textColor="#F6F4F4" />
-
-
-        </LinearLayout>
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/txtData"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="No data received"
-        android:textSize="20sp"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/tv_account"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/txtData"
-        android:layout_centerInParent="true"
-        android:fontFamily="serif-monospace"
-        android:text="my account"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:visibility="gone" />
+        <TextView
+            android:id="@+id/tv_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtData"
+            android:layout_centerInParent="true"
+            android:fontFamily="serif-monospace"
+            android:text="my account"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:visibility="gone" />
     </LinearLayout>
 </RelativeLayout>
 

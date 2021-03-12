@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.uploadandviewimage.activity.SlidePanelActivity">
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        xmlns:sothree="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/sliding_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        sothree:umanoPanelHeight="68dp"
+        sothree:umanoShadowHeight="4dp">
+
+        <include
+            layout="@layout/activity_fragmnet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout_centerVertical="true"
+            tools:layout_centerHorizontal="true" />
+
+        <include
+            android:layout_marginTop="60dp"
+            layout="@layout/activity_second"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout_centerVertical="true"
+            tools:layout_centerHorizontal="true" />
+
+
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -59,11 +59,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static android.app.Activity.RESULT_OK;
 
 public class AccountFragment extends Fragment {
-    TextView txtData, textEmail, txtUsername, txtAlamat, txtPasswrd,txtPasswrdRetype ;
-    Button btnLogout, btn_insertdataacount, btn_updatedataacount, mBtn_Save ;
-    FirebaseAuth mAuth ;
+    TextView txtData, textEmail, txtUsername, txtAlamat, txtPasswrd, txtPasswrdRetype;
+    Button btnLogout, btn_insertdataacount, btn_updatedataacount, mBtn_Save;
+    FirebaseAuth mAuth;
     DatabaseReference rootDb;
-    String getEmail, getAlamatz, getUsernamez,id, getId, getPw, getPwRetype;
+    String getEmail, getAlamatz, getUsernamez, id, getId, getPw, getPwRetype;
     String getPphoneNumbbr;
     Sesion session;
     Accounts accounts = new Accounts();
@@ -73,6 +73,7 @@ public class AccountFragment extends Fragment {
     public static final int REQUEST = 1;
     public static final int FUCK_UP = 2;
     private Uri mainImageURI;
+
     public AccountFragment() {
     }
 
@@ -85,7 +86,7 @@ public class AccountFragment extends Fragment {
 //        phoneNumbbr = mAuth.getCurrentUser().getPhoneNumber();
 
         txtData = rootView.findViewById(R.id.tv_account_phone);
-        txtUsername = (TextView)rootView.findViewById(R.id.nameOneTv);
+        txtUsername = (TextView) rootView.findViewById(R.id.nameOneTv);
         textEmail = rootView.findViewById(R.id.tvemail_account);
         txtAlamat = rootView.findViewById(R.id.tv_account_alamat);
         txtPasswrd = rootView.findViewById(R.id.tv_password_view);
@@ -166,9 +167,9 @@ public class AccountFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    Log.d("DATA CHANGEt", "onDataChange: "+dataSnapshot.getValue());
+                    Log.d("DATA CHANGEt", "onDataChange: " + dataSnapshot.getValue());
                     accounts = dataSnapshot.getValue(Accounts.class);
-                    Log.d("DATA CHANGE -- ", "onDataChange: "+accounts.getAddress());
+                    Log.d("DATA CHANGE -- ", "onDataChange: " + accounts.getAddress());
                     txtUsername.setText(accounts.getUsername());
                     txtAlamat.setText(accounts.getAddress());
                     textEmail.setText(accounts.getEmail());
@@ -229,9 +230,7 @@ public class AccountFragment extends Fragment {
                         }
                     });
 
-                    mBtn_Save.setOnClickListener(new View.OnClickListener()
-
-                    {
+                    mBtn_Save.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
@@ -316,7 +315,7 @@ public class AccountFragment extends Fragment {
 
                 Intent intent = new Intent(getContext(), AccountUpdateActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("user",accounts);
+                bundle.putSerializable("user", accounts);
                 intent.putExtras(bundle);
 //                intent.putExtra("id",id);
 //                intent.putExtra("namez", accounts.getUsername());
@@ -379,7 +378,7 @@ public class AccountFragment extends Fragment {
                         mBtn_Save.setVisibility(View.GONE);
 
 
-                    }else {
+                    } else {
 
                         String ERROR = task.getException().getMessage();
                         Toast.makeText(getActivity(), ERROR, Toast.LENGTH_SHORT).show();
@@ -388,7 +387,7 @@ public class AccountFragment extends Fragment {
                 }
 
             });
-        }else {
+        } else {
 
             Toast.makeText(getActivity(), "Enter your name.", Toast.LENGTH_SHORT).show();
 

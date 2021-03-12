@@ -54,11 +54,12 @@ public class FragmentActivity extends AppCompatActivity implements BottomNavigat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragmnet);
         sesion = new Sesion(this);
-        if (sesion.isLoggedIn()) {
+        if (!sesion.isLoggedIn()) {
 
-        } else {
+
             String jwtNull = "";
-            Intent intent = new Intent(FragmentActivity.this, LoginNumber.class);;
+            Intent intent = new Intent(FragmentActivity.this, LoginNumber.class);
+            ;
             sesion.setKeyApiJwt(jwtNull);
             sesion.setIsLogin(false);
             sesion.logoutUser();

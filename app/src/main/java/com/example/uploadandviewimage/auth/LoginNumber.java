@@ -138,6 +138,7 @@ public class LoginNumber extends AppCompatActivity {
             public void onClick(View view) {
                 //auth here
                 FirebaseAuth.getInstance().signOut();
+                session.logoutUser();
                 startActivity(new Intent(LoginNumber.this, com.example.uploadandviewimage.auth.AuthActivity.class));
                 finish();
             }
@@ -146,6 +147,7 @@ public class LoginNumber extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
+                session.logoutUser();
                 startActivity(new Intent(LoginNumber.this, com.example.uploadandviewimage.auth.AuthActivity.class));
                 finish();
             }

@@ -14,8 +14,8 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     private Context context;
     private LayoutInflater layoutInflater;
-    private Integer [] images = {R.drawable.n,R.drawable.tutorupload,R.drawable.tutorhasil, R.drawable.tutorhistory, R.drawable.details};
-    private Integer [] txtV = {R.string.upload,R.string.uploaded,R.string.chart,R.string.hasil,R.string.details };
+    private Integer [] images = {R.drawable.n, R.drawable.beras_pwktn,R.drawable.tutorupload,R.drawable.tutorhasil, R.drawable.tutorhistory, R.drawable.details,};
+    private Integer [] txtV = {R.string.upload,R.string.beras_contoh,R.string.uploaded,R.string.chart,R.string.hasil,R.string.details };
 
     public ViewPagerAdapter(Context context) {
         this.context = context;
