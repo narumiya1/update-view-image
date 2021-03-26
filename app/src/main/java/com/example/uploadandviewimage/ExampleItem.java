@@ -1,4 +1,7 @@
+
 package com.example.uploadandviewimage;
+
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -30,7 +33,7 @@ public class ExampleItem {
 
     public String getName() {
 
-        return this.nameType + ", " + this.nameSize;
+        return "Butir "+ this.nameSize + " " + this.nameType;
     }
 
     public String getScoreSize() {
@@ -52,17 +55,25 @@ public class ExampleItem {
     }
 
     public String getScore() {
-        String str = "(";
-        str = str + String.format("%.0f", this.classificationSize);
-        str = str + ", ";
-        str = str + String.format("%.0f", this.identificationSize);
-        str = str + ")";
-        str = str + ", ";
-        str = str + "(";
-        str = str + String.format("%.0f", this.classificationType);
-        str = str + ", ";
-        str = str + String.format("%.0f", this.identificationType);
-        str = str + ")";
+        String str = "";
+//        str = str + String.format("%.0f", this.classificationSize);
+//        str = str + ", ";
+//        str = str + String.format("%.0f", this.identificationSize/10);
+//        str = str + "% ";
+//        str = str + "";
+//        str = str + ")";
+//        str = str + "+";
+//        str = str + "(";
+//        str = str + String.format("%.0f", this.classificationType);
+//        str = str + ", ";
+//        str = str + String.format("%.0f", this.identificationType/10);
+//        Log.d("Body Value str", "Value str : " +str);
+//        str = str + "% ";
+//        str = str + ") = ";
+        double k = (double) ((this.identificationSize+this.identificationType)/2);
+        Log.d("Body Value Accuracy ", "Accuracy Value  : " +k/10+" % ");
+        str = str + " Accuracy : ";
+        str = str + ""+(Math.round(k/10))+" %";
         return str;
     }
 

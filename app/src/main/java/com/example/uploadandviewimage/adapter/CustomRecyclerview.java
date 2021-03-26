@@ -45,8 +45,8 @@ public class CustomRecyclerview extends RecyclerView.Adapter<CustomRecyclerview.
         holder.price.setText("" + repo.getId()+""+position+1);
 
         holder.wd.setText("" + repo.getJson());
-
-        holder.textName.setText(""+repo.getName());
+        holder.textName.setText(""+String.valueOf(position+1) + ". " + repo.getName());
+//        holder.textName.setText(""+repo.getName());
         holder.textScoreType.setText(""+repo.getScore());
         holder.textScoreSize.setText("");
 

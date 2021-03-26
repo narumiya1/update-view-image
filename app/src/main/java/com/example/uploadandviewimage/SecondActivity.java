@@ -24,6 +24,8 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,6 +38,7 @@ import static android.app.PendingIntent.getActivity;
 public class SecondActivity extends AppCompatActivity {
     private TextView total, tipe;
     Button share_btn;
+    private static DecimalFormat df = new DecimalFormat("0.0");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +46,6 @@ public class SecondActivity extends AppCompatActivity {
         setContentView(R.layout.activity_second);
         total = (TextView) findViewById(R.id.total_size);
         tipe = (TextView)findViewById(R.id.tipezs);
-        share_btn=findViewById(R.id.share_btn);
         Bundle bundle = getIntent().getExtras();
 
         GrainPie[] type = (GrainPie[]) bundle.get("DataSaya");
@@ -56,7 +58,10 @@ public class SecondActivity extends AppCompatActivity {
             int b = (int) Math.round(a);
             String c = (String.valueOf(type[j].getValue()));
             String d = (String.valueOf(type[j].getName()));
-            builder.append(d).append(" - ").append(b).append(" , ").append("");
+            double e = (double) type[j].getPercent()*100;
+            df.setRoundingMode(RoundingMode.HALF_EVEN);
+            double f = Double.parseDouble(df.format(e));
+            builder.append(d).append(" ").append(b).append(" Butir / ").append(f).append("%").append("\t\r\n");
 //            tipe.setText(String.valueOf(a));
         }
         tipe.setText(builder.toString());
@@ -65,48 +70,18 @@ public class SecondActivity extends AppCompatActivity {
         for (int k = 0; k < type.length; k++) {
             float a = (float) type[k].getValue();
             int b = (int) Math.round(a);
+            double c = (double) type[k].getPercent()*100;
+            df.setRoundingMode(RoundingMode.HALF_EVEN);
+            double d = Double.parseDouble(df.format(c));
             String e = (String.valueOf(type[k].getValue()));
             String f = (String.valueOf(type[k].getName()));
-            builders.append(f).append(" - ").append(b).append(" ").append("\t\r\n");
+            builders.append(f).append("-").append(b).append("Butir / ").append(d).append("%").append("\t\r\n");
 //            tipe.setText(String.valueOf(a));
         }
         total.setText(builders.toString());
         drwawChartSize(size);
 
-        share_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Jika Terdapat Google PlayStore pada Perangkat Android
-                //Maka akan langsung terhubung dengan PlayStore Tersebut
-                StringBuilder builderz = new StringBuilder();
-                for (int k = 0; k < type.length; k++) {
-                    float a = (float) type[k].getValue();
-                    int b = (int) Math.round(a);
-                    int c = (int) type[k].getValue();
-                    String f = (String.valueOf(type[k].getValue()));
-                    String e = (String.valueOf(type[k].getName()));
-                    builderz.append("Tipe : ").append(e).append("\t\r, Jumlah : ").append(b).append(" ").append("\t\r\n");
-                }
 
-                StringBuilder builderx = new StringBuilder();
-                for (int i = 0; i < size.length; i++) {
-                    float a = (float) size[i].getValue();
-                    int b = (int) Math.round(a);
-                    String c = (String.valueOf(size[i].getValue()));
-                    String d = (String.valueOf(size[i].getName()));
-                    builderx.append("Size : ").append(d).append(" \t\r, Jumlah : ").append(b).append("\t\r\n");
-                }
-                String titlez = "Hasil Pengujian \n";
-                String new_ln = "\n";
-                Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.setType("text/plain");
-                sendIntent.putExtra(Intent.EXTRA_TEXT, TextUtils.concat(builderz.toString(), TextUtils.concat(builderx.toString())));
-                String someValue = (String) TextUtils.concat(titlez, TextUtils.concat(builderz.toString(), new_ln ,TextUtils.concat(builderx.toString() )));
-
-                Intent shareIntent = Intent.createChooser(sendIntent, someValue);
-                startActivity(shareIntent);
-            }
-        });
     }
 
     private void drwawChartSize(GrainPie[] size) {
@@ -121,7 +96,10 @@ public class SecondActivity extends AppCompatActivity {
             yvalues.add(new PieEntry((float) size[i].getValue(), size[i].getName(), i + 1));
             String c = (String.valueOf(size[i].getValue()));
             String d = (String.valueOf(size[i].getName()));
-            builders.append(d).append(" - ").append(b).append(" ").append("\t\r\n");
+            double e = (double) size[i].getPercent()*100;
+            df.setRoundingMode(RoundingMode.HALF_EVEN);
+            double f = Double.parseDouble(df.format(e));
+            builders.append(d).append(" ").append(b).append(" Butir / ").append(f).append("%").append("\n");
         }
         total.setText(builders);
         PieDataSet dataSet = new PieDataSet(yvalues, getString(R.string.election_results));
@@ -135,6 +113,7 @@ public class SecondActivity extends AppCompatActivity {
         pieChart.setDrawHoleEnabled(true);
         pieChart.setTransparentCircleRadius(58f);
         pieChart.setHoleRadius(58f);
+        pieChart.setEntryLabelColor(Color.BLACK);
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         data.setValueTextSize(13f);
         data.setValueTextColor(Color.BLACK);
@@ -171,6 +150,7 @@ public class SecondActivity extends AppCompatActivity {
         pieChart.setDrawHoleEnabled(true);
         pieChart.setTransparentCircleRadius(58f);
         pieChart.setHoleRadius(58f);
+        pieChart.setEntryLabelColor(Color.BLACK);
         dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         data.setValueTextSize(13f);
         data.setValueTextColor(Color.BLACK);

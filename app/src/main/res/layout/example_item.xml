@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:text="Grain Type, Grain Size"
                 android:textColor="@android:color/black"
-                android:textSize="18sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
         </TableRow>
 
@@ -44,7 +44,7 @@
                 android:layout_marginLeft="18dp"
                 android:text="Grain Type (Class, Id)"
                 android:textColor="@android:color/black"
-                android:textSize="15sp" />
+                android:textSize="11sp" />
 
             <TextView
                 android:fontFamily="@font/ubunturegular"
@@ -54,7 +54,7 @@
                 android:layout_marginLeft="14dp"
                 android:text="GrainSize(Class, Id)"
                 android:textColor="@android:color/black"
-                android:textSize="15sp" />
+                android:textSize="11sp" />
         </TableRow>
 
 

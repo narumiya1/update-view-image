@@ -45,6 +45,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import es.dmoral.toasty.Toasty;
+
 public class PdfActivity extends AppCompatActivity {
 
     PieChart pieChart, pieChart1;
@@ -73,8 +75,8 @@ public class PdfActivity extends AppCompatActivity {
         pdfCreate(type, size);
 
 
-        Intent intent = new Intent(PdfActivity.this, FragmentActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(PdfActivity.this, FragmentActivity.class);
+//        startActivity(intent);
 
     }
 
@@ -102,7 +104,7 @@ public class PdfActivity extends AppCompatActivity {
         paint.setTextSize(35f);
         paint.setTextAlign(Paint.Align.RIGHT);
         //change 590-340 to
-        canvas.drawText("No : " + "232425", pageWidth - 20, 250, paint);
+        canvas.drawText(" ", pageWidth - 20, 250, paint);
 
         dateFormat = new SimpleDateFormat("dd/MM/yy");
         canvas.drawText("Tanggal: " + dateFormat.format(dateTime), pageWidth - 20, 300, paint);
@@ -168,7 +170,7 @@ public class PdfActivity extends AppCompatActivity {
 //                                   canvas.drawText(String.valueOf(items[2].getShape().getWidth()), 800, 1000, paint);
 
        // 07 draw picture chart
-        Bitmap b=BitmapFactory.decodeResource(getResources(), R.drawable.grainvision2020);
+        Bitmap b=BitmapFactory.decodeResource(getResources(), R.drawable.logdaun);
         paint.setColor(Color.RED);
         canvas.drawBitmap(b, 400, 700, paint);
         // chart to pdf
@@ -185,7 +187,8 @@ public class PdfActivity extends AppCompatActivity {
                 Locale.getDefault()).format(System.currentTimeMillis());
         //pdf file path
         String mFilePath = Environment.getExternalStorageDirectory() + "/" + mFileName + ".pdf";
-        File file = new File(Environment.getExternalStorageDirectory(), "/" + mFileName + ".pdf");
+//        File file = new File(Environment.getExternalStorageDirectory(), "/" + mFileName + ".pdf");
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),  "/" + mFileName + ".pdf");
 
 
         try {
@@ -195,7 +198,13 @@ public class PdfActivity extends AppCompatActivity {
         }
 
         pdfDocument.close();
-        Toast.makeText(this, "PDF sudah dibuat", Toast.LENGTH_LONG).show();
+        Toasty.Config.getInstance()
+//                        .setToastTypeface(Typeface.createFromAsset(getAssets(), "revans.otf"))
+                .allowQueue(false)
+                .apply();
+        Toasty.custom(getApplicationContext(), R.string.pdf_download, getResources().getDrawable(R.drawable.ic_arrow_left),
+                android.R.color.black, android.R.color.holo_green_dark, Toasty.LENGTH_LONG, true, true).show();
+        Toasty.Config.reset(); // Use this if you want to use the configuration above only once
 
 
         Intent intent = new Intent(PdfActivity.this, FragmentActivity.class);

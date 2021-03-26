@@ -327,7 +327,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="6dp"
                     android:background="@drawable/button"
-                    android:text="Insert Data"
+                    android:text="Kotlin"
                     android:textColor="#F6F4F4"
                     android:visibility="gone" />
 
@@ -355,6 +355,18 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:visibility="gone" />
     </LinearLayout>
+
+    <Button android:layout_marginBottom="40dp"
+        android:id="@+id/btnRetryConnect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Retry"
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="#fff"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"/>
 </RelativeLayout>
 
 

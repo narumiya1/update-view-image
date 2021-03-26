@@ -40,7 +40,7 @@ public class ExampleAdapter extends RecyclerView.Adapter<ExampleAdapter.ExampleV
     @Override
     public void onBindViewHolder(@NonNull ExampleViewHolder holder, int position) {
         ExampleItem currentItem = mExampleList.get(position);
-        holder.textName.setText(String.valueOf(position+1) + ". " + currentItem.getName());
+        holder.textName.setText(""+String.valueOf(position+1) + ". " + currentItem.getName());
         //holder.textScoreType.setText(currentItem.getScoreType());
         //holder.textScoreSize.setText(currentItem.getScoreSize());
         holder.textScoreType.setText(currentItem.getScore());

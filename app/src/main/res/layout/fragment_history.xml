@@ -12,16 +12,19 @@
                 android:orientation="vertical" android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <TextView
-                    android:background="@color/colorPrimary"
-                    android:padding="5dp"
                     android:textAppearance="@android:style/TextAppearance.Material.Medium"
                     android:layout_margin="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="History"
                     android:fontFamily="@font/montserratlight"
-                    android:textColor="@color/whiteCardColor"/>
-
+                    android:textColor="@color/colorPrimary"/>
+                <View
+                    android:layout_width="65dp"
+                    android:layout_height="1dp"
+                    android:background="@drawable/bg_gradient"
+                    android:layout_marginLeft="6dp"
+                    />
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_history"
                     android:layout_width="match_parent"

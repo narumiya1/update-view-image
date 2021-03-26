@@ -34,6 +34,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.concurrent.TimeUnit;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import es.dmoral.toasty.Toasty;
 
 public class FragmentActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener, MeinenDialogFragment.DialogListener {
 
@@ -113,11 +114,17 @@ public class FragmentActivity extends AppCompatActivity implements BottomNavigat
                 // changing the timer status to stopped
                 timerStatus = FragmentActivity.TimerStatus.STOPPED;
                 String jwtNull = "";
-                showDialogs();
+//                showDialogs();
                 sesion.setKeyApiJwt(jwtNull);
                 sesion.setIsLogin(false);
                 sesion.logoutUser();
-
+                Toasty.Config.getInstance()
+//                        .setToastTypeface(Typeface.createFromAsset(getAssets(), "revans.otf"))
+                        .allowQueue(false)
+                        .apply();
+                Toasty.custom(getApplicationContext(), R.string.loginkembali, getResources().getDrawable(R.drawable.ic_arrow_left),
+                        android.R.color.black, android.R.color.holo_green_dark, Toasty.LENGTH_LONG, true, true).show();
+                Toasty.Config.reset();
                 Log.d("Body jwtNull", "String jwtNull : " + jwtNull);
             }
 

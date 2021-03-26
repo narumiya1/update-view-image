@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="10dp"
+    app:ignore="NamespaceTypo">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_main"
         android:layout_width="match_parent"
-        android:layout_height="210dp"
+        android:layout_height="230dp"
         android:layout_gravity="center_horizontal"
         android:layout_margin="4dp"
-        android:padding="10dp"
-        card_view:cardBackgroundColor="@color/background_material_light"
-        card_view:cardCornerRadius="3dp"
-        card_view:cardElevation="2.5dp">
+        android:padding="10dp">
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -34,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Specs"
+                    android:text="Report"
                     android:textSize="16sp" />
 
                 <TextView
@@ -43,10 +42,9 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/title_data"
                     android:fontFamily="@font/montserratlight"
-                    android:text="Type"
+                    android:text="Varietas"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
-                    android:textStyle="italic"
                     android:visibility="visible" />
 
 
@@ -57,7 +55,7 @@
                     android:layout_below="@id/tv_item1"
                     android:layout_marginTop="0dp"
                     android:fontFamily="@font/montserratlight"
-                    android:text="Type "
+                    android:text="Varietas "
                     android:textColor="@android:color/black"
                     android:textSize="14dp" />
 
@@ -67,10 +65,9 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/tv_items2"
                     android:fontFamily="@font/montserratlight"
-                    android:text="Size "
+                    android:text="Butir "
                     android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="italic" />
+                    android:textSize="16sp" />
 
 
 
@@ -81,9 +78,9 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/data_szie"
                     android:fontFamily="@font/montserratlight"
-                    android:text="Size"
+                    android:text="Butir"
                     android:textColor="@android:color/black"
-                    android:textSize="14sp"/>
+                    android:textSize="14dp"/>
 
 
 
@@ -118,7 +115,7 @@
         android:layout_marginLeft="20dp"
         android:fontFamily="@font/ubunturegular"
         android:gravity="center"
-        android:text="Type"
+        android:text="Varietas"
         android:textStyle="bold" />
 
     <View
@@ -133,6 +130,10 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -144,15 +145,24 @@
                 android:layout_height="250dp"
                 android:layout_below="@id/tipe" />
 
-            <TextView
-                android:id="@+id/size"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:fontFamily="@font/ubunturegular"
-                android:gravity="center"
-                android:text="Size"
-                android:textStyle="bold" />
+            <RelativeLayout
+                android:layout_below="@id/chart_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_marginTop="18dp"
+                    android:id="@+id/size"
+                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/ubunturegular"
+                    android:gravity="center"
+                    android:text="Butir"
+                    android:textStyle="bold" />
+
+
+            </RelativeLayout>
+
 
             <View
                 android:layout_width="130dp"
@@ -168,6 +178,64 @@
                 android:layout_height="250dp"
                 android:layout_centerHorizontal="true" />
         </LinearLayout>
+            <com.github.clans.fab.FloatingActionMenu
+
+                android:id="@+id/fab_popUps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginRight="6dp"
+                android:layout_marginBottom="50dp"
+                android:src="@drawable/ic_baseline_how_to_reg_24"
+                fab:fab_size="normal"
+                fab:menu_backgroundColor="@android:color/transparent"
+                fab:menu_colorNormal="#05B6A2"
+                fab:menu_colorPressed="#939C9B"
+                fab:menu_icon="@drawable/ic_notifications_black_24dp"
+                fab:menu_labels_colorNormal="@color/colorPrimary"
+                fab:menu_labels_colorPressed="#E91E63"
+                fab:menu_labels_showShadow="true"
+                fab:menu_labels_textColor="#F4F8F4"
+                fab:menu_openDirection="up"
+                fab:menu_showShadow="true">
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/toasts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_amp_stories_24"
+                    fab:fab_colorNormal="@color/colorPrimary"
+                    fab:fab_colorPressed="#FF00786D"
+                    fab:fab_label="TOAST "
+                    fab:fab_size="mini"
+                    android:visibility="gone"/>
+
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/fab_pdf_intents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_check_box_24"
+                    fab:fab_colorNormal="@color/colorPrimary"
+                    fab:fab_colorPressed="#FF00786D"
+                    fab:fab_label="Export PDF "
+                    fab:fab_size="mini"
+                    android:visibility="visible"/>
+
+            </com.github.clans.fab.FloatingActionMenu>
+            <TextView
+                android:layout_marginTop="18dp"
+                android:id="@+id/pedf"
+                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ubunturegular"
+                android:gravity="right"
+                android:layout_marginRight="6dp"
+                android:text="Export PDF"
+                android:textStyle="bold" />
+        </FrameLayout>
     </ScrollView>
 
 </LinearLayout>

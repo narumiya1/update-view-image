@@ -102,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:text="Grain Type, Grain Size"
                 android:textColor="@android:color/black"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
         </TableRow>
 
@@ -113,10 +113,10 @@
                 android:id="@+id/text2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="14dp"
+                android:layout_marginLeft="25dp"
                 android:text="Grain Type (Class, Id)"
                 android:textColor="@android:color/black"
-                android:textSize="15sp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:fontFamily="@font/ubunturegular"
@@ -126,7 +126,7 @@
                 android:layout_marginLeft="14dp"
                 android:text="GrainSize(Class, Id)"
                 android:textColor="@android:color/black"
-                android:textSize="15sp" />
+                android:textSize="12sp" />
         </TableRow>
 
 

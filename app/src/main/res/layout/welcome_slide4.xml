@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="200dp"
+            android:layout_height="400dp"
+            android:layout_margin="12dp"
+            android:background="@color/colorPrimary"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="27dp"
+            app:cardElevation="9dp">
+
+            <com.github.chrisbanes.photoview.PhotoView
+                android:layout_width="204dp"
+                android:layout_height="400dp"
+                android:layout_gravity="center"
+                android:background="@drawable/tutoruploade_removebg" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_margin="10dp"
+                android:background="@drawable/line_background"
+                android:backgroundTint="@color/design_default_color_error"
+                android:outlineAmbientShadowColor="@color/design_default_color_error"
+                android:outlineSpotShadowColor="@color/design_default_color_error"
+                app:cardBackgroundColor="@color/colorPrimaryDark"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="4dp">
+
+                <ImageButton
+                    android:id="@+id/iv_add"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="top|left"
+                    android:background="#F8F6F6"
+                    android:outlineAmbientShadowColor="@color/colorAccent"
+                    android:src="@drawable/ic_baseline_add_a_photo_24"
+                    android:visibility="gone" />
+
+            </androidx.cardview.widget.CardView>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RESULT"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/slide_title"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:paddingLeft="@dimen/desc_padding"
+            android:paddingRight="@dimen/desc_padding"
+            android:text="After the photo is uploaded, the application will automatically generate report of grain analysis"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/slide_desc" />
+
+    </LinearLayout>
+</RelativeLayout>

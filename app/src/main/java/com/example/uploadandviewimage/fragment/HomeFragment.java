@@ -157,6 +157,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import es.dmoral.toasty.Toasty;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -209,7 +210,7 @@ public class HomeFragment extends Fragment{
     String phoneNumberz ;
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocTrack locationTrack;
-    TextView longi,lati;
+    TextView longi,lati, pdef;
     Sesion session;
     Accounts accounts = new Accounts();
     private CountDownTimer countDownTimer;
@@ -235,8 +236,11 @@ public class HomeFragment extends Fragment{
         mrRecyclerView = view.findViewById(R.id.recyclerView_fragmenth);
         cardView = view.findViewById(R.id.cv_maine);
         warningtext = view.findViewById(R.id.warning_frame);
+        pdef=view.findViewById(R.id.pdef);
+        pdef.setVisibility(View.GONE);
         findViews(view);
         //check connection
+        menu = view.findViewById(R.id.fab_popUp);
 
         db = Room.databaseBuilder(getActivity(), AppDatabase.class, "tbGrainHistory")
                 .allowMainThreadQueries()
@@ -424,7 +428,7 @@ public class HomeFragment extends Fragment{
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         progressDialog = new ProgressDialog(getActivity());
-        menu.setVisibility(View.VISIBLE);
+
 
         return view;
 
@@ -438,7 +442,6 @@ public class HomeFragment extends Fragment{
         btnRetry = view.findViewById(R.id.btnRetry);
         //viewImage=(ImageView)findViewById(R.id.viewImage);
         viewImage = (PhotoView) view.findViewById(R.id.viewImage);
-        menu = view.findViewById(R.id.fab_popUp);
         fab_chart = view.findViewById(R.id.fab_chart);
         fab_pdf = view.findViewById(R.id.fab_pdf);
         fab_view_history = view.findViewById(R.id.fab_view_history);
@@ -971,7 +974,8 @@ public class HomeFragment extends Fragment{
         // post
 
         viewImage.setImageBitmap(rotateBitmap);
-
+        PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(viewImage);
+        photoViewAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
         uploadImage(rotateBitmap);
     }
 
@@ -1211,7 +1215,6 @@ public class HomeFragment extends Fragment{
                         insertItems(typeC);
 
 
-
                         /*
                         for (int i = 0; i < items.length; i++) {
                             Gitems type2 = new Gitems();
@@ -1279,6 +1282,10 @@ public class HomeFragment extends Fragment{
                                 startActivityForResult(intent, 10);
                             }
                         });
+                        fab_view_history.setVisibility(View.GONE);
+                        fab_pdf_intent.setVisibility(View.VISIBLE);
+                        menu.setVisibility(View.VISIBLE);
+                        pdef.setVisibility(View.VISIBLE);
                         fab_pdf_intent.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -1287,6 +1294,13 @@ public class HomeFragment extends Fragment{
                                 intent.putExtra("pdfType", type);
                                 intent.putExtra("pdfSize", size);
                                 startActivityForResult(intent, 19);
+                                Toasty.Config.getInstance()
+//                        .setToastTypeface(Typeface.createFromAsset(getAssets(), "revans.otf"))
+                                        .allowQueue(false)
+                                        .apply();
+                                Toasty.custom(getActivity(), R.string.pdf_download, getResources().getDrawable(R.drawable.ic_arrow_left),
+                                        android.R.color.black, android.R.color.holo_green_dark, Toasty.LENGTH_LONG, true, true).show();
+                                Toasty.Config.reset(); // Use this if you want to use the configuration above only once
                             }
                         });
                         fab_pdf.setOnClickListener(new View.OnClickListener() {
@@ -1350,18 +1364,26 @@ public class HomeFragment extends Fragment{
                                         Locale.getDefault()).format(System.currentTimeMillis());
                                 //pdf file path
                                 String mFilePath = Environment.getExternalStorageDirectory() + "/" + mFileName + ".pdf";
-                                File file = new File(Environment.getExternalStorageDirectory(),  "/" + mFileName + ".pdf");
+                                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),  "/" + mFileName + ".pdf");
 
 
                                 try {
                                     pdfDocument.writeTo(new FileOutputStream(file));
+
+
+
+
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
 
                                 pdfDocument.close();
-                                Toast.makeText(getContext(), "PDF sudah dibuat", Toast.LENGTH_LONG).show();
-
+//                                Toast.makeText(getContext(), "PDF sudah dibuat di Folder Download", Toast.LENGTH_LONG).show();
+                                Toasty.Config.getInstance()
+                                        .allowQueue(false)
+                                        .apply();
+                                Toasty.custom(getActivity(), R.string.pdf_download, getResources().getDrawable(R.drawable.ic_arrow_left),
+                                        android.R.color.black, android.R.color.holo_green_dark, Toasty.LENGTH_LONG, true, true).show();
                             }
 
                         });
@@ -1422,14 +1444,28 @@ public class HomeFragment extends Fragment{
 
                     } else {
                         Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
-                        Toast.makeText(getContext(), "Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getContext(), "Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+                             Toasty.Config.getInstance()
+//                        .setToastTypeface(Typeface.createFromAsset(getAssets(), "revans.otf"))
+                                        .allowQueue(false)
+                                        .apply();
+                                Toasty.custom(getActivity(), R.string.pdf_download, getResources().getDrawable(R.drawable.ic_arrow_left),
+                                        android.R.color.black, android.R.color.holo_green_dark, Toasty.LENGTH_LONG, true, true).show();
+                                Toasty.Config.reset(); // Use this if you want to use the configuration above only once
 
                         closeProgress();
                         String jwtNull = "";
                         session.setKeyApiJwt(jwtNull);
                         session.setIsLogin(false);
                         session.logoutUser();
-                        showDialogs();
+                        Toasty.Config.getInstance()
+//                        .setToastTypeface(Typeface.createFromAsset(getAssets(), "revans.otf"))
+                                .allowQueue(false)
+                                .apply();
+                        Toasty.custom(getActivity(), R.string.loginkembali, getResources().getDrawable(R.drawable.ic_arrow_left),
+                                android.R.color.black, android.R.color.holo_green_dark, Toasty.LENGTH_LONG, true, true).show();
+                        Toasty.Config.reset(); // Use this if you want to use the configuration above only once
+//                        showDialogs();
                     }
                 }
 
@@ -1438,10 +1474,19 @@ public class HomeFragment extends Fragment{
                     String message = "";
                     closeProgress();
                     String jwtNull = "";
-                    Toast.makeText(getContext(), "Status Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getActivity(), "Status Login Time Out, silahkan login kembali", Toast.LENGTH_LONG).show();
+                    Toasty.Config.getInstance()
+//                        .setToastTypeface(Typeface.createFromAsset(getAssets(), "revans.otf"))
+                            .allowQueue(false)
+                            .apply();
+                    Toasty.custom(getActivity(), R.string.loginkembali, getResources().getDrawable(R.drawable.ic_baseline_close_24),
+                            android.R.color.black, android.R.color.holo_green_dark, Toasty.LENGTH_LONG, true, true).show();
+                    Toasty.Config.reset(); // Use this if you want to use the configuration above only once
 
+//                    ???????
                     session.setKeyApiJwt(jwtNull);
                     session.setIsLogin(false);
+                    session.setFirstTimeLaunch(true);
                     session.logoutUser();
                 }
             });
@@ -1750,7 +1795,7 @@ public class HomeFragment extends Fragment{
         new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
                 .setTitleText("Session Login telah habis")
                 .setContentText("silahkan lakukan login kembali untuk menggunakan aplikasi")
-                .setConfirmText("ok")
+                .setConfirmText(" ")
                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sDialog) {

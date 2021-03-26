@@ -2,12 +2,13 @@ package com.example.uploadandviewimage.fragment;
 
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.se.omapi.Session;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,10 +28,7 @@ import com.bumptech.glide.Glide;
 import com.example.uploadandviewimage.Account.SaveData;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.Account.AccountUpdateActivity;
-import com.example.uploadandviewimage.auth.AuthActivity;
 import com.example.uploadandviewimage.Account.Accounts;
-import com.example.uploadandviewimage.auth.LoginActivity;
-import com.example.uploadandviewimage.auth.Preference;
 import com.example.uploadandviewimage.auth.Sesion;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -49,9 +47,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -73,7 +69,8 @@ public class AccountFragment extends Fragment {
     public static final int REQUEST = 1;
     public static final int FUCK_UP = 2;
     private Uri mainImageURI;
-
+    ProgressDialog progressDialog;
+    private Context context;
     public AccountFragment() {
     }
 
@@ -82,9 +79,11 @@ public class AccountFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_account, container, false);
 
+        context = container.getContext();
         mAuth = FirebaseAuth.getInstance();
 //        phoneNumbbr = mAuth.getCurrentUser().getPhoneNumber();
-
+        progressDialog = new ProgressDialog(getActivity());
+        showProgress();
         txtData = rootView.findViewById(R.id.tv_account_phone);
         txtUsername = (TextView) rootView.findViewById(R.id.nameOneTv);
         textEmail = rootView.findViewById(R.id.tvemail_account);
@@ -103,7 +102,7 @@ public class AccountFragment extends Fragment {
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
                 session.logoutUser();
-
+                session.setFirstTimeLaunch(false);
             }
         });
         // insert Data user
@@ -111,7 +110,7 @@ public class AccountFragment extends Fragment {
         btn_insertdataacount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(), SaveData.class);
+                Intent intent = new Intent(getContext(), OnBoarding.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
@@ -175,28 +174,8 @@ public class AccountFragment extends Fragment {
                     textEmail.setText(accounts.getEmail());
                     txtData.setText(session.getPhone());
 
-                    mFirestore.collection("Users").document(accounts.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    callFireStore(accounts);
 
-                            if (task.isSuccessful()) {
-
-                                if (task.getResult().exists()) {
-
-                                    String image = task.getResult().getString("image");
-
-                                    Glide.with(getActivity()).load(image).into(profile_image);
-
-
-                                }
-                            } else {
-
-                                Toast.makeText(getActivity(), "ERROR", Toast.LENGTH_SHORT).show();
-
-                            }
-
-                        }
-                    });
 
                     profile_image.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -335,6 +314,38 @@ public class AccountFragment extends Fragment {
         return rootView;
     }
 
+    private void callFireStore(Accounts accounts) {
+        mFirestore.collection("Users").document(accounts.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                if (task.isSuccessful()) {
+
+                    if (task.getResult().exists()) {
+
+                        String image = task.getResult().getString("image");
+
+
+                        if (getActivity() !=null){
+                            Glide.with(getActivity())
+                                    .load(image)
+                                    .into(profile_image);
+                        }
+
+
+                        closeProgress();
+                    }
+                } else {
+                    closeProgress();
+                    Toast.makeText(getActivity(), "ERROR", Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
+        });
+
+    }
+
     private void SAVE_NAME_AND_PHOTO() {
 
         final String user_name = accounts.getUsername();
@@ -428,4 +439,40 @@ public class AccountFragment extends Fragment {
         }
     }
 
+    private void showProgress() {
+
+        progressDialog.setMessage("Loading . . .");
+        progressDialog.setCancelable(false);
+
+        progressDialog.show();
+
+    }
+
+    private void closeProgress() {
+        progressDialog.dismiss();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("ondesrtoy", "onDestroy");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        context = null;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d("onDestroyView", "onDestroyView");
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        context = context;
+    }
 }

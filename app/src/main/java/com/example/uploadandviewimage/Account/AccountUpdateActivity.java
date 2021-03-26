@@ -1,5 +1,6 @@
 package com.example.uploadandviewimage.Account;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -25,6 +26,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.regex.Pattern;
 
+import es.dmoral.toasty.Toasty;
+
 public class AccountUpdateActivity extends AppCompatActivity {
     Button update;
     EditText et_nama, et_email, et_alamat;
@@ -32,6 +35,7 @@ public class AccountUpdateActivity extends AppCompatActivity {
     String id, name,email, alamat,phone, pw, retype;
     FirebaseAuth mAuth;
     TextInputEditText et_password,et_password_retype;
+    ProgressDialog progressDialog;
     private Accounts accounts = new Accounts();
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^" +
@@ -57,7 +61,7 @@ public class AccountUpdateActivity extends AppCompatActivity {
         et_password = findViewById(R.id.et_update_password_account);
         et_password_retype=findViewById(R.id.et_update_retypepassowrd_account);
         mAuth = FirebaseAuth.getInstance();
-
+        progressDialog = new ProgressDialog(AccountUpdateActivity.this);
         Intent intent = getIntent();
          accounts = (Accounts) intent.getSerializableExtra("user");
 //        id = mAuth.getCurrentUser().getPhoneNumber();
@@ -67,6 +71,7 @@ public class AccountUpdateActivity extends AppCompatActivity {
         et_alamat.setText(accounts.getAddress());
         et_password.setText(accounts.getPassword());
         et_password_retype.setText(accounts.getPassword());
+        showProgress();
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,7 +93,13 @@ public class AccountUpdateActivity extends AppCompatActivity {
                         return;
                     }else {
                         et_password.setError(null);
-                        Toast.makeText(AccountUpdateActivity.this, "  ", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(AccountUpdateActivity.this, " Update Successfull", Toast.LENGTH_SHORT).show();
+                        Toasty.Config.getInstance()
+                                .allowQueue(false)
+                                .apply();
+                        Toasty.custom(getApplicationContext(), R.string.update_berhasil, getResources().getDrawable(R.drawable.ic_baseline_check_box_24),
+                                android.R.color.black, android.R.color.holo_green_dark, Toasty.LENGTH_LONG, true, true).show();
+                        Toasty.Config.reset(); // Use this if you want to use the configuration above only once
 
                     }
                 }
@@ -123,6 +134,20 @@ public class AccountUpdateActivity extends AppCompatActivity {
                 finish();
 
             }
+
         });
+        closeProgress();
+    }
+
+    private void showProgress() {
+
+        progressDialog.setMessage("Loading . . .");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+    }
+
+    private void closeProgress() {
+        progressDialog.dismiss();
     }
 }

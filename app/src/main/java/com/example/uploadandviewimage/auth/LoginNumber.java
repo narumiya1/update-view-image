@@ -59,6 +59,7 @@ import com.example.uploadandviewimage.activity.PdfActivity;
 import com.example.uploadandviewimage.cookies.AddCookiesInterceptor;
 import com.example.uploadandviewimage.cookies.JavaNetCookieJar;
 import com.example.uploadandviewimage.cookies.ReceivedCookiesInterceptor;
+import com.example.uploadandviewimage.fragment.OnBoardingActivite;
 import com.example.uploadandviewimage.roomdbGhistory.GHistory;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
@@ -81,6 +82,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -267,8 +269,15 @@ public class LoginNumber extends AppCompatActivity {
                                         .build();
 
                                 Log.d("Body <>", "Response: "+response.body().toString());
-                                Intent intent = new Intent(LoginNumber.this, FragmentActivity.class);
-                                startActivity(intent);
+                                finishAffinity();
+                                if (!session.isFirstTimeLaunch()) {
+                                    Intent intent = new Intent(LoginNumber.this, FragmentActivity.class);
+                                    startActivity(intent);
+                                }else {
+                                    Intent intent = new Intent(LoginNumber.this, OnBoardingActivite.class);
+                                    startActivity(intent);
+                                }
+
 
                             } catch (Exception e) {
                                 String errMessage = e.getMessage();
@@ -277,8 +286,13 @@ public class LoginNumber extends AppCompatActivity {
                         }
 
                     }, 1000);
-                    Toast.makeText(LoginNumber.this, "LOGIN BERHASIL !", Toast.LENGTH_LONG).show();
-
+//                    Toast.makeText(LoginNumber.this, "LOGIN BERHASIL !", Toast.LENGTH_LONG).show();
+                    Toasty.Config.getInstance()
+                            .allowQueue(false)
+                            .apply();
+                    Toasty.custom(getApplicationContext(), R.string.login_berhasil, getResources().getDrawable(R.drawable.ic_baseline_check_box_24),
+                            android.R.color.black, android.R.color.holo_green_dark, Toasty.LENGTH_LONG, true, true).show();
+                    Toasty.Config.reset(); // Use this if you want to use the configuration above only once
                 }else {
 
                     Toast.makeText(LoginNumber.this, "Nomor/Password tidak sesuai, silahkan cek kembali  !", Toast.LENGTH_LONG).show();
@@ -300,6 +314,7 @@ public class LoginNumber extends AppCompatActivity {
 
     private void openMain() {
         if (session.isLoggedIn()) {
+//            session.setValuesz("status","1");
             Intent intent = new Intent(LoginNumber.this, FragmentActivity.class);
             startActivity(intent);
         }

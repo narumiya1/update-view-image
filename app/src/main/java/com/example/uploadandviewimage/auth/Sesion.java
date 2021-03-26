@@ -28,6 +28,8 @@ public class Sesion {
     public static final String KEY_PASSWORD = "passowrd";
     public static final String KEY_API_JWT = "jwt";
     public static final String KEY_IMAGE = "image";
+    public static final String PREEF = "USER_PREF";
+    private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
 
 
     public Sesion(Context context) {
@@ -117,6 +119,15 @@ public class Sesion {
         editor.putString(KEY_API_JWT, img);
         editor.commit();
     }
+
+    public void setValuesz(String statusOnBoarding,String value){
+        editor.putString(PREEF,statusOnBoarding);
+        editor.commit();
+    }
+    public String getValuesz(String status) {
+        return pref.getString(PREEF, "");
+    }
+
     public UserResponse getUser() {
         Gson gson = new Gson();
         String json = pref.getString(KEY_USER, "");
@@ -134,5 +145,14 @@ public class Sesion {
 
         editor.commit();
 
+    }
+
+    public void setFirstTimeLaunch(boolean isFirstTime) {
+        editor.putBoolean(IS_FIRST_TIME_LAUNCH, isFirstTime);
+        editor.commit();
+    }
+
+    public boolean isFirstTimeLaunch() {
+        return pref.getBoolean(IS_FIRST_TIME_LAUNCH, true);
     }
 }

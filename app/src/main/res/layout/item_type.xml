@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="4dp">
+    android:background="@drawable/ractangle"
+    android:padding="4dp"
+    android:layout_marginTop="2dp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_main"
@@ -16,7 +18,8 @@
         android:padding="4dp"
         card_view:cardBackgroundColor="@color/background_material_light"
         card_view:cardCornerRadius="3dp"
-        card_view:cardElevation="2.5dp">
+        card_view:cardElevation="2.5dp"
+        >
 
 
         <RelativeLayout android:visibility="gone"

@@ -40,6 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Nama"
+        android:backgroundTint="@color/colorPrimary"
         android:inputType="text" />
 
     <EditText
@@ -47,6 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email"
+        android:backgroundTint="@color/colorPrimary"
         android:inputType="textEmailAddress" />
 
     <EditText
@@ -54,12 +56,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Alamat"
-        android:inputType="text" />
+        android:inputType="text"
+        android:backgroundTint="@color/colorPrimary"
+        />
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/text_input_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:errorEnabled="true"
+            app:boxBackgroundColor="@color/colorPrimary"
+            app:boxStrokeColor="@color/colorPrimaryDark"
+            app:counterTextColor="@color/colorPrimaryDark"
+            android:backgroundTint="@color/colorPrimary"
+            app:hintTextColor="@color/manu"
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -67,7 +76,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Password"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:backgroundTint="@color/colorPrimary"
+                />
 
         </com.google.android.material.textfield.TextInputLayout>
 <!--    <EditText-->
@@ -80,6 +91,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:errorEnabled="true"
+            android:backgroundTint="@color/colorPrimary"
+            app:hintTextColor="@color/manu"
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -87,6 +100,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Retype Password"
+                android:backgroundTint="@color/colorPrimary"
                 android:inputType="textPassword" />
 
         </com.google.android.material.textfield.TextInputLayout>

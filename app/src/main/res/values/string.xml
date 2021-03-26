@@ -9,8 +9,13 @@
     <string name="table_layout_4_open_shortcut">Open shortcut</string>
     <string name="table_layout_4_save">Save</string>
     <string name="table_layout_4_save_shortcut">Save shortcut</string>
-    <string name="election_results">Pie Chart</string>
-    <string name="pie_chart">Pie Charts</string>
+    <string name="election_results"> </string>
+    <string name="pie_chart"> </string>
+    <string name="pdf_download">PDF Sudah di simpan di Folder Download</string>
+    <string name="loginkembali">Timeout , silahkan login Kembali</string>
+    <string name="login_berhasil">Login Berhasil</string>
+    <string name="update_berhasil">Update Berhasil</string>
+    <string name="check_connection">error, check_connection </string>
     <string name="register">REGISTER</string>
     <string name="login_email_hint">Email</string>
     <string name="login_password_hint">Password</string>

@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-android'
+
 android {
     compileSdkVersion 29
     buildToolsVersion '29.0.3'
@@ -98,5 +100,13 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     implementation 'com.sothree.slidinguppanel:library:3.4.0'
+    implementation 'androidx.browser:browser:1.2.0'
+    compile 'com.emredavarci:noty:1.0.3'
+    implementation 'com.github.GrenderG:Toasty:1.5.0'
+
+    implementation "androidx.core:core-ktx:+"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
 }
 apply plugin: 'com.google.gms.google-services'

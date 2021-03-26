@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Grain Vision 2021</string>
+    <string name="app_name">Grain Vision</string>
     <string name="title_activity_home">MainActivity</string>
     <string name="login_password_hint2">Repeat Password</string>
     <string name="reg_passwordS_hint">Retype Password</string>
@@ -10,9 +10,17 @@
     <string name="uploaded">  Setelah foto selesai di upload, maka aplikasi akan secara otomatis mengenerate angka statistik "</string>
     <string name="hasil"> Secara otomatis hasil dari tampilan akan tersimpan di history</string>
     <string name="chart"> Secara otomatis akan menampilkan chart</string>
-    <string name="details">dengan mengklik salah satu list yang ada di history, maka halaman akan berpindah ke page Detail"</string>
+    <string name="details">Details"</string>
     <string name="reg_password_hint">password</string>
     <string name="beras_contoh">Berikut Contoh posisi beras yang benar untuk meningkatkan akurasi"</string>
     <string name="beras_contohb">Contoh posisi beras yang benar \n untuk mendapatkan hasil dan akurasi yang maksimal"</string>
-
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="start">Lets Start</string>
+    <string name="en_slide1">The Grain Vision is an artificial intelligence application that can analyze the quality and variety of grains. \nThis application is very easy to use, users only need to take a photo of grain by click photo icon and then upload the photo  or select from photo gallery. This application will automatically generate reports grain types and varieties </string>
+    <string name="en_slide2">To generate valid data and improve accuracy, the grains need to be placed on a dark background (black, dark blue, dark green or dark red)  and at distance from each other. \nNote : a white or bright background will make the data inaccurate and invalid</string>
+    <string name="en_slide3">After the photo is uploaded, the application will automatically generate report of grain analysis </string>
+    <string name="en_slide4">And will generate report chart </string>
+    <string name="en_slide5">  The results will be stored in history and to view historical data,  user only needs to click on date to be displayed</string>
+    <string name="en_slide6"> VERSIONS :</string>
 </resources>

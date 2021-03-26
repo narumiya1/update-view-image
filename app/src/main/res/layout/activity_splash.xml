@@ -19,16 +19,22 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_centerInParent="true"
-            android:src="@drawable/grainvision2020" />
+            android:src="@drawable/logdaun_removebg" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_large"
             android:fontFamily="@font/ubunturegular"
-            android:text="Grain Vision 2021"
+            android:text="Grain Vision "
             android:textSize="34dp" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ubunturegular"
+            android:text="Version 2.0.0 "
+            android:textSize="24dp" />
         <TextView
             android:visibility="gone"
             android:layout_width="wrap_content"
