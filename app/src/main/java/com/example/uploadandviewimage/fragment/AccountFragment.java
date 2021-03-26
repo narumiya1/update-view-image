@@ -6,6 +6,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -51,6 +53,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import es.dmoral.toasty.Toasty;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -443,7 +446,20 @@ public class AccountFragment extends Fragment {
 
         progressDialog.setMessage("Loading . . .");
         progressDialog.setCancelable(false);
+        if (isConnected()) {
+            Log.d("Body Internet Connected", "Internet Connected");
+            closeProgress();
+        } else {
+            Toast.makeText(getActivity(), "Check Connection and Try Again", Toast.LENGTH_LONG).show();
+            Log.d("Body Internet Check", "Turn on your Connection and Try Again");
+            Toasty.Config.getInstance()
+                    .allowQueue(false)
+                    .apply();
+            Toasty.custom(getActivity(), R.string.check_connection, getResources().getDrawable(R.drawable.ic_baseline_close_24),
+                    android.R.color.white, android.R.color.holo_red_dark, Toasty.LENGTH_LONG, true, true).show();
+            Toasty.Config.reset(); // Use this if you want to use the configuration above only once
 
+        }
         progressDialog.show();
 
     }
@@ -474,5 +490,18 @@ public class AccountFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         context = context;
+    }
+    private boolean isConnected() {
+        boolean connected = false;
+        try {
+            ConnectivityManager cm = (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo nInfo = cm.getActiveNetworkInfo();
+            connected = nInfo != null && nInfo.isAvailable() && nInfo.isConnected();
+            return connected;
+        } catch (Exception e) {
+            Log.e("Connectivity Exception", e.getMessage());
+        }
+        return connected;
+
     }
 }
