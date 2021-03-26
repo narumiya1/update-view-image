@@ -64,7 +64,7 @@ public class HistoryReadSingleActivity extends AppCompatActivity {
 
     GrainHistory history;
     private static DecimalFormat df = new DecimalFormat("###.#");
-    TextView tv_item2, tv_item3, itemTimes;
+    TextView tv_item2, tv_item3, itemTimes, tv_sum_varietas, tv_sum_butir;
     FloatingActionMenu menu;
     FloatingActionButton fab_pdf_intents, fab_toast;
     Date dateTime;
@@ -82,6 +82,8 @@ public class HistoryReadSingleActivity extends AppCompatActivity {
         tv_item3 = findViewById(R.id.tv_items3);
         itemTimes = findViewById(R.id.item_time);
         tv_item2 = findViewById(R.id.tv_items2);
+        tv_sum_varietas = findViewById(R.id.tv_sum_varietas);
+        tv_sum_butir = findViewById(R.id.tv_sum_butir);
         history = (GrainHistory) getIntent().getSerializableExtra("data");
         menu = findViewById(R.id.fab_popUps);
         fab_pdf_intents = findViewById(R.id.fab_pdf_intents);
@@ -117,12 +119,14 @@ public class HistoryReadSingleActivity extends AppCompatActivity {
         int count = myTypes.size();
         StringBuilder builder = new StringBuilder();
         StringBuilder builders = new StringBuilder();
+        int x = 0;
         for (int i = 0; i < count; i++) {
 
             //chart typez
             GrainPie type = myTypes.get(i);
             float a = (float) type.getValue();
             int b = (int) Math.round(a);
+            x = x+b;
             yvalues.add(new PieEntry((float) type.getValue(), type.getName(), i + 1));
             //text
             String s = type.getName();
@@ -141,6 +145,8 @@ public class HistoryReadSingleActivity extends AppCompatActivity {
             builder.append(s).append(" - ").append(b).append(" Butir / ").append(e).append(" %").append("\t\r\n");
 
         }
+        Log.d("Math Body x", "" + x);
+        tv_sum_varietas.setText(String.valueOf(x));
         tv_item2.setText(builder.toString());
 
         itemTimes.setText(AppUtils.getFormattedDateString(history.getDateTime()));
@@ -168,10 +174,12 @@ public class HistoryReadSingleActivity extends AppCompatActivity {
         pieCharts.setUsePercentValues(true);
         ArrayList<PieEntry> valuesz = new ArrayList<PieEntry>();
         int counts = mySize.size();
+        int z = 0;
         for (int j = 0; j < counts; j++) {
             GrainPie sizc = mySize.get(j);
             float a = (float) sizc.getValue();
             int b = (int) Math.round(a);
+            z=z+b;
             double c = (double) sizc.getPercent() * 100;
             df.setRoundingMode(RoundingMode.HALF_EVEN);
             e = Double.parseDouble(df.format(c));
@@ -194,6 +202,7 @@ public class HistoryReadSingleActivity extends AppCompatActivity {
             String s = sizc.getName();
             builders.append(s).append(" - ").append(b).append(" Butir / ").append(String.valueOf(e)).append(" %").append("\t\r\n");
         }
+        tv_sum_butir.setText(String.valueOf(z));
 
         PieDataSet dataSetz = new PieDataSet(valuesz, getString(R.string.election_results));
         PieData dataz = new PieData(dataSetz);

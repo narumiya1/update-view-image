@@ -12,7 +12,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_main"
         android:layout_width="match_parent"
-        android:layout_height="230dp"
+        android:layout_height="250dp"
         android:layout_gravity="center_horizontal"
         android:layout_margin="4dp"
         android:padding="10dp">
@@ -58,12 +58,23 @@
                     android:text="Varietas "
                     android:textColor="@android:color/black"
                     android:textSize="14dp" />
+                <TextView
+                    android:id="@+id/tv_sum_varietas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_items2"
+                    android:layout_marginTop="0dp"
+                    android:fontFamily="@font/montserratlight"
+                    android:text="Sum Varietas "
+                    android:visibility="gone"
+                    android:textColor="@android:color/black"
+                    android:textSize="13dp" />
 
                 <TextView
                     android:id="@+id/data_szie"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/tv_items2"
+                    android:layout_below="@id/tv_sum_varietas"
                     android:fontFamily="@font/montserratlight"
                     android:text="Butir "
                     android:textColor="@android:color/black"
@@ -83,7 +94,35 @@
                     android:textSize="14dp"/>
 
 
-
+                <LinearLayout
+                    android:layout_below="@id/tv_items3"
+                    android:background="@drawable/ractangle"
+                    android:layout_width="200dp"
+                    android:layout_height="20dp"
+                    android:outlineAmbientShadowColor="@color/colorPrimary"
+                    android:outlineSpotShadowColor="@color/jack">
+                    <TextView
+                        android:id="@+id/tv_sum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tv_items3"
+                        android:fontFamily="@font/montserratlight"
+                        android:text="Jumlah Varietas / Butir =  "
+                        android:textColor="@android:color/black"
+                        android:textSize="13dp"
+                        android:layout_marginLeft="4dp"/>
+                    <TextView
+                        android:id="@+id/tv_sum_butir"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/tv_sum"
+                        android:layout_below="@id/tv_items3"
+                        android:layout_marginLeft="4dp"
+                        android:fontFamily="@font/montserratlight"
+                        android:text="100"
+                        android:textColor="@android:color/black"
+                        android:textSize="13dp" />
+                </LinearLayout>
             </RelativeLayout>
         </androidx.core.widget.NestedScrollView>
 
