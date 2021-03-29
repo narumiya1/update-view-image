@@ -15,7 +15,7 @@
     <string name="loginkembali">Timeout , silahkan login Kembali</string>
     <string name="login_berhasil">Login Berhasil</string>
     <string name="update_berhasil">Update Berhasil</string>
-    <string name="check_connection">error, check_connection </string>
+    <string name="check_connection">Turn on your Connection and Try Again </string>
     <string name="register">REGISTER</string>
     <string name="login_email_hint">Email</string>
     <string name="login_password_hint">Password</string>

@@ -49,18 +49,54 @@
                 android:layout_below="@id/tipezs"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="6dp" />
+            <LinearLayout
+                android:layout_margin="4dp"
+                android:id="@+id/ll_type"
+                android:layout_below="@id/chart1"
+                android:gravity="center"
+                android:background="@drawable/ractangle"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:outlineAmbientShadowColor="@color/colorPrimary"
+                android:outlineSpotShadowColor="@color/jack">
+                <TextView
+                    android:id="@+id/tv_sum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_items3"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:fontFamily="@font/montserratlight"
+                    android:text="Jumlah Varietas / Butir =  "
+                    android:textColor="@android:color/black"
+                    android:textSize="12dp"
+                    android:layout_marginRight="4dp"/>
+                <TextView
+                    android:id="@+id/tv_sum_butir_scnd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/tv_sum"
+                    android:layout_below="@id/tv_items3"
+                    android:layout_marginRight="6dp"
+                    android:fontFamily="@font/montserratlight"
+                    android:text="100"
+                    android:textColor="@android:color/black"
+                    android:textSize="12dp" />
+            </LinearLayout>
             <View
+                android:visibility="gone"
+                android:id="@+id/garis"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_below="@id/chart1"
+                android:layout_below="@id/ll_type"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:background="#9C9191"/>
 
             <TextView
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 android:id="@+id/butir"
-                android:layout_below="@id/chart1"
+                android:layout_below="@id/garis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"

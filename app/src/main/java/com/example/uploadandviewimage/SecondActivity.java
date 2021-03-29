@@ -24,6 +24,7 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -36,9 +37,9 @@ import static android.app.PendingIntent.getActivity;
 
 
 public class SecondActivity extends AppCompatActivity {
-    private TextView total, tipe;
+    private TextView total, tipe, tv_sum_butir_scnd;
     Button share_btn;
-    private static DecimalFormat df = new DecimalFormat("0.0");
+    private static DecimalFormat df = new DecimalFormat("##.#");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class SecondActivity extends AppCompatActivity {
         setContentView(R.layout.activity_second);
         total = (TextView) findViewById(R.id.total_size);
         tipe = (TextView)findViewById(R.id.tipezs);
+        tv_sum_butir_scnd= findViewById(R.id.tv_sum_butir_scnd);
         Bundle bundle = getIntent().getExtras();
 
         GrainPie[] type = (GrainPie[]) bundle.get("DataSaya");
@@ -53,6 +55,7 @@ public class SecondActivity extends AppCompatActivity {
 
         drawChart(type);
         StringBuilder builder = new StringBuilder();
+        int x = 0;
         for (int j = 0; j < type.length; j++) {
             float a = (float) type[j].getValue();
             int b = (int) Math.round(a);
@@ -60,22 +63,27 @@ public class SecondActivity extends AppCompatActivity {
             String d = (String.valueOf(type[j].getName()));
             double e = (double) type[j].getPercent()*100;
             df.setRoundingMode(RoundingMode.HALF_EVEN);
-            double f = Double.parseDouble(df.format(e));
-            builder.append(d).append(" ").append(b).append(" Butir / ").append(f).append("%").append("\t\r\n");
+//            double f = Double.parseDouble(df.format(e));
+            BigDecimal bd = new BigDecimal(e).setScale(1, RoundingMode.HALF_EVEN);
+            double newInput = bd.doubleValue();
+            x=x+b;
+            builder.append(d).append(" ").append(b).append(" Butir / ").append(newInput).append("%").append("\t\r\n");
 //            tipe.setText(String.valueOf(a));
         }
         tipe.setText(builder.toString());
-
+        tv_sum_butir_scnd.setText(String.valueOf(x));
         StringBuilder builders = new StringBuilder();
         for (int k = 0; k < type.length; k++) {
             float a = (float) type[k].getValue();
             int b = (int) Math.round(a);
             double c = (double) type[k].getPercent()*100;
             df.setRoundingMode(RoundingMode.HALF_EVEN);
-            double d = Double.parseDouble(df.format(c));
+//            double d = Double.parseDouble(df.format(c));
+            BigDecimal bd = new BigDecimal(c).setScale(1, RoundingMode.HALF_UP);
+            double newInput = bd.doubleValue();
             String e = (String.valueOf(type[k].getValue()));
             String f = (String.valueOf(type[k].getName()));
-            builders.append(f).append("-").append(b).append("Butir / ").append(d).append("%").append("\t\r\n");
+            builders.append(f).append("-").append(b).append("Butir / ").append(newInput).append("%").append("\t\r\n");
 //            tipe.setText(String.valueOf(a));
         }
         total.setText(builders.toString());
@@ -98,8 +106,11 @@ public class SecondActivity extends AppCompatActivity {
             String d = (String.valueOf(size[i].getName()));
             double e = (double) size[i].getPercent()*100;
             df.setRoundingMode(RoundingMode.HALF_EVEN);
-            double f = Double.parseDouble(df.format(e));
-            builders.append(d).append(" ").append(b).append(" Butir / ").append(f).append("%").append("\n");
+
+//            double f = Double.parseDouble(df.format(e));
+            BigDecimal bd = new BigDecimal(e).setScale(1, RoundingMode.HALF_EVEN);
+            double newInput = bd.doubleValue();
+            builders.append(d).append(" ").append(b).append(" Butir / ").append(newInput).append("%").append("\n");
         }
         total.setText(builders);
         PieDataSet dataSet = new PieDataSet(yvalues, getString(R.string.election_results));

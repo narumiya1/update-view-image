@@ -882,7 +882,7 @@ public class HomeFragment extends Fragment{
                     if (length<40000){
                         Log.d("Body Max Size", "5mb " +length);
                     }
-                    Log.d("Body Longitude", "longitude : "+length);
+                    Log.d("Body length", "length : "+length);
                     Bitmap converetdImage = getResizedBitmap(bitmap, 650);
 
 

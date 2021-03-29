@@ -50,6 +50,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -63,7 +64,7 @@ import es.dmoral.toasty.Toasty;
 public class HistoryReadSingleActivity extends AppCompatActivity {
 
     GrainHistory history;
-    private static DecimalFormat df = new DecimalFormat("###.#");
+    private static DecimalFormat df = new DecimalFormat("#.#");
     TextView tv_item2, tv_item3, itemTimes, tv_sum_varietas, tv_sum_butir;
     FloatingActionMenu menu;
     FloatingActionButton fab_pdf_intents, fab_toast;
@@ -132,7 +133,7 @@ public class HistoryReadSingleActivity extends AppCompatActivity {
             String s = type.getName();
             double c = (double) type.getPercent() * 100;
             df.setRoundingMode(RoundingMode.HALF_EVEN);
-            e = Double.parseDouble(df.format(c));
+//            e = Double.parseDouble(df.format(c));
 
 //            double d = Double.parseDouble(df.format(c));
 //            if(c % 1 >= 0.5) {
@@ -141,8 +142,13 @@ public class HistoryReadSingleActivity extends AppCompatActivity {
 //            }else if(c %1 <= 0.5) {
 //                e = c;
 //            }
+            BigDecimal bd = new BigDecimal(c).setScale(1, RoundingMode.HALF_EVEN);
+            double newInput = bd.doubleValue();
+
+            System.out.println("double : " + newInput);
+
             Log.d("Math Body c", "" + e);
-            builder.append(s).append(" - ").append(b).append(" Butir / ").append(e).append(" %").append("\t\r\n");
+            builder.append(s).append(" - ").append(b).append(" Butir / ").append(String.valueOf(newInput)).append(" %").append("\t\r\n");
 
         }
         Log.d("Math Body x", "" + x);
@@ -182,7 +188,9 @@ public class HistoryReadSingleActivity extends AppCompatActivity {
             z=z+b;
             double c = (double) sizc.getPercent() * 100;
             df.setRoundingMode(RoundingMode.HALF_EVEN);
-            e = Double.parseDouble(df.format(c));
+            BigDecimal bd = new BigDecimal(c).setScale(1, RoundingMode.HALF_EVEN);
+            double newInput = bd.doubleValue();
+//            e = Double.parseDouble(df.format(c));
 
 //            double d = Double.parseDouble(df.format(c));
 //            if(c % 1 >= 0.5) {
@@ -200,7 +208,7 @@ public class HistoryReadSingleActivity extends AppCompatActivity {
             valuesz.add(new PieEntry((float) sizc.getValue(), sizc.getName(), j + 1));
             //text
             String s = sizc.getName();
-            builders.append(s).append(" - ").append(b).append(" Butir / ").append(String.valueOf(e)).append(" %").append("\t\r\n");
+            builders.append(s).append(" - ").append(b).append(" Butir / ").append(String.valueOf(newInput)).append(" %").append("\t\r\n");
         }
         tv_sum_butir.setText(String.valueOf(z));
 

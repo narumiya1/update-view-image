@@ -21,6 +21,8 @@
     <string name="en_slide2">To generate valid data and improve accuracy, the grains need to be placed on a dark background (black, dark blue, dark green or dark red)  and at distance from each other. \nNote : a white or bright background will make the data inaccurate and invalid</string>
     <string name="en_slide3">After the photo is uploaded, the application will automatically generate report of grain analysis </string>
     <string name="en_slide4">And will generate report chart </string>
+    <string name="cooming_soon">Cooming soon </string>
     <string name="en_slide5">  The results will be stored in history and to view historical data,  user only needs to click on date to be displayed</string>
     <string name="en_slide6"> VERSIONS :</string>
+    <string name="coming_son">cooming soon !</string>
 </resources>
