@@ -36,6 +36,8 @@ public class GHistory implements Serializable {
     @TypeConverters({TimeStampConverters.class})
     private int dataType;
 
+    @ColumnInfo(name = "jenis")
+    public String jenis;
 
     public int getId() {
         return id;
@@ -92,4 +94,13 @@ public class GHistory implements Serializable {
     public void setDataType(int dataTye) {
         this.dataType = dataTye;
     }
+
+    public String getJenis() {
+        return jenis;
+    }
+
+    public void setJenis(String jenis) {
+        this.jenis = jenis;
+    }
+
 }

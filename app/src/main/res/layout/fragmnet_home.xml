@@ -138,13 +138,113 @@
 
         </FrameLayout>
         <androidx.cardview.widget.CardView
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="bottom|right"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/ractangle"
+            android:backgroundTint="@color/whiteCardColor"
+           app:cardBackgroundColor="@color/whiteCardColor"
+            app:cardCornerRadius="6dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_marginTop="16dp"
+               android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center">
+                <TextView
+                    android:visibility="visible"
+                    android:textSize="16sp"
+                    android:id="@+id/tv_grain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Grain Type  : "
+                    android:textColor="@color/colorPrimaryDarker" />
+                <TextView
+                    android:visibility="visible"
+                    android:textSize="16sp"
+                    android:id="@+id/tv_grainSum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" Beras"
+                    android:textColor="@color/colorPrimaryDarker" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_marginTop="18dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:gravity="bottom|center">
+
+                <TextView
+                    android:id="@+id/tv_grain2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text=" Jumlah : "
+                    android:textColor="@color/colorPrimaryDarker"
+                    android:textSize="16sp"
+                    android:visibility="visible" />
+                <TextView
+                    android:visibility="visible"
+                    android:textSize="16sp"
+                    android:id="@+id/tv_grainSum2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" : 50"
+                    android:textColor="@color/colorPrimaryDarker"
+                    android:layout_gravity="center"
+                    android:gravity="center"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginTop="18dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:gravity="bottom|center">
+                <TextView
+                    android:visibility="gone"
+                    android:textSize="16sp"
+                    android:id="@+id/tv_grain3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" Jumlah : "
+                    android:textColor="@color/colorPrimaryDarker"
+                    android:layout_gravity="center"
+                    android:gravity="center"/>
+                <TextView
+                    android:visibility="gone"
+                    android:textSize="16sp"
+                    android:id="@+id/tv_grainSum3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" : 50"
+                    android:textColor="@color/colorPrimaryDarker"
+                    android:layout_gravity="center"
+                    android:gravity="center"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:cardCornerRadius="8dp"
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
             android:layout_marginBottom="50dp"
-            android:layout_marginTop="12dp"
+            android:background="@drawable/ractangle"
+            android:layout_marginTop="6dp"
             app:cardElevation="4.5dp">
             <ScrollView
                 android:layout_width="match_parent"

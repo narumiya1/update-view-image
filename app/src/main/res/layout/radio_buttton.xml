@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android1="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <RadioGroup
+        android:id="@+id/lokasi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android1:id="@+id/timur"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android1:checked="true"
+            android1:text="Corn" />
+
+        <RadioButton
+            android1:id="@+id/selatan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android1:text="Coffee Beans" />
+
+        <RadioButton
+            android1:id="@+id/barat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android1:text="Cocoa Beans" />
+
+        <RadioButton
+
+            android1:id="@+id/utara"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android1:text="Rice" />
+
+        <RadioButton
+            android1:id="@+id/pusat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android1:text="Fruit" />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="10dp"
+        android:text="Coffee bean, Chocholate, Corn, adn Fruit is Coming soon"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+</LinearLayout>

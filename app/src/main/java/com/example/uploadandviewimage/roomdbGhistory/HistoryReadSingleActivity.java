@@ -288,10 +288,12 @@ public class HistoryReadSingleActivity extends AppCompatActivity {
             String s = type.getName();
             double c = (double) type.getPercent() * 100;
             df.setRoundingMode(RoundingMode.HALF_EVEN);
-            double d = Double.parseDouble(df.format(c));
-
+//            double d = Double.parseDouble(df.format(c));
+            BigDecimal bd = new BigDecimal(c).setScale(1, RoundingMode.HALF_EVEN);
+            double newInput = bd.doubleValue();
+            int percent = (int) newInput;
             canvas.drawText(String.valueOf(s), 500, y, paint);
-            canvas.drawText(String.valueOf(b) + " (" + d + ") %", 820, y, paint);
+            canvas.drawText(String.valueOf(b) + " (" + percent + ") %", 820, y, paint);
             y += 50;
 
         }
@@ -305,11 +307,13 @@ public class HistoryReadSingleActivity extends AppCompatActivity {
             int b = (int) Math.round(a);
             double c = (double) sizc.getPercent() * 100;
             df.setRoundingMode(RoundingMode.HALF_EVEN);
-            double d = Double.parseDouble(df.format(c));
-
+//            double d = Double.parseDouble(df.format(c));
+            BigDecimal bd = new BigDecimal(c).setScale(1, RoundingMode.HALF_EVEN);
+            double newInput = bd.doubleValue();
+            int percent = (int) newInput;
             String s = sizc.getName();
             canvas.drawText(String.valueOf(s), 100, v, paint);
-            canvas.drawText(String.valueOf(b) + " (" + d + ")% ", 270, v, paint);
+            canvas.drawText(String.valueOf(b) + " (" + percent + ")% ", 270, v, paint);
             v += 50;
         }
 

@@ -2,6 +2,7 @@ package com.example.uploadandviewimage.auth;
 
 public class CountryData {
     public static final String[] countryNamesz ={"+62"};
+    public static final String[] grain ={"Rice", "Corn", "Chocholate", "Peanuts", "Coffee Bean"};
     public static final String[] countryNames = {"Afghanistan", "Albania",
             "Algeria", "Andorra", "Angola", "Antarctica", "Argentina",
             "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan",

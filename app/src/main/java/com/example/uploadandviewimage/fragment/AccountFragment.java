@@ -86,7 +86,21 @@ public class AccountFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
 //        phoneNumbbr = mAuth.getCurrentUser().getPhoneNumber();
         progressDialog = new ProgressDialog(getActivity());
-        showProgress();
+//        showProgress();
+        if (isConnected()) {
+            Log.d("Body Internet Connected", "Internet Connected");
+//            closeProgress();
+        } else {
+            Toast.makeText(getActivity(), "Check Connection and Try Again", Toast.LENGTH_LONG).show();
+            Log.d("Body Internet Check", "Turn on your Connection and Try Again");
+            Toasty.Config.getInstance()
+                    .allowQueue(false)
+                    .apply();
+            Toasty.custom(getActivity(), R.string.check_connection, getResources().getDrawable(R.drawable.ic_baseline_close_24),
+                    android.R.color.white, android.R.color.holo_red_dark, Toasty.LENGTH_LONG, true, true).show();
+            Toasty.Config.reset(); // Use this if you want to use the configuration above only once
+
+        }
         txtData = rootView.findViewById(R.id.tv_account_phone);
         txtUsername = (TextView) rootView.findViewById(R.id.nameOneTv);
         textEmail = rootView.findViewById(R.id.tvemail_account);
@@ -333,13 +347,20 @@ public class AccountFragment extends Fragment {
                             Glide.with(getActivity())
                                     .load(image)
                                     .into(profile_image);
+//                        }
+//                        else if (getActivity().equals(null)){
+//                            int images = R.drawable.beraslogo01;
+//                            Glide.with(getActivity())
+//                                    .load(images)
+//                                    .into(profile_image);
+//                            Toast.makeText(getActivity(), "ERROR", Toast.LENGTH_SHORT).show();
                         }
 
 
-                        closeProgress();
+//                        closeProgress();
                     }
                 } else {
-                    closeProgress();
+//                    closeProgress();
                     Toast.makeText(getActivity(), "ERROR", Toast.LENGTH_SHORT).show();
 
                 }
@@ -446,20 +467,7 @@ public class AccountFragment extends Fragment {
 
         progressDialog.setMessage("Loading . . .");
         progressDialog.setCancelable(false);
-        if (isConnected()) {
-            Log.d("Body Internet Connected", "Internet Connected");
-            closeProgress();
-        } else {
-            Toast.makeText(getActivity(), "Check Connection and Try Again", Toast.LENGTH_LONG).show();
-            Log.d("Body Internet Check", "Turn on your Connection and Try Again");
-            Toasty.Config.getInstance()
-                    .allowQueue(false)
-                    .apply();
-            Toasty.custom(getActivity(), R.string.check_connection, getResources().getDrawable(R.drawable.ic_baseline_close_24),
-                    android.R.color.white, android.R.color.holo_red_dark, Toasty.LENGTH_LONG, true, true).show();
-            Toasty.Config.reset(); // Use this if you want to use the configuration above only once
 
-        }
         progressDialog.show();
 
     }

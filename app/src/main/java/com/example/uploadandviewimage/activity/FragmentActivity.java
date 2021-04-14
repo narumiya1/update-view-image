@@ -72,7 +72,7 @@ public class FragmentActivity extends AppCompatActivity implements BottomNavigat
         BottomNavigationView bottomNavigationView = findViewById(R.id.btn_main);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         textViewTime = findViewById(R.id.textViewCountTime);
-        startStops();
+//        startStops();
     }
 
     private void startStops() {

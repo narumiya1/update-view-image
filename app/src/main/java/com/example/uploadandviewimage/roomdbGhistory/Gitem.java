@@ -29,6 +29,8 @@ public class Gitem implements Serializable {
     @TypeConverters({TimeStampConverters.class})
     private Date createdAt;
 
+    @ColumnInfo(name = "jenis")
+    public String jenis;
 
     @ColumnInfo(name = "grainType")
     public double grainType;
@@ -104,4 +106,13 @@ public class Gitem implements Serializable {
     public void setShape(double shape) {
         this.shape = shape;
     }
+
+    public String getJenis() {
+        return jenis;
+    }
+
+    public void setJenis(String jenis) {
+        this.jenis = jenis;
+    }
+
 }

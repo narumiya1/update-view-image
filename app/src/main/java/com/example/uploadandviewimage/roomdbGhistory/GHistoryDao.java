@@ -47,5 +47,9 @@ public interface GHistoryDao  {
 
 //    @Query("SELECT created_at FROM tbGrainHistory")
 //    List<Date> getDate();
+    @Query("SELECT jenis FROM tbGrainItem")
+    String getJenis();
 
+//    @Query("SELECT jumlah FROM tbGjumlah")
+//    int getJumlah();
 }

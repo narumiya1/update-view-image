@@ -18,6 +18,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfDocument;
@@ -39,14 +40,19 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -102,6 +108,7 @@ import com.example.uploadandviewimage.roomdbGhistory.AdapterTypeRecyclerView;
 import com.example.uploadandviewimage.roomdbGhistory.AppDatabase;
 import com.example.uploadandviewimage.roomdbGhistory.GHistory;
 import com.example.uploadandviewimage.roomdbGhistory.Gitem;
+import com.example.uploadandviewimage.roomdbGhistory.Gjumlah;
 import com.example.uploadandviewimage.roomdbGhistory.HistoryReadActivity;
 import com.example.uploadandviewimage.utils.AppUtils;
 import com.github.chrisbanes.photoview.PhotoView;
@@ -210,7 +217,9 @@ public class HomeFragment extends Fragment{
     String phoneNumberz ;
     private final static int ALL_PERMISSIONS_RESULT = 101;
     LocTrack locationTrack;
-    TextView longi,lati, pdef;
+    TextView longi,lati, pdef, tv_grain2, tv_grainSum2, tv_grain3,tv_grainSum3 ,tv_grainSum ;
+    String state_data[] = new String[5];
+    String choosen,  grain_slected;
     Sesion session;
     Accounts accounts = new Accounts();
     private CountDownTimer countDownTimer;
@@ -237,6 +246,11 @@ public class HomeFragment extends Fragment{
         cardView = view.findViewById(R.id.cv_maine);
         warningtext = view.findViewById(R.id.warning_frame);
         pdef=view.findViewById(R.id.pdef);
+        tv_grain2 = view.findViewById(R.id.tv_grain2);
+        tv_grainSum=view.findViewById(R.id.tv_grainSum);
+        tv_grainSum2 =  view.findViewById(R.id.tv_grainSum2);
+        tv_grain3 =  view.findViewById(R.id.tv_grain3);
+        tv_grainSum3=view.findViewById(R.id.tv_grainSum3);
         pdef.setVisibility(View.GONE);
         findViews(view);
         //check connection
@@ -252,9 +266,10 @@ public class HomeFragment extends Fragment{
         GHistory type2 = new GHistory();
         decodeBase64(mImageFileLocation);
         type2.getImage();
+        type2.getJenis();
         List<String> statusImg = db.gHistoryDao().getImageStorage();
         statusImg.size();
-        if(statusImg.size()==0){
+        if(statusImg.size()==0&&statusImg.size()<0){
             Log.d("AAABL", "No file");
 
             warningtext.setVisibility(View.VISIBLE);
@@ -274,6 +289,12 @@ public class HomeFragment extends Fragment{
             String json = db.gHistoryDao().selectJsonHistory();
             GrainData grainData2 = new Gson().fromJson(json, GrainData.class);
             listGrainType = new ArrayList<>();
+            String jenis = db.gHistoryDao().getJenis();
+            tv_grainSum.setText(jenis);
+//            int jumlah = db.gHistoryDao().getJumlah();
+            Log.d("Body jenis", "jenis "+jenis);
+//            Log.d("Body jumlahs", "jumlah jumlah : "+jumlah);
+//            tv_grainSum2.setText(String.valueOf(jumlah));
             if (json.equals(null) && grainData2.equals(null)){
                 Log.d("AAABL", "No file");
                 Log.d("AAABL", "No file");
@@ -281,6 +302,10 @@ public class HomeFragment extends Fragment{
             GrainItem[] items = grainData2.getItems();
             for (int j = 0; j < items.length; j++) {
                 Log.d("Body items", "here is an value jsonArray"+items);
+                Log.d("Body items", "here is an value items----------"+items.length);
+//                tv_grainSum2.setVisibility(View.VISIBLE);
+//                tv_grainSum2.setText(String.valueOf(items.length));
+//                tv_grain2.setVisibility(View.VISIBLE);
                 GrainItem item = items[j];
                 ExampleItem grain = new ExampleItem(item);
 //            double val = items[j].getShape().getWidth();
@@ -370,7 +395,7 @@ public class HomeFragment extends Fragment{
             Toast.makeText(view.getContext(), "Check Connection and Try Again", Toast.LENGTH_LONG).show();
         }
         // migrate
-        db = Room.databaseBuilder(getActivity().getApplicationContext(),
+        db = Room.databaseBuilder(getActivity(),
                 AppDatabase.class, "tbGrainHistory")
                 .fallbackToDestructiveMigration()
                 .build();
@@ -420,7 +445,8 @@ public class HomeFragment extends Fragment{
         add_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectImage();
+//                selectGrain();
+                selectRadio();
             }
         });
         mRecyclerView = view.findViewById(R.id.recyclerView_fragment);
@@ -555,9 +581,92 @@ public class HomeFragment extends Fragment{
         return connected;
 
     }
+    private void selectRadio(){
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-    private void selectImage() {
+        final View formsView = inflater.inflate(R.layout.radio_buttton, null, false);
+        final RadioGroup lokasi = (RadioGroup) formsView.findViewById(R.id.lokasi);
+//        int pilih = lokasi.getCheckedRadioButtonId();
+//        RadioButton radio_grain = (RadioButton) formsView.findViewById(pilih);
+        new AlertDialog.Builder(getActivity())
+                .setView(formsView)
+                .setTitle("SELECT GRAIN")
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            @TargetApi(11)
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                int pilih = lokasi.getCheckedRadioButtonId();
+                                RadioButton radio_grain = (RadioButton) formsView.findViewById(pilih);
+
+                                if (radio_grain.isChecked()){
+                                    grain_slected = radio_grain.getText().toString();
+                                    Toast.makeText(getActivity(), grain_slected, Toast.LENGTH_LONG).show();
+                                    Log.d("Body grain_slected", "grain_slected  : "+grain_slected+" grain_slected ");
+                                    selectImage(grain_slected);
+                                }else {
+                                    Toast.makeText(getActivity(), "Coming soon", Toast.LENGTH_LONG).show();
+
+                                }
+
+
+                                dialog.cancel();
+                            }
+                        }).show();
+    }
+    private void selectGrain(){
+        LayoutInflater inf = (LayoutInflater)  getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inf.inflate(R.layout.change_bike_state, null);
+
+        AlertDialog.Builder changeState = new AlertDialog.Builder(getActivity());
+
+        changeState.setTitle(  " Choose Grain " );
+        changeState.setView(layout);
+
+        state_data[0]= "Rice";
+        state_data[1]="Corn";
+        state_data[2]="Chocholate";
+        state_data[3]="Peanuts";
+        state_data[4]="Coffee Bean";
+
+        Spinner mSpinner = (Spinner) layout.findViewById(R.id.bike_states);
+
+        ArrayAdapter adapter = new ArrayAdapter(getActivity(),android.R.layout.simple_spinner_item,state_data);
+//        ArrayAdapter adapter = new ArrayAdapter(getActivity(),android.R.layout.simple_spinner_item,getResources().getStringArray(R.array.grainList));
+        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        mSpinner.setAdapter(adapter);
+        //positive and negative button
+        changeState.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (!mSpinner.getSelectedItem().toString().equalsIgnoreCase("Choose Graain")){
+                    Toast.makeText(getActivity(), mSpinner.getSelectedItem().toString(),
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
+                choosen = state_data[0];
+                selectImage(choosen);
+                Log.d("Body state_data", "state_data : "+choosen+"  "+state_data);
+
+            }
+        });
+//        changeState.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                dialogInterface.dismiss();
+//            }
+//        });
+
+        changeState.setView(layout);
+        AlertDialog alert = changeState.create();
+
+        alert.show();
+
+    }
+
+    private void selectImage(String state_data) {
         final CharSequence[] options = {"Take Photo", "Choose from Gallery"};
+        Log.d("Body state_data", "state_data preasstate_data : "+state_data.toString()+" ");
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Add Photo!");
         builder.setItems(options, new DialogInterface.OnClickListener() {
@@ -626,6 +735,78 @@ public class HomeFragment extends Fragment{
                         startActivityForResult(intent, 2);
                     }
                 }
+            /*
+                else if (options[item].equals("Grain")) {
+                    LayoutInflater inf = (LayoutInflater)  getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    View layout = inf.inflate(R.layout.change_bike_state, null);
+
+                    AlertDialog.Builder changeState = new AlertDialog.Builder(getActivity());
+
+                    changeState.setTitle(  " Choose Grain " );
+                    changeState.setView(layout);
+
+                    String state_data[] = new String[5];
+
+                    state_data[0]= "Rice";
+                    state_data[1]="Corn";
+                    state_data[2]="Chocholate";
+                    state_data[3]="Peanuts";
+                    state_data[4]="Coffee Bean";
+
+
+                    Spinner mSpinner = (Spinner) layout.findViewById(R.id.bike_states);
+
+//                    ArrayAdapter adapter = new ArrayAdapter(getActivity(),android.R.layout.simple_spinner_item,     state_data);
+                    ArrayAdapter adapter = new ArrayAdapter(getActivity(),android.R.layout.simple_spinner_item,getResources().getStringArray(R.array.grainList));
+                    adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                    mSpinner.setAdapter(adapter);
+                    //positive and negative button
+                    changeState.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if (!mSpinner.getSelectedItem().toString().equalsIgnoreCase("Choose Graain")){
+                                Toast.makeText(getActivity(), mSpinner.getSelectedItem().toString(),
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        }
+                    });
+                    changeState.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                          dialogInterface.dismiss();
+                        }
+                    });
+
+                    changeState.setView(layout);
+                    AlertDialog alert = changeState.create();
+
+                    alert.show();
+                }
+                else if(options[item].equals("Radio")){
+                    LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+                    final View formsView = inflater.inflate(R.layout.radio_buttton, null, false);
+                    final RadioGroup lokasi = (RadioGroup) formsView.findViewById(R.id.lokasi);
+
+                    new AlertDialog.Builder(getActivity())
+                            .setView(formsView)
+                            .setTitle("PILIH LOKASI ANDA")
+                            .setPositiveButton("OK",
+                                    new DialogInterface.OnClickListener() {
+                                        @TargetApi(11)
+                                        public void onClick(
+                                                DialogInterface dialog, int id) {
+                                            int pilih = lokasi.getCheckedRadioButtonId();
+                                            RadioButton radio_lokasi = (RadioButton) formsView.findViewById(pilih);
+
+                                            String lokasi_anda = "Lokasi Anda : " + radio_lokasi.getText();
+                                            Toast.makeText(getActivity(), lokasi_anda, Toast.LENGTH_LONG).show();
+                                            dialog.cancel();
+                                        }
+                                    }).show();
+                }
+          */
             }
         });
         builder.show();
@@ -907,7 +1088,46 @@ public class HomeFragment extends Fragment{
 
                     PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(viewImage);
                     photoViewAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    uploadImage(converetdImage);
+                      /*
+                        cek jenis grain
+                        if (beras = panggil function upload image beras)
+                        else if (kopi = uploadImagekopi)
+                        else if(gandum = uploadImageGandum)
+                        dibuatkan upload image
+                      */
+                    if (grain_slected.equals("Rice")){
+                        uploadImage(converetdImage, grain_slected);
+                        Log.d("Body grain_slected", "grain_slected  : " +grain_slected);
+                    }else if (grain_slected.equals("Coffee Bean")){
+                        Toast toast=Toast.makeText(getActivity(), "Coffee Bean is cooming soon / Not Executed /  in Development" , Toast.LENGTH_LONG);
+                        View view = toast.getView();
+                        //Gets the actual oval background of the Toast then sets the colour filter
+                        view.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
+                        view.setBackgroundColor(Color.RED);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toast.show();
+                    }else if (grain_slected.equals("Chocholate")){
+                        Toast toasts=Toast.makeText(getActivity(), "Chocholate is cooming soon / Not Executed /  in Development" , Toast.LENGTH_LONG);
+                        View view = toasts.getView();
+                        view.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
+                        view.setBackgroundColor(Color.GREEN);
+                        toasts.setGravity(Gravity.CENTER, 0, 0);
+                        toasts.show();
+                    } else if (grain_slected.equals("Corn")){
+                        Toast toastc = Toast.makeText(getActivity(), "Corn  is cooming soon / Not Executed / in Development" , Toast.LENGTH_LONG);
+                        View view = toastc.getView();
+                        view.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
+                        view.setBackgroundColor(Color.MAGENTA);
+                        toastc.setGravity(Gravity.CENTER, 0, 0);
+                        toastc.show();
+                    }  else if (grain_slected.equals("Fruit")){
+                        Toast toast = Toast.makeText(getActivity(), "Fruit is cooming soon / Not Executed / in Development" , Toast.LENGTH_LONG);
+                        View view = toast.getView();
+                        view.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
+                        view.setBackgroundColor(Color.YELLOW);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toast.show();
+                    }
 //                    Uri imageUri = data.getData();
 //                    cropImage(bitmap);
 
@@ -976,7 +1196,18 @@ public class HomeFragment extends Fragment{
         viewImage.setImageBitmap(rotateBitmap);
         PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(viewImage);
         photoViewAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        uploadImage(rotateBitmap);
+        /*
+        cek jenis grain
+        if (beras = panggil function upload image beras)
+        else if (kopi = uploadImagekopi)
+        else if(gandum = uploadImageGandum)
+        dibuatkan upload image
+        */
+        if (grain_slected.equals("Rice")){
+            uploadImage(rotateBitmap, grain_slected);
+            Log.d("Body choosen Chōsa Heidan", "String choosen : "+grain_slected);
+
+        }
     }
 
     private Bitmap setReducedImageSize() {
@@ -1113,9 +1344,10 @@ public class HomeFragment extends Fragment{
                 .decodeByteArray(decodedByte, 0, decodedByte.length);
     }
 
-    private void uploadImage(Bitmap bitmap) {
+    private void uploadImage(Bitmap bitmap, String choosen) {
         //20210130
         //volleyPost();
+        Log.d("Body choosen", "String choosen : " +choosen);
         mrRecyclerView.setVisibility(View.GONE);
         cardView.setVisibility(View.GONE);
 //        cardView.setVisibility(View.GONE);
@@ -1391,10 +1623,13 @@ public class HomeFragment extends Fragment{
                         LocalDate date2 = LocalDate.now();
                         Date date = new Date();
                         //type
+                        double x = 0;
                         for(int i=0; i<type.length; i++) {
                             String name = type[i].getName();
                             double val = type[i].getValue();
                             double pct = type[i].getPercent();
+                            int b = (int) Math.round(val);
+                            x = x+b;
 
                             //call db model
                             GHistory type2 = new GHistory();
@@ -1406,6 +1641,10 @@ public class HomeFragment extends Fragment{
                             type2.setImage(mImageFileLocation);
                             insertData(type2);
                         }
+                     Toast.makeText(getActivity(), "Jumlah Variabel = "+x+" ", Toast.LENGTH_LONG).show();
+//                        tv_grain3.setVisibility(View.VISIBLE);
+//                        tv_grainSum3.setVisibility(View.VISIBLE);
+//                        tv_grainSum3.setText(String.valueOf(x));
                         //size
                         for(int i=0; i<size.length; i++) {
                             String name_size = size[i].getName();
@@ -1422,6 +1661,17 @@ public class HomeFragment extends Fragment{
                             type2.setImage(mImageFileLocation);
                             insertData(type2);
                         }
+//                        String jenisz= "Ricee";
+//                        GHistory typec = new GHistory();
+//                        typec.setJenis(jenisz);
+                        int y = (int) x;
+//                        typec.setJumlah(y);
+//                        Gjumlah type3 = new Gjumlah();
+//                        type3.setJumlah(y);
+//                        Log.d("Math Body setJumlah", "" + y);
+//                        insertData(typec);
+//                        Log.d("Math Body setJenis", "" + jenisz);
+
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
