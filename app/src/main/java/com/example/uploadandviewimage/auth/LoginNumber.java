@@ -270,6 +270,8 @@ public class LoginNumber extends AppCompatActivity {
 
                                 Log.d("Body <>", "Response: "+response.body().toString());
                                 finishAffinity();
+                                session.getOnBoard();
+                                Log.d("Body getOnBoard <>", "getOnBoard: "+session.getOnBoard());
                                 if (!session.isFirstTimeLaunch()) {
                                     Intent intent = new Intent(LoginNumber.this, FragmentActivity.class);
                                     startActivity(intent);

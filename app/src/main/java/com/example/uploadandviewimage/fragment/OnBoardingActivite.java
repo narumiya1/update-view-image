@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -127,6 +128,8 @@ public class OnBoardingActivite extends AppCompatActivity {
 
     private void launchHomeScreen() {
         session.setFirstTimeLaunch(false);
+        session.setOnBoard(1);
+        Log.d("Body getOnBoard launchHomeScreen<>", "getOnBoard launchHomeScreen: "+session.getOnBoard());
         startActivity(new Intent(OnBoardingActivite.this, FragmentActivity.class));
         finish();
     }

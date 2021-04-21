@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -44,6 +45,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -86,13 +88,16 @@ import com.example.uploadandviewimage.GrainHistoryCollection;
 import com.example.uploadandviewimage.GrainItem;
 import com.example.uploadandviewimage.GrainPie;
 import com.example.uploadandviewimage.GrainShape;
+import com.example.uploadandviewimage.MainActivity;
 import com.example.uploadandviewimage.NetworkClient;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.SecondActivity;
 import com.example.uploadandviewimage.UploadApis;
 import com.example.uploadandviewimage.activity.FragmentActivity;
+import com.example.uploadandviewimage.activity.HistoryActivity;
 import com.example.uploadandviewimage.activity.LocTrack;
 import com.example.uploadandviewimage.activity.PdfActivity;
+import com.example.uploadandviewimage.activity.SlidePanelActivity;
 import com.example.uploadandviewimage.adapter.AdapterFragmentHome;
 import com.example.uploadandviewimage.adapter.CustomRecyclerview;
 import com.example.uploadandviewimage.auth.LoginActivity;
@@ -156,6 +161,8 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -233,6 +240,12 @@ public class HomeFragment extends Fragment{
     int PRIVATE_MODE = 0;
     private HomeFragment.TimerStatus timerStatus = HomeFragment.TimerStatus.STOPPED;
     private long timeCountInMilliSeconds = 1 * 60000;
+    private String[] Item = {"Rice","Coffee","Cocho"};
+    private Dialog dialogue ;
+    ArrayList<String> arrayListz;
+    int originalPositions,newPositions ;
+    private Button dialogIntent;
+
     public HomeFragment() {
     }
 
@@ -242,6 +255,7 @@ public class HomeFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragmnet_home, container, false);
         //get view
         session = new Sesion(getContext());
+        dialogue = new Dialog(getActivity());
         mrRecyclerView = view.findViewById(R.id.recyclerView_fragmenth);
         cardView = view.findViewById(R.id.cv_maine);
         warningtext = view.findViewById(R.id.warning_frame);
@@ -446,7 +460,8 @@ public class HomeFragment extends Fragment{
             @Override
             public void onClick(View v) {
 //                selectGrain();
-                selectRadio();
+//                selectRadio();
+                selectDialogue();
             }
         });
         mRecyclerView = view.findViewById(R.id.recyclerView_fragment);
@@ -662,6 +677,144 @@ public class HomeFragment extends Fragment{
 
         alert.show();
 
+    }
+    private void selectDialogue() {
+        final Dialog dialog = new Dialog(getActivity());
+        dialogue.setTitle("Contoh Custom Dialog");
+        dialogue.setContentView(R.layout.custom_design);
+        dialogIntent = dialogue.findViewById(R.id.action_cancels);
+        //spinners
+        final Spinner List = dialogue.findViewById(R.id.listItemz);
+        //1 Arraylist
+        arrayListz = new ArrayList<>();
+        arrayListz.add("Roaster");
+        arrayListz.add("Beans");
+        arrayListz.add("Cupz");
+        //String Arr 2
+        String[] question1 = {"Q1","Q2","Q3","Q4"};
+        String[] question2 = {"Q5","Q6","Q7","Q8"};
+        ArrayList<String> aList = new ArrayList<String>(Arrays.asList(question1));
+        aList.addAll(Arrays.asList(question2));
+        //3 HashMap
+        Map<String, Integer> countryISOCodeMapping = new HashMap<>();
+        countryISOCodeMapping.put("Rice", 0);
+        countryISOCodeMapping.put("Corns", 1);
+        countryISOCodeMapping.put("Fruitz", 2);
+        countryISOCodeMapping.put("Peanuts", 3);
+        countryISOCodeMapping.put("Wheat", 4);
+        Collection<Object> vals = Collections.singleton(countryISOCodeMapping.values());
+        Object[] array = vals.toArray(new Object[vals.size()]);
+        //4 Algortihmszc
+        String [] myArrays = {"Rice", "Coffee Beans", "Corns","Fruitz","Buckwheats","Wheat","Peanuts","Sesame","Millet"};
+        String temps = myArrays[originalPositions];
+        myArrays[originalPositions] = myArrays[newPositions];
+        myArrays[newPositions] = temps;
+        System.out.println(Arrays.toString(myArrays));
+
+        ArrayAdapter adapter = new ArrayAdapter(getActivity(),android.R.layout.simple_spinner_item,myArrays);
+        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        List.setAdapter(adapter);
+        //buat function untuk membaca selected indeks dari grain type dari room database(angka/indeks)
+        //membuat table room dataabase (1 kolom)
+        List.setSelection(5);
+        Sesion sesions = new Sesion(getActivity());
+
+        List.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(getActivity()," "+adapter.getItem(i)+" choosen", Toast.LENGTH_SHORT).show();
+                grain_slected = adapter.getItem(i).toString();
+                sesions.setString(grain_slected);
+                adapterView.setTag(grain_slected);
+                Log.d("Body grain_slected", "grain_slected : "+grain_slected+" ");
+                Log.d("Body i", " i : "+i+" ");
+
+                for (int x = 0; x < myArrays.length; x++) {
+                    System.out.print(myArrays[x] +" "+ i +" ");
+//                    Log.d("Body myArrays", "myArrays  : >> "+myArrays[x]+" << ");
+                }
+                originalPositions = 0;
+                // buat function untuk menyimpan selected indeks ke room database (angka/indeks)
+                //newPositions = 5;
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        dialogIntent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent((Context) getActivity(), SlidePanelActivity.class);
+                startActivity(intent);
+            }
+        });
+        //button
+        Button DialogButton = dialogue.findViewById(R.id.action_oke);
+        DialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogue.dismiss();
+            }
+        });
+
+        //textView
+        TextView gallery = dialogue.findViewById(R.id.gallery);
+        gallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    // Permission is not granted
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        // Show an explanation to the user *asynchronously* -- don't block
+                        // this thread waiting for the user's response! After the user
+                        // sees the explanation, try again to request the permission.
+                    } else {
+                        // No explanation needed; request the permission
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                PERMISSION_CODE_READ_GALLERY);
+                    }
+                } else {
+                    //permission already granted
+                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(intent, 2);
+                }
+            }
+        });
+
+        TextView cammera = dialogue.findViewById(R.id.cammera);
+        cammera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if ((ActivityCompat.checkSelfPermission(getContext(),
+                            android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) ||
+                            (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED)) {
+                        String[] permission = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                        requestPermissions(permission, PERMISSION_CODE_OPEN_CAMERA);
+
+                    } else {
+                        //permission already granted
+                        openCamera();
+                    }
+                } else {
+                    // system OS < Marshmallow
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    File f = new File(android.os.Environment.getExternalStorageDirectory(), "temp.jpg");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                    openCamera();
+                }
+
+            }
+        });
+
+        dialogue.show();
     }
 
     private void selectImage(String state_data) {
@@ -1095,10 +1248,11 @@ public class HomeFragment extends Fragment{
                         else if(gandum = uploadImageGandum)
                         dibuatkan upload image
                       */
+                    dialogue.dismiss();
                     if (grain_slected.equals("Rice")){
                         uploadImage(converetdImage, grain_slected);
                         Log.d("Body grain_slected", "grain_slected  : " +grain_slected);
-                    }else if (grain_slected.equals("Coffee Bean")){
+                    }else if (grain_slected.equals("Coffee Beans")){
                         Toast toast=Toast.makeText(getActivity(), "Coffee Bean is cooming soon / Not Executed /  in Development" , Toast.LENGTH_LONG);
                         View view = toast.getView();
                         //Gets the actual oval background of the Toast then sets the colour filter
@@ -1106,7 +1260,7 @@ public class HomeFragment extends Fragment{
                         view.setBackgroundColor(Color.RED);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
-                    }else if (grain_slected.equals("Chocholate")){
+                    }else if (grain_slected.equals("Cocho")){
                         Toast toasts=Toast.makeText(getActivity(), "Chocholate is cooming soon / Not Executed /  in Development" , Toast.LENGTH_LONG);
                         View view = toasts.getView();
                         view.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);

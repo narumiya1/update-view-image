@@ -30,6 +30,8 @@ public class Sesion {
     public static final String KEY_IMAGE = "image";
     public static final String PREEF = "USER_PREF";
     private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
+    private static final String KEY_STR = "str";
+    private static final String KEY_INT = "str";
 
 
     public Sesion(Context context) {
@@ -120,6 +122,20 @@ public class Sesion {
         editor.commit();
     }
 
+    public void setString(String srt) {
+        editor.putString(KEY_STR, srt);
+        editor.commit();
+    }
+    public String getString() {
+        return pref.getString(KEY_STR, "");
+    }
+    public void setOnBoard(int angka) {
+        editor.putInt(KEY_INT, angka);
+        editor.commit();
+    }
+    public int getOnBoard() {
+        return pref.getInt(KEY_INT, 0);
+    }
     public void setValuesz(String statusOnBoarding,String value){
         editor.putString(PREEF,statusOnBoarding);
         editor.commit();
