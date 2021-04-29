@@ -26,10 +26,12 @@ public interface GHistoryDao  {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertJson(Gitem items);
-
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long insertIdx(Gindeks idx);
     @Update
     int updateGrainHistory(GHistory gHistory);
-
+    @Update
+    int updateGrainSelected(Gindeks gindeks);
     @Delete
     void deleteGrainHistory(GHistory gHistory);
 
@@ -38,6 +40,18 @@ public interface GHistoryDao  {
 
     @Query("SELECT json FROM tbGrainItem WHERE created_at=(SELECT MAX(created_at) FROM tbGrainItem )")
     String selectJsonHistory();
+
+    @Query("SELECT COUNT(id)  FROM tbGindeks  ")
+    List<Integer> getCountIdx();
+
+    @Query("SELECT value FROM tbGindeks")
+    int selectIndeks();
+
+    @Query("SELECT COUNT (*) FROM tbGindeks WHERE type = 1")
+    int getCount();
+
+    @Query("UPDATE tbGindeks SET value = :value, type=:type WHERE id = :id")
+    int updateIndeks(int id, int type,int value);
 
     @Query("SELECT * FROM tbGrainHistory WHERE id = :id ")
     GHistory selectBarangDetail(int id);

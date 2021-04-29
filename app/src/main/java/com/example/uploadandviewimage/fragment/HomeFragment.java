@@ -10,7 +10,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -21,9 +20,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfDocument;
-import android.location.Location;
 import android.media.ExifInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -35,10 +32,7 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.provider.Settings;
-import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
@@ -48,7 +42,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -65,83 +58,46 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.uploadandviewimage.Account.Accounts;
 import com.example.uploadandviewimage.ExampleAdapter;
 import com.example.uploadandviewimage.ExampleItem;
 import com.example.uploadandviewimage.GrainData;
-import com.example.uploadandviewimage.GrainHistory;
-import com.example.uploadandviewimage.GrainHistoryCollection;
 import com.example.uploadandviewimage.GrainItem;
 import com.example.uploadandviewimage.GrainPie;
-import com.example.uploadandviewimage.GrainShape;
-import com.example.uploadandviewimage.MainActivity;
-import com.example.uploadandviewimage.NetworkClient;
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.SecondActivity;
 import com.example.uploadandviewimage.UploadApis;
-import com.example.uploadandviewimage.activity.FragmentActivity;
-import com.example.uploadandviewimage.activity.HistoryActivity;
 import com.example.uploadandviewimage.activity.LocTrack;
 import com.example.uploadandviewimage.activity.PdfActivity;
-import com.example.uploadandviewimage.activity.SlidePanelActivity;
-import com.example.uploadandviewimage.adapter.AdapterFragmentHome;
 import com.example.uploadandviewimage.adapter.CustomRecyclerview;
-import com.example.uploadandviewimage.auth.LoginActivity;
-import com.example.uploadandviewimage.auth.LoginNumber;
 import com.example.uploadandviewimage.auth.Sesion;
 import com.example.uploadandviewimage.auth.TokenInterceptor;
-import com.example.uploadandviewimage.auth.User;
 import com.example.uploadandviewimage.cookies.AddCookiesInterceptor;
-import com.example.uploadandviewimage.cookies.JavaNetCookieJar;
 import com.example.uploadandviewimage.cookies.ReceivedCookiesInterceptor;
-import com.example.uploadandviewimage.location.GpsUtils;
-import com.example.uploadandviewimage.roomdbGhistory.AdapterTypeRecyclerView;
 import com.example.uploadandviewimage.roomdbGhistory.AppDatabase;
 import com.example.uploadandviewimage.roomdbGhistory.GHistory;
+import com.example.uploadandviewimage.roomdbGhistory.Gindeks;
 import com.example.uploadandviewimage.roomdbGhistory.Gitem;
-import com.example.uploadandviewimage.roomdbGhistory.Gjumlah;
 import com.example.uploadandviewimage.roomdbGhistory.HistoryReadActivity;
 import com.example.uploadandviewimage.utils.AppUtils;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.github.mikephil.charting.data.PieEntry;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -152,11 +108,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.RoundingMode;
-import java.net.CookieHandler;
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -176,9 +128,7 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
-import okio.ByteString;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -245,6 +195,7 @@ public class HomeFragment extends Fragment{
     ArrayList<String> arrayListz;
     int originalPositions,newPositions ;
     private Button dialogIntent;
+    private Dialog dialog;
 
     public HomeFragment() {
     }
@@ -255,6 +206,7 @@ public class HomeFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragmnet_home, container, false);
         //get view
         session = new Sesion(getContext());
+        dialog = new Dialog(getActivity());
         dialogue = new Dialog(getActivity());
         mrRecyclerView = view.findViewById(R.id.recyclerView_fragmenth);
         cardView = view.findViewById(R.id.cv_maine);
@@ -287,17 +239,7 @@ public class HomeFragment extends Fragment{
             Log.d("AAABL", "No file");
 
             warningtext.setVisibility(View.VISIBLE);
-            /* get via drawable
-            String uri = "@drawable/beraslogo01.jpg";  // where myresource (without the extension) is the file
-            viewImage = (PhotoView) view.findViewById(R.id.viewImage);
-            viewImage.setVisibility(View.VISIBLE);
-            int imageResource = getResources().getIdentifier(uri, null, getActivity().getPackageName());
-            Drawable res = getResources().getDrawable(R.drawable.beras);
-//            Drawable res = ContextCompat.getDrawable(getActivity(),R.drawable.beraslogo01);
-            viewImage.setImageDrawable(res);
-            PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(viewImage);
-            photoViewAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            */
+
         }
         else if(statusImg.size()>0) {
             String json = db.gHistoryDao().selectJsonHistory();
@@ -305,10 +247,7 @@ public class HomeFragment extends Fragment{
             listGrainType = new ArrayList<>();
             String jenis = db.gHistoryDao().getJenis();
             tv_grainSum.setText(jenis);
-//            int jumlah = db.gHistoryDao().getJumlah();
-            Log.d("Body jenis", "jenis "+jenis);
-//            Log.d("Body jumlahs", "jumlah jumlah : "+jumlah);
-//            tv_grainSum2.setText(String.valueOf(jumlah));
+            Log.d("Body jsonn", "jsonn "+json);
             if (json.equals(null) && grainData2.equals(null)){
                 Log.d("AAABL", "No file");
                 Log.d("AAABL", "No file");
@@ -317,14 +256,8 @@ public class HomeFragment extends Fragment{
             for (int j = 0; j < items.length; j++) {
                 Log.d("Body items", "here is an value jsonArray"+items);
                 Log.d("Body items", "here is an value items----------"+items.length);
-//                tv_grainSum2.setVisibility(View.VISIBLE);
-//                tv_grainSum2.setText(String.valueOf(items.length));
-//                tv_grain2.setVisibility(View.VISIBLE);
                 GrainItem item = items[j];
                 ExampleItem grain = new ExampleItem(item);
-//            double val = items[j].getShape().getWidth();
-//            double pct = items[j].getShape().getLeft();
-//            double shpe = items[j].getShape().getTop();
 
                 String name = grain.getName();
                 String score = grain.getScore();
@@ -378,7 +311,7 @@ public class HomeFragment extends Fragment{
         }
 
 
-//        listGrainType.addAll(Arrays.asList(db.gHistoryDao().selectJsonHistory()));
+
 
         //22 02 21
         // ambil text json dri database
@@ -386,12 +319,11 @@ public class HomeFragment extends Fragment{
         // dirubah ke format recyclerView
         // insert ke variabel listGrainType
 
-//        Gson gson = new Gson();
+
 
 
 
         if (isConnected()) {
-//            Toast.makeText(view.getContext(), "Internet Connected", Toast.LENGTH_SHORT).show();
             Log.d("Body Internet Connected", "Internet Connected");
         } else {
             btnRetry.setVisibility(View.VISIBLE);
@@ -443,7 +375,6 @@ public class HomeFragment extends Fragment{
             longi.setText("longitudesz" +longitude);
             Log.d("Body latitude", "latitude val"+latitude);
             Log.d("Body longitudesz", "latitude val"+longitude);
-//            Toast.makeText(getActivity(), "Longitude:" + Double.toString(longitude) + "\nLatitude:" + Double.toString(latitude), Toast.LENGTH_SHORT).show();
         } else {
 
             locationTrack.showSettingsAlert();
@@ -679,12 +610,11 @@ public class HomeFragment extends Fragment{
 
     }
     private void selectDialogue() {
-        final Dialog dialog = new Dialog(getActivity());
-        dialogue.setTitle("Contoh Custom Dialog");
-        dialogue.setContentView(R.layout.custom_design);
-        dialogIntent = dialogue.findViewById(R.id.action_cancels);
+        dialog.setTitle("Contoh Custom Dialog");
+        dialog.setContentView(R.layout.custom_design);
+//        dialog = dialogue.findViewById(R.id.action_cancels);
         //spinners
-        final Spinner List = dialogue.findViewById(R.id.listItemz);
+        final Spinner list = dialog.findViewById(R.id.listItemz);
         //1 Arraylist
         arrayListz = new ArrayList<>();
         arrayListz.add("Roaster");
@@ -705,39 +635,81 @@ public class HomeFragment extends Fragment{
         Collection<Object> vals = Collections.singleton(countryISOCodeMapping.values());
         Object[] array = vals.toArray(new Object[vals.size()]);
         //4 Algortihmszc
+        db = Room.databaseBuilder(getActivity(), AppDatabase.class, "tbGrainHistory")
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .addMigrations(AppDatabase.MIGRATION_4_5)
+                .build();
+
+//        List<Integer> indx = db.gHistoryDao().getCountIdx();
+//        int count = db.gHistoryDao().getCount();
         String [] myArrays = {"Rice", "Coffee Beans", "Corns","Fruitz","Buckwheats","Wheat","Peanuts","Sesame","Millet"};
         String temps = myArrays[originalPositions];
         myArrays[originalPositions] = myArrays[newPositions];
         myArrays[newPositions] = temps;
         System.out.println(Arrays.toString(myArrays));
 
-        ArrayAdapter adapter = new ArrayAdapter(getActivity(),android.R.layout.simple_spinner_item,myArrays);
+        ArrayAdapter adapter = new ArrayAdapter(getActivity(),android.R.layout.simple_spinner_item, myArrays);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        List.setAdapter(adapter);
+        list.setAdapter(adapter);
         //buat function untuk membaca selected indeks dari grain type dari room database(angka/indeks)
         //membuat table room dataabase (1 kolom)
-        List.setSelection(5);
+        int selection = db.gHistoryDao().selectIndeks() ;
+        Log.d("Body selections ", " selection : "+selection+" ");
+        list.setSelection(selection);
         Sesion sesions = new Sesion(getActivity());
 
-        List.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+        list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Toast.makeText(getActivity()," "+adapter.getItem(i)+" choosen", Toast.LENGTH_SHORT).show();
                 grain_slected = adapter.getItem(i).toString();
                 sesions.setString(grain_slected);
                 adapterView.setTag(grain_slected);
-                Log.d("Body grain_slected", "grain_slected : "+grain_slected+" ");
+//                Log.d("Body grain_slected selection", "grain_slected : "+grain_slected+" + "+i+" z");
                 Log.d("Body i", " i : "+i+" ");
 
                 for (int x = 0; x < myArrays.length; x++) {
                     System.out.print(myArrays[x] +" "+ i +" ");
 //                    Log.d("Body myArrays", "myArrays  : >> "+myArrays[x]+" << ");
                 }
-                originalPositions = 0;
+//                originalPositions = 0;
                 // buat function untuk menyimpan selected indeks ke room database (angka/indeks)
                 //newPositions = 5;
+                Gindeks idx = new Gindeks();
+                idx.setType(1);
+                idx.setValue(i);
+                Log.d("Body idx", " fl getidxs : "+  idx.getId()+" "+db.gHistoryDao().getCountIdx()+" n ");
+//                Log.d("Body ListgetIdx", " getIdx : "+db.gHistoryDao().getCountIdx()+" "+indx+"");
+                /*
+                1. baca jumlah row pada table Gindeks
+                2. jika jumlah row == 0 , insert dengan type = 1, value selected row
+                3. jika jumlah > 0 lakukan update Where type == 1, value selected row
+                */
+//                updateSelectedGrain(idx);
 
-
+                int rowGrainType = db.gHistoryDao().getCount();
+//                int rowGrainType = count123.size();
+                if(rowGrainType==0){
+                    Log.d("AAABL", "idx "+rowGrainType);
+                    insertIdx(idx);
+                }
+                else{
+                     /* cara-1, dengan fungsi */
+                    idx.setId(1);
+                    idx.setType(1);
+                    idx.setValue(i);
+                    Log.d("AAVAIL", " i "+i);
+                    updateSelectedGrain(idx);
+                   /* cara-2 , dengan queriy
+                    int val = idx.getValue();
+                    int id = 1;
+                    int type = idx.getType();
+                    db.gHistoryDao().updateIndeks(id,type, val);
+                    Log.d("AAVAIL", " idx "+idx.getValue());
+                    */
+                }
             }
 
             @Override
@@ -746,24 +718,24 @@ public class HomeFragment extends Fragment{
             }
         });
 
-        dialogIntent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent((Context) getActivity(), SlidePanelActivity.class);
-                startActivity(intent);
-            }
-        });
+//        dialogIntent.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent((Context) getActivity(), SlidePanelActivity.class);
+//                startActivity(intent);
+//            }
+//        });
         //button
-        Button DialogButton = dialogue.findViewById(R.id.action_oke);
+        Button DialogButton = dialog.findViewById(R.id.action_oke);
         DialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogue.dismiss();
+                dialog.dismiss();
             }
         });
 
         //textView
-        TextView gallery = dialogue.findViewById(R.id.gallery);
+        TextView gallery = dialog.findViewById(R.id.gallery);
         gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -788,7 +760,7 @@ public class HomeFragment extends Fragment{
             }
         });
 
-        TextView cammera = dialogue.findViewById(R.id.cammera);
+        TextView cammera = dialog.findViewById(R.id.cammera);
         cammera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -814,7 +786,7 @@ public class HomeFragment extends Fragment{
             }
         });
 
-        dialogue.show();
+        dialog.show();
     }
 
     private void selectImage(String state_data) {
@@ -1248,7 +1220,7 @@ public class HomeFragment extends Fragment{
                         else if(gandum = uploadImageGandum)
                         dibuatkan upload image
                       */
-                    dialogue.dismiss();
+                    dialog.dismiss();
                     if (grain_slected.equals("Rice")){
                         uploadImage(converetdImage, grain_slected);
                         Log.d("Body grain_slected", "grain_slected  : " +grain_slected);
@@ -1260,27 +1232,27 @@ public class HomeFragment extends Fragment{
                         view.setBackgroundColor(Color.RED);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
-                    }else if (grain_slected.equals("Cocho")){
+                        Toast.makeText(getActivity(), "This is my Coffee message!",
+                                Toast.LENGTH_LONG).show();
+                        Log.d("Body grain_slected2", "grain_slected2  : " +grain_slected);
+                    }else if (grain_slected.equals("Corns")){
                         Toast toasts=Toast.makeText(getActivity(), "Chocholate is cooming soon / Not Executed /  in Development" , Toast.LENGTH_LONG);
                         View view = toasts.getView();
                         view.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
                         view.setBackgroundColor(Color.GREEN);
                         toasts.setGravity(Gravity.CENTER, 0, 0);
                         toasts.show();
-                    } else if (grain_slected.equals("Corn")){
-                        Toast toastc = Toast.makeText(getActivity(), "Corn  is cooming soon / Not Executed / in Development" , Toast.LENGTH_LONG);
-                        View view = toastc.getView();
-                        view.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
-                        view.setBackgroundColor(Color.MAGENTA);
-                        toastc.setGravity(Gravity.CENTER, 0, 0);
-                        toastc.show();
-                    }  else if (grain_slected.equals("Fruit")){
+                    } else if (grain_slected.equals("Buckwheats")){
+                        Toast.makeText(getActivity(), "Buckwheats On Development" , Toast.LENGTH_LONG).show();
+                    }  else if (grain_slected.equals("Fruitz")){
                         Toast toast = Toast.makeText(getActivity(), "Fruit is cooming soon / Not Executed / in Development" , Toast.LENGTH_LONG);
                         View view = toast.getView();
                         view.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
                         view.setBackgroundColor(Color.YELLOW);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
+                    }else {
+                         Toast.makeText(getActivity(), "On Development" , Toast.LENGTH_LONG);
                     }
 //                    Uri imageUri = data.getData();
 //                    cropImage(bitmap);
@@ -1890,7 +1862,7 @@ public class HomeFragment extends Fragment{
 //                    ???????
                     session.setKeyApiJwt(jwtNull);
                     session.setIsLogin(false);
-                    session.setFirstTimeLaunch(true);
+                    session.setFirstTimeLaunch(false);
                     session.logoutUser();
                 }
             });
@@ -2176,7 +2148,58 @@ public class HomeFragment extends Fragment{
         */
 
     }
+    private void updateSelectedGrain(Gindeks idx) {
+        new AsyncTask<Void, Void, Long>() {
+            @Override
+            protected Long doInBackground(Void... voids) {
+                long status = db.gHistoryDao().updateGrainSelected(idx);
+                return status;
+            }
 
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            protected void onPostExecute(Long status) {
+//                Toast.makeText(getActivity().getApplicationContext(), "status row " + status, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity().getApplicationContext(), "history row added sucessfully" + status, Toast.LENGTH_SHORT).show();
+                Log.d("Upload history row added sucessfullys", "String status  : " +status);
+            }
+        }.execute();
+    }
+
+    private void deleteRowGrain(Gindeks idx) {
+        new AsyncTask<Void, Void, Long>() {
+            @Override
+            protected Long doInBackground(Void... voids) {
+                long status = db.gHistoryDao().updateGrainSelected(idx);
+                return status;
+            }
+
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            protected void onPostExecute(Long status) {
+//                Toast.makeText(getActivity().getApplicationContext(), "status row " + status, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity().getApplicationContext(), "history row added sucessfully" + status, Toast.LENGTH_SHORT).show();
+                Log.d("Upload history row added sucessfullys", "String status  : " +status);
+            }
+        }.execute();
+    }
+    private void insertIdx(Gindeks idx) {
+        new AsyncTask<Void, Void, Long>() {
+            @Override
+            protected Long doInBackground(Void... voids) {
+                long status = db.gHistoryDao().insertIdx(idx);
+                return status;
+            }
+
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            protected void onPostExecute(Long status) {
+//                Toast.makeText(getActivity().getApplicationContext(), "status row " + status, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity().getApplicationContext(), "history row added sucessfully" + status, Toast.LENGTH_SHORT).show();
+                Log.d("Upload history row added sucessfullys", "String status  : " +status);
+            }
+        }.execute();
+    }
     private void insertItems(Gitem type2) {
         new AsyncTask<Void, Void, Long>() {
             @Override
