@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {GHistory.class, Gitem.class,Gindeks.class}, version = 45)
+@Database(entities = {GHistory.class, Gitem.class,Gindeks.class,GStatus.class}, version = 50)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract GHistoryDao gHistoryDao();

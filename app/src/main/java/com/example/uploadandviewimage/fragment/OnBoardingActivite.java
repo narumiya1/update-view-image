@@ -1,8 +1,10 @@
 package com.example.uploadandviewimage.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -27,6 +30,8 @@ import com.example.uploadandviewimage.SplashActivity;
 import com.example.uploadandviewimage.activity.FragmentActivity;
 import com.example.uploadandviewimage.auth.LoginNumber;
 import com.example.uploadandviewimage.auth.Sesion;
+import com.example.uploadandviewimage.roomdbGhistory.AppDatabase;
+import com.example.uploadandviewimage.roomdbGhistory.GStatus;
 
 public class OnBoardingActivite extends AppCompatActivity {
 
@@ -37,11 +42,16 @@ public class OnBoardingActivite extends AppCompatActivity {
     private int[] layouts;
     private Button btnSkip, btnNext;
     private Sesion session;
+    private AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        db = Room.databaseBuilder(this, AppDatabase.class, "tbGrainHistory")
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .addMigrations(AppDatabase.MIGRATION_4_5)
+                .build();
         // Checking for first time launch - before calling setContentView()
         session = new Sesion(this);
         if (!session.isFirstTimeLaunch()) {
@@ -127,11 +137,36 @@ public class OnBoardingActivite extends AppCompatActivity {
     }
 
     private void launchHomeScreen() {
-        session.setFirstTimeLaunch(false);
-        session.setOnBoard(1);
-        Log.d("Body getOnBoard launchHomeScreen<>", "getOnBoard launchHomeScreen: "+session.getOnBoard());
+//        session.setFirstTimeLaunch(false);
+//        session.setOnBoard(1);
+        GStatus gStatus = new GStatus();
+        gStatus.setId(1);
+        gStatus.setType(1);
+        gStatus.setStatus(1);
+        int rowStaatus = db.gHistoryDao().getStatusCount();
+        Log.d("Body rowStaatus ON Board", " rowStaatus Board: " + rowStaatus + "  ");
+        insertStats(gStatus);
+        Log.d("AAABL rowStaatus 1", "idx = " + rowStaatus);
+//        Log.d("Body getOnBoard launchHomeScreen<>", "getOnBoard launchHomeScreen: " + session.getOnBoard());
         startActivity(new Intent(OnBoardingActivite.this, FragmentActivity.class));
         finish();
+    }
+
+    private void insertStats(GStatus idx) {
+        new AsyncTask<Void, Void, Long>() {
+            @Override
+            protected Long doInBackground(Void... voids) {
+                long status = db.gHistoryDao().insertStatus(idx);
+                return status;
+            }
+
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            protected void onPostExecute(Long status) {
+//                Toast.makeText(getActivity().getApplicationContext(), "history row added sucessfully" + status, Toast.LENGTH_SHORT).show();
+                Log.d("Upload history row added sucessfullys", "String status  : " + status);
+            }
+        }.execute();
     }
 
     //  viewpager change listener

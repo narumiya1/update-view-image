@@ -28,6 +28,10 @@ public interface GHistoryDao  {
     long insertJson(Gitem items);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertIdx(Gindeks idx);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long insertStatus(GStatus gStatus);
+
     @Update
     int updateGrainHistory(GHistory gHistory);
     @Update
@@ -49,6 +53,9 @@ public interface GHistoryDao  {
 
     @Query("SELECT COUNT (*) FROM tbGindeks WHERE type = 1")
     int getCount();
+
+    @Query("SELECT COUNT (*) FROM tbGstatus WHERE id = 1")
+    int getStatusCount();
 
     @Query("UPDATE tbGindeks SET value = :value, type=:type WHERE id = :id")
     int updateIndeks(int id, int type,int value);

@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.room.Room;
 
 import com.example.uploadandviewimage.R;
 import com.example.uploadandviewimage.auth.LoginNumber;
@@ -28,6 +29,8 @@ import com.example.uploadandviewimage.fragment.AboutFragment;
 import com.example.uploadandviewimage.fragment.HistoryFragment;
 import com.example.uploadandviewimage.fragment.HomeFragment;
 import com.example.uploadandviewimage.fragment.MeinenDialogFragment;
+import com.example.uploadandviewimage.roomdbGhistory.AppDatabase;
+import com.example.uploadandviewimage.roomdbGhistory.GStatus;
 import com.example.uploadandviewimage.utils.DialogUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -46,6 +49,7 @@ public class FragmentActivity extends AppCompatActivity implements BottomNavigat
         STARTED,
         STOPPED
     }
+    private AppDatabase db;
 
     private FragmentActivity.TimerStatus timerStatus = FragmentActivity.TimerStatus.STOPPED;
     private long timeCountInMilliSeconds = 1 * 60000;
@@ -55,6 +59,13 @@ public class FragmentActivity extends AppCompatActivity implements BottomNavigat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragmnet);
         sesion = new Sesion(this);
+        db = Room.databaseBuilder(this, AppDatabase.class, "tbGrainHistory")
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .addMigrations(AppDatabase.MIGRATION_4_5)
+                .build();
+        int rowStaatus = db.gHistoryDao().getStatusCount();
+        Log.d("Body rowStaatus id", " rowStaatus Fragment:  "+rowStaatus);
         if (!sesion.isLoggedIn()) {
 
 

@@ -1,6 +1,7 @@
 package com.example.uploadandviewimage.auth;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -24,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfDocument;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -44,6 +46,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+import androidx.room.Room;
 
 import com.example.uploadandviewimage.ExampleAdapter;
 import com.example.uploadandviewimage.GrainData;
@@ -60,7 +64,10 @@ import com.example.uploadandviewimage.cookies.AddCookiesInterceptor;
 import com.example.uploadandviewimage.cookies.JavaNetCookieJar;
 import com.example.uploadandviewimage.cookies.ReceivedCookiesInterceptor;
 import com.example.uploadandviewimage.fragment.OnBoardingActivite;
+import com.example.uploadandviewimage.roomdbGhistory.AppDatabase;
 import com.example.uploadandviewimage.roomdbGhistory.GHistory;
+import com.example.uploadandviewimage.roomdbGhistory.GStatus;
+import com.example.uploadandviewimage.roomdbGhistory.Gindeks;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.google.firebase.auth.FirebaseAuth;
@@ -122,6 +129,7 @@ public class LoginNumber extends AppCompatActivity {
                             ".{6,}"               //at least 4 characters
 
             );
+    private AppDatabase db;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,6 +141,11 @@ public class LoginNumber extends AppCompatActivity {
         session = new Sesion(this);
         forgot_password = findViewById(R.id.forgot_password);
         progressDialog = new ProgressDialog(LoginNumber.this);
+        db = Room.databaseBuilder(this, AppDatabase.class, "tbGrainHistory")
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .addMigrations(AppDatabase.MIGRATION_4_5)
+                .build();
         openMain();
         reg = findViewById(R.id.textview_signup);
         reg.setOnClickListener(new View.OnClickListener() {
@@ -195,7 +208,7 @@ public class LoginNumber extends AppCompatActivity {
 
         String phone = "+628156055410";
         String password = "123456";
-        Log.d("PHONE <->", "Response: "+passwordInput);
+        Log.d("PHONE <->", "Response: " + passwordInput);
         phoneInput = numbr.getText().toString();
         passwordInput = passwrd.getText().toString();
 //                String phone = new Sesion(getApplicationContext()).getPhone();
@@ -208,25 +221,25 @@ public class LoginNumber extends AppCompatActivity {
         UploadApis uploadApiss = retrofits.create(UploadApis.class);
 
         Call<ResponseBody> calls = uploadApiss.insertLogin(phoneInput, passwordInput);
-        Log.d("Body PHONE", "Response: "+phoneInput);
-        Log.d("Body passwrd", "Response: "+passwordInput);
+        Log.d("Body PHONE", "Response: " + phoneInput);
+        Log.d("Body passwrd", "Response: " + passwordInput);
         jwt = "";
         calls.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.code() == 200){
+                if (response.code() == 200) {
                     closeProgress();
-                    Log.d("Body API <>", "Response: "+response.body().toString());
+                    Log.d("Body API <>", "Response: " + response.body().toString());
                     session.setKeyApiJwt(jwt);
-                    Log.d("Body Token 1 <>", "Response: "+jwt);
+                    Log.d("Body Token 1 <>", "Response: " + jwt);
                     //add delay
                     //String jwt = "";
                     ResponseBody responseBody = response.body();
                     try {
                         byte[] myByte = responseBody.bytes();
                         jwt = new String(myByte, StandardCharsets.UTF_8);
-                        jwt = jwt.substring(1, jwt.length()-1);
-                        Log.d("Body Token 2 <>", "Response: "+jwt);
+                        jwt = jwt.substring(1, jwt.length() - 1);
+                        Log.d("Body Token 2 <>", "Response: " + jwt);
                         //String strResponse = responseBody.string();
                         //String coba = "disini";
                     } catch (IOException e) {
@@ -246,7 +259,7 @@ public class LoginNumber extends AppCompatActivity {
 
                                 TokenInterceptor tokenInterceptor = new TokenInterceptor(jwt);
 
-                                Log.d("Body Token <>", "Response: "+jwt);
+                                Log.d("Body Token <>", "Response: " + jwt);
 
                                 session.setPhone(phoneInput);
                                 session.setPassword(passwordInput);
@@ -270,16 +283,27 @@ public class LoginNumber extends AppCompatActivity {
 
                                 Log.d("Body <>", "Response: "+response.body().toString());
                                 finishAffinity();
-                                session.getOnBoard();
-                                Log.d("Body getOnBoard <>", "getOnBoard: "+session.getOnBoard());
-                                if (!session.isFirstTimeLaunch()) {
-                                    Intent intent = new Intent(LoginNumber.this, FragmentActivity.class);
-                                    startActivity(intent);
-                                }else {
+//                                session.getOnBoard();
+//                                Log.d("Body getOnBoard <>", "getOnBoard: " + session.getOnBoard());
+//                                if (!session.isFirstTimeLaunch()) {
+//                                    Intent intent = new Intent(LoginNumber.this, FragmentActivity.class);
+//                                    startActivity(intent);
+//                                } else {
+//                                    Intent intent = new Intent(LoginNumber.this, OnBoardingActivite.class);
+//                                    startActivity(intent);
+//                                }
+
+                                GStatus gStatus = new GStatus();
+                                int rowStaatus = db.gHistoryDao().getStatusCount();
+                                Log.d("Body rowStaatus log in", " rowStaatus Board: " + rowStaatus + "  ");
+
+                                if (rowStaatus == 0&&gStatus.getId()==0) {
                                     Intent intent = new Intent(LoginNumber.this, OnBoardingActivite.class);
                                     startActivity(intent);
+                                } else {
+                                    Intent intent = new Intent(LoginNumber.this, FragmentActivity.class);
+                                    startActivity(intent);
                                 }
-
 
                             } catch (Exception e) {
                                 String errMessage = e.getMessage();
@@ -295,7 +319,7 @@ public class LoginNumber extends AppCompatActivity {
                     Toasty.custom(getApplicationContext(), R.string.login_berhasil, getResources().getDrawable(R.drawable.ic_baseline_check_box_24),
                             android.R.color.black, android.R.color.holo_green_dark, Toasty.LENGTH_LONG, true, true).show();
                     Toasty.Config.reset(); // Use this if you want to use the configuration above only once
-                }else {
+                } else {
 
                     Toast.makeText(LoginNumber.this, "Nomor/Password tidak sesuai, silahkan cek kembali  !", Toast.LENGTH_LONG).show();
 
@@ -327,5 +351,21 @@ public class LoginNumber extends AppCompatActivity {
     }
 
 
+    private void insertStats(GStatus idx) {
+        new AsyncTask<Void, Void, Long>() {
+            @Override
+            protected Long doInBackground(Void... voids) {
+                long status = db.gHistoryDao().insertStatus(idx);
+                return status;
+            }
+
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            protected void onPostExecute(Long status) {
+//                Toast.makeText(getActivity().getApplicationContext(), "history row added sucessfully" + status, Toast.LENGTH_SHORT).show();
+                Log.d("Upload history row added sucessfullys", "String status  : " + status);
+            }
+        }.execute();
+    }
 
 }
